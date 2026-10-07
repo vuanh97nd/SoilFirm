@@ -1,5 +1,9 @@
 """Deterministic validation/transaction. No model/UI/AI imports or callbacks."""
 from copy import deepcopy
+try:
+    from mapping_proposer import save_mapping_experience as _save_exp
+except Exception:
+    _save_exp = None
 from dataclasses import dataclass
 from datetime import date,datetime,time,timedelta
 import hashlib
@@ -201,6 +205,12 @@ def apply_mapping(validated, columns, data_rows, registry, state, *, required=()
         try:state.clear();state.update(candidate)
         except BaseException:
             state.clear();state.update(backup);raise
+    if _save_exp is not None:
+        for item in (validated.preview if hasattr(validated,'preview') else ()):
+            try:
+                _save_exp(item.get('source',''), item.get('target',''), item.get('unit_source',''))
+            except Exception:
+                pass
     return backup
 
 
