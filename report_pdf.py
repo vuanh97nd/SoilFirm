@@ -41,6 +41,12 @@ LEFT = 85.04
 RIGHT = 42.52
 W = A4[0] - LEFT - RIGHT
 
+# Font size constants — thay đổi tại đây để điều chỉnh toàn bộ báo cáo
+FS_BODY   = 9.0   # chữ ngoài bảng (label + value)
+FS_TABLE  = 7.5   # bảng ít cột (≤5 cột, bảng công thức)
+FS_WIDE   = 6.5   # bảng nhiều cột (6–10 cột)
+FS_DENSE  = 6.0   # bảng rất nhiều cột (>10 cột)
+
 
 def _draw_pdf_brand(canvas, enabled=True):
     if not enabled:
@@ -651,7 +657,7 @@ class StagedSettlementChart(Flowable):
 
 
 def _table(rows, widths, normal, bold, *, header=1,
-           last=False, font_size=7.3, padding=3):
+           last=False, font_size=FS_TABLE, padding=3):
     cell = ParagraphStyle('cell', parent=normal, fontSize=font_size,
                           leading=font_size+2, alignment=TA_CENTER)
     head = ParagraphStyle('head', parent=bold, fontSize=font_size,
@@ -784,7 +790,7 @@ def _geology_tables(project,normal,bold,L,include_spt=True):
             + L('Cao độ lỗ khoan (m)') + f': {project.ground_elevation:.3f}; '
             + L('Chiều sâu lỗ khoan tính toán (m)') + f': {project.borehole_depth:.3f}')
     return [_p(info,normal),Spacer(1,4),
-            _table(rows,widths,normal,bold,font_size=6.2,padding=3),Spacer(1,8)]
+            _table(rows,widths,normal,bold,font_size=FS_WIDE,padding=3),Spacer(1,8)]
 
 
 def _check_text(symbol,value,allowed_symbol,allowed,unit,L):
@@ -805,7 +811,7 @@ def _settlement_formulas(normal,bold,L,radial=False):
                         (L('Cố kết kết hợp đứng và hướng tâm'),r'$U=1-(1-U_v)(1-U_h)$')])
     return [Section(L('CÔNG THỨC TÍNH TOÁN')),
             _table([[L('Nội dung'),L('Công thức')]]+[(label,MathFormula(eq)) for label,eq in entries],
-                   [W*.43,W*.57],normal,bold,font_size=8,padding=4),Spacer(1,8)]
+                   [W*.43,W*.57],normal,bold,font_size=FS_TABLE,padding=4),Spacer(1,8)]
 
 
 def _create_cdm_only_report(project, destination, method, data, language='vi', show_logo=True):
@@ -813,7 +819,7 @@ def _create_cdm_only_report(project, destination, method, data, language='vi', s
     L = lambda s: _english_ui(s) if language == 'en' else s
     if method not in ('standard', 'alicc') or not data:
         raise ValueError(L('Chưa có kết quả CDM/ALiCC để xuất báo cáo.'))
-    normal = ParagraphStyle('cdm_normal', fontName='SFReport', fontSize=9.2, leading=12.5)
+    normal = ParagraphStyle('cdm_normal', fontName='SFReport', fontSize=FS_BODY, leading=FS_BODY+3.5)
     bold = ParagraphStyle('cdm_bold', parent=normal, fontName='SFReportBold')
     title = ParagraphStyle('cdm_title', parent=bold, fontSize=11, leading=15,
                            alignment=TA_CENTER, spaceAfter=7)
@@ -835,7 +841,7 @@ def _create_cdm_only_report(project, destination, method, data, language='vi', s
         rows = [(label, _formula_cell(expression), result) for label, expression, result in rows]
         story.append(_table([[L('Nội dung'), L('Công thức tính'), L('Kết quả')]] + rows,
                             [W*.25, W*.51, W*.24], normal, bold,
-                            font_size=8.2, padding=4))
+                            font_size=FS_TABLE, padding=4))
         story.append(Spacer(1, 7))
 
     details([(L('Lý trình'), ' — '.join(v for v in (project.station_from, project.station_to) if v) or project.station or '—'),
@@ -910,7 +916,7 @@ def _create_cdm_only_report(project, destination, method, data, language='vi', s
         block = [[L('Khối gia cố'), 'Lc (m)', 'ap', 'q (T/m²)', 'Ec (T/m²)', 'Es (T/m²)', 'S1 (cm)'],
                  ['CDM', f'{params["Lc"]:.2f}', f'{result["ap"]:.2f}', f'{result["q_cdm"]:.2f}',
                   f'{params["Ec"]:.2f}', f'{first["e_soil"]:.2f}', f'{s1:.2f}']]
-        story.append(_table(block,[W*.16]+[W*.14]*6,normal,bold,font_size=8.0,padding=3))
+        story.append(_table(block,[W*.16]+[W*.14]*6,normal,bold,font_size=FS_WIDE,padding=3))
         story.append(Spacer(1,6))
         story.append(Section(L('1.2. LÚN S2 CỦA ĐẤT DƯỚI MŨI CỌC')))
         if end_bearing:
@@ -934,7 +940,7 @@ def _create_cdm_only_report(project, destination, method, data, language='vi', s
                              cell_number(row['e0'],3),cell_number(row['cc'],3),cell_number(row['cr'],3),
                              cell_number(row['pc']),cell_number(row['dp']),cell_number(row['sc'])])
             rows.append([L('TỔNG'),'','','','','','','',f'{sc2:.2f}'])
-            story.append(_table(rows,[W*.24]+[W*.095]*8,normal,bold,font_size=7.8,padding=3,last=True))
+            story.append(_table(rows,[W*.24]+[W*.095]*8,normal,bold,font_size=FS_WIDE,padding=3,last=True))
             story.append(Spacer(1, 10))
             formula([(L('Lún cố kết dưới mũi cọc Sc2'), 'Sc2=ΣSc2,i',f'{sc2:.2f} cm'),
                      (L('Lún dưới mũi cọc S2'), 'S2=Sc2',f'{s2:.2f} cm')])
@@ -1006,7 +1012,7 @@ def _create_cdm_only_report(project, destination, method, data, language='vi', s
             rows = [[L('Lớp đất'), L('Đỉnh')+' (m)', L('Đáy')+' (m)', 'Δp (T/m²)', 'S2 (cm)']]
             rows += [[r['layer'], f'{r["z0"]:.2f}', f'{r["z1"]:.2f}', f'{r["dp"]:.2f}', f'{r["cm"]:.2f}']
                      for r in result['settlement_rows']]
-            story.append(_table(rows,[W*.32]+[W*.17]*4,normal,bold,font_size=8.2,padding=3))
+            story.append(_table(rows,[W*.32]+[W*.17]*4,normal,bold,font_size=FS_TABLE,padding=3))
         details([(L('Giới hạn tổng lún cho phép'), f'{data["limit"]:.2f} cm'),
                  (L('Đánh giá lún'), _check_text('S',result['S_total_cm'],'[S]',data['limit'],'cm',L))])
 
@@ -1159,9 +1165,9 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
             L('Dự báo sau') + f' {selected_day:.2f} '
             + L('ngày kể từ hiện tại: tải nền chính cũ và tải mở rộng'), bold))
         target.append(_table(rows, [W*.29]+[W*.142]*5, normal, bold,
-                             font_size=5.8, padding=2))
+                             font_size=FS_DENSE, padding=2))
 
-    normal = ParagraphStyle('n', fontName='SFReport', fontSize=9.2, leading=12.5,
+    normal = ParagraphStyle('n', fontName='SFReport', fontSize=FS_BODY, leading=FS_BODY+3.5,
                             textColor=INK)
     bold = ParagraphStyle('b', parent=normal, fontName='SFReportBold')
     table_caption = ParagraphStyle('table_caption', parent=bold,
@@ -1170,7 +1176,7 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
                            textColor=INK, alignment=TA_CENTER, spaceAfter=8)
     cover_title = ParagraphStyle('cover_title', parent=title, fontSize=10.3,
                                  leading=13, spaceAfter=4)
-    note = ParagraphStyle('note', parent=normal, fontSize=8.3, leading=13,
+    note = ParagraphStyle('note', parent=normal, fontSize=FS_BODY-1, leading=13,
                           spaceBefore=3, spaceAfter=5)
     doc = SimpleDocTemplate(destination, pagesize=A4, leftMargin=LEFT,
                             rightMargin=RIGHT, topMargin=38, bottomMargin=38,
@@ -1291,7 +1297,7 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
             L('Địa chất vùng đã xử lý của nền chính') + f' ({project.main_treatment}):',
             bold))
         story.append(_table(zone_rows, soil_widths, normal, bold,
-                            font_size=6.2, padding=2.2))
+                            font_size=FS_WIDE, padding=2.2))
     story.append(Section(L('II. KẾT QUẢ KIỂM TOÁN LÚN')))
     detail = [[L('Lớp'), 'h\n(m)', 'Z\n(m)', 'γ′\n(T/m³)', 'e₀', 'Cc', 'Cs',
                'P₀\n(T/m²)', 'Δp Tim\n(T/m²)', 'Δp Vai\n(T/m²)',
@@ -1311,7 +1317,7 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
                    f'{sum(e["Sc_list"][2] for e in elements):.2f}'])
     story.append(Paragraph(L('1. Thông số phân tố, ứng suất và lún:'), bold))
     story.append(_table(detail, [22,31,31,38,30,28,28,37,37,37,46,46,W-411],
-                        normal, bold, last=True, font_size=5.9, padding=1.6))
+                        normal, bold, last=True, font_size=FS_DENSE, padding=2))
     if project.expansion_width > 0:
         position_rows = [[L('Vị trí'), 'x (m)',
                           L('Δp tại Z đầu') + ' (T/m²)',
@@ -1325,7 +1331,7 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
             L('Ứng suất tăng thêm và lún theo vị trí nền chính / nền mở rộng:'),
             bold))
         story.append(_table(position_rows, [W*.38,W*.12,W*.24,W*.13,W*.13],
-                            normal, bold, font_size=6.2, padding=2))
+                            normal, bold, font_size=FS_WIDE, padding=2))
     story.append(Paragraph(
         f'<b>Sc:</b> {comp["Sc_cm"]:.2f} cm  |  '
         f'<b>Si:</b> {comp["Si_cm"]:.2f} cm  |  '
@@ -1366,7 +1372,7 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
                            f'{r["Sc_t_cm"]/100:.2f}',
                            f'{r["Sc_dư_cm"]/100:.2f}'])
     time_flowable = _table(time_table, [43, 38, 39, 44, 46], normal, bold,
-                           font_size=6.5, padding=2.0)
+                           font_size=FS_WIDE, padding=2.0)
     if language == 'en':
         time_flowable = _translate_flowable(time_flowable)
     _, time_height = time_flowable.wrap(210, 1000)
@@ -1534,7 +1540,7 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
             L('Địa chất vùng đã xử lý của nền chính') + f' ({project.main_treatment}):',
             bold))
         story.append(_table(zone_rows, soil_widths, normal, bold,
-                            font_size=6.2, padding=2.2))
+                            font_size=FS_WIDE, padding=2.2))
     story.append(Spacer(1, 8))
     if not mechanical_direct:
         story.append(Paragraph(L('2. Các giai đoạn thi công:'), bold))
@@ -1563,7 +1569,7 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
                             '', '', '', '',
                             f'P_vac {project.vacuum_pressure:.2f} T/m²'])
         story.append(_table(st_rows, [64,48,48,50,50,55,48,W-363],
-                            normal, bold, font_size=6.6, padding=3))
+                            normal, bold, font_size=FS_WIDE, padding=3))
     if project.treatment_group == 'mechanical':
         _, _, shallow_elements = settlement(project, return_details=True, treated=True)
         shallow_rows = [[L('Lớp'), L('Tên lớp'), L('Xử lý'), 'Z (m)',
@@ -1580,7 +1586,7 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
                       Paragraph(f'{step_no}. ' + L('Phân tố lún sau xử lý:'), bold),
                       _table(shallow_rows,
                              [25,48,72,35,34,43,45,48,44,44,W-438],
-                             normal, bold, font_size=5.9, padding=1.6)])
+                             normal, bold, font_size=FS_DENSE, padding=2)])
     if mechanical_direct:
         story.append(Section(L('II. KẾT QUẢ KIỂM TOÁN LÚN SAU XỬ LÝ')))
         result_rows = [[L('Vị trí'), L('Sc = Sc dư') + ' (cm)',
@@ -1691,7 +1697,7 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
                         f'{vacuum:.2f}', f'{row["U_%"]:.2f}',
                         f'{row["Sc_t_cm"]:.2f}', f'{row["Sc_dư_cm"]:.2f}'])
     story.append(_table(summary, [110,67,47,50,52,37,53,W-416], normal, bold,
-                        font_size=6.4, padding=2.4))
+                        font_size=FS_WIDE, padding=2.4))
     story.append(Spacer(1, 8))
     for event_index, (label, start, end, row) in enumerate(event_rows):
         layer_rows = [[L('Lớp'), L('Tên lớp'), L('Dày') + '\n(m)',
@@ -1724,7 +1730,7 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
         layer_table = _table(layer_rows,
                              [28,80,38,55,41,57,55,55,W-409],
                              normal, bold, last=True,
-                             font_size=6.4, padding=2.0)
+                             font_size=FS_WIDE, padding=2.0)
         story.append(heading)
         story.append(layer_table)
         if event_index < len(event_rows)-1:
