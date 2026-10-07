@@ -9,6 +9,7 @@ from __future__ import annotations
 import math
 from copy import deepcopy
 import tkinter as tk
+from ui_theme import UI_FONT, UI_FONT_MONO
 from tkinter import ttk, messagebox
 
 from utils import ScrollableFrame, number
@@ -415,7 +416,7 @@ def build_view(parent: tk.Misc) -> None:
     title_frame = ttk.Frame(root)
     title_frame.pack(fill='x', padx=5, pady=(5, 0))
     tk.Label(title_frame, text='THIẾT KẾ XỬ LÝ NỀN BẰNG CỌC XI MĂNG ĐẤT (CDM) - CHỈ DẪN ALiCC',
-             font=('Times New Roman', 13, 'bold'), anchor='w').pack(fill='x', padx=5, pady=5)
+             font=(UI_FONT, 13, 'bold'), anchor='w').pack(fill='x', padx=5, pady=5)
     
     ttk.Separator(root, orient='horizontal').pack(fill='x', padx=5, pady=2)
               
@@ -440,7 +441,7 @@ def build_view(parent: tk.Misc) -> None:
         entry.grid(row=row, column=2 * col + 1, sticky='w', pady=3)
         return entry
 
-    btn_style_teal = {'bg': '#0C6175', 'fg': 'white', 'font': ('Times New Roman', 10, 'bold'), 
+    btn_style_teal = {'bg': '#0C6175', 'fg': 'white', 'font': (UI_FONT, 10, 'bold'), 
                       'relief': 'flat', 'activebackground': '#0284C7', 'activeforeground': 'white',
                       'padx': 12, 'pady': 7,
                       'cursor': 'hand2'}
@@ -461,7 +462,7 @@ def build_view(parent: tk.Misc) -> None:
     btn_hbl = tk.Button(frame_hbl, text='Tính chiều cao bù lún', **btn_style_teal)
     btn_hbl.pack(side='left', padx=(0, 10))
     ttk.Label(frame_hbl, text='(*) Cọc treo: tính theo Htt = Hkcad + Htk + Hbl', 
-              foreground='#0078D7', font=('Times New Roman', 9, 'italic')).pack(side='left')
+              foreground='#0078D7', font=(UI_FONT, 9, 'italic')).pack(side='left')
 
     # 2. THÔNG SỐ CỌC CDM & GÓC VÒM
     geom = ttk.LabelFrame(root, text='2. Thông số cọc CDM & Hiệu ứng vòm')
@@ -492,7 +493,7 @@ def build_view(parent: tk.Misc) -> None:
                  state='readonly', width=15).pack(side='left')
     ttk.Label(frame_pattern, 
               text='   Es = 250 × Co của lớp được chọn; ΔS = |Ssoil − Scol| ≤ [ΔS].',
-              foreground='#005580', font=('Times New Roman', 9, 'italic')).pack(side='left')
+              foreground='#005580', font=(UI_FONT, 9, 'italic')).pack(side='left')
 
     def pile_type_suggest_theta(*_):
         try:
@@ -556,7 +557,7 @@ def build_view(parent: tk.Misc) -> None:
     btn_calc.pack(side='left', padx=(0, 10))
     
     btn_opt = tk.Button(controls, text='Tính toán tối ưu', 
-                        bg='#0C6175', fg='white', font=('Times New Roman', 10, 'bold'),
+                        bg='#0C6175', fg='white', font=(UI_FONT, 10, 'bold'),
                         activebackground='#0284C7', activeforeground='white', padx=12, pady=7,
                         relief='flat', cursor='hand2')
     btn_opt.pack(side='left')
@@ -572,15 +573,15 @@ def build_view(parent: tk.Misc) -> None:
         result_tabs.add(panel, text=title)
         
         body = tk.Text(panel, height=18, width=110, wrap='word', state='disabled', 
-                       font=('Times New Roman', 11), bg='#F0F0F0', relief='flat')
+                       font=(UI_FONT, 11), bg='#F0F0F0', relief='flat')
         body.pack(fill='both', expand=True, padx=10, pady=10)
         
-        body.tag_configure('title', font=('Times New Roman', 12, 'bold'), foreground='#003399', spacing1=5, spacing3=5)
-        body.tag_configure('bold', font=('Times New Roman', 11, 'bold'), foreground='black')
-        body.tag_configure('ok', font=('Times New Roman', 11, 'bold'), foreground='#008000')
-        body.tag_configure('ng', font=('Times New Roman', 11, 'bold'), foreground='#CC0000')
-        body.tag_configure('blue_bold', font=('Times New Roman', 11, 'bold'), foreground='#003399')
-        body.tag_configure('italic', font=('Times New Roman', 11, 'italic'), foreground='#555555')
+        body.tag_configure('title', font=(UI_FONT, 12, 'bold'), foreground='#003399', spacing1=5, spacing3=5)
+        body.tag_configure('bold', font=(UI_FONT, 11, 'bold'), foreground='black')
+        body.tag_configure('ok', font=(UI_FONT, 11, 'bold'), foreground='#008000')
+        body.tag_configure('ng', font=(UI_FONT, 11, 'bold'), foreground='#CC0000')
+        body.tag_configure('blue_bold', font=(UI_FONT, 11, 'bold'), foreground='#003399')
+        body.tag_configure('italic', font=(UI_FONT, 11, 'italic'), foreground='#555555')
         
         outputs[key] = body
 

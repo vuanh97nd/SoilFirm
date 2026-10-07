@@ -335,7 +335,7 @@ class GeologyStatistics(ttk.Frame):
         chart_controls=ttk.Frame(depth_panel,padding=(8,3));chart_controls.pack(fill='x',before=self.canvas)
         chart_controls.columnconfigure(0,weight=1)
         self.chart_heading_text=tk.StringVar(value='Giá trị theo độ sâu')
-        ttk.Label(chart_controls,textvariable=self.chart_heading_text,font=('Times New Roman',10,'bold')).grid(row=0,column=0,columnspan=3,sticky='w',pady=(0,4))
+        ttk.Label(chart_controls,textvariable=self.chart_heading_text,font=(UI_FONT,10,'bold')).grid(row=0,column=0,columnspan=3,sticky='w',pady=(0,4))
         self.reference.set(REFS[0])
         self.plot_kind=tk.StringVar(value='Hằng số')
         self.plot_kind_selector=ttk.Combobox(chart_controls,textvariable=self.plot_kind,values=('Hằng số','Hàm số'),state='readonly',width=10)
@@ -345,7 +345,7 @@ class GeologyStatistics(ttk.Frame):
         self.plot_kind.trace_add('write',lambda *_:self.draw_chart())
         pressure_bar=ttk.Frame(pressure_panel,padding=(8,3));pressure_bar.pack(fill='x')
         pressure_bar.columnconfigure(0,weight=1)
-        ttk.Label(pressure_bar,text='Đường cong cố kết',font=('Times New Roman',10,'bold')).grid(row=0,column=0,columnspan=3,sticky='w',pady=(0,4))
+        ttk.Label(pressure_bar,text='Đường cong cố kết',font=(UI_FONT,10,'bold')).grid(row=0,column=0,columnspan=3,sticky='w',pady=(0,4))
         pressure_selector=ttk.Combobox(pressure_bar,textvariable=self.pressure_kind,values=('e-logP','Cv-logP'),state='readonly',width=10)
         pressure_selector.grid(row=1,column=0,sticky='ew',padx=(0,4))
         pressure_selector.bind('<<ComboboxSelected>>',lambda event:self.draw_pressure_chart())
@@ -359,7 +359,7 @@ class GeologyStatistics(ttk.Frame):
         self.pressure_canvas.configure(yscrollcommand=pressure_scroll.set)
         self.pressure_canvas.bind('<Configure>',lambda event:self.draw_pressure_chart())
         self.pressure_canvas.bind('<Motion>',self.hover_pressure_point)
-        ttk.Label(lower,text='Thống kê từng chỉ tiêu của lớp đang chọn',padding=(8,4),font=('Times New Roman',10,'bold')).pack(fill='x')
+        ttk.Label(lower,text='Thống kê từng chỉ tiêu của lớp đang chọn',padding=(8,4),font=(UI_FONT,10,'bold')).pack(fill='x')
         choice_bar=ttk.Frame(lower,padding=(8,4));choice_bar.pack(fill='x')
         ttk.Button(choice_bar,text='Chọn giá trị',command=self.open_value_choice).pack(side='left')
         ttk.Button(choice_bar,text='Trung bình tất cả',command=self.choose_all_means).pack(side='left',padx=6)
@@ -965,16 +965,16 @@ class GeologyStatistics(ttk.Frame):
         names={'gamma':'Trọng lượng thể tích tự nhiên γ','e0':'Hệ số rỗng e₀','cc':'Chỉ số nén Cc','cs':'Chỉ số nở Cs','pc':'Áp lực tiền cố kết Pc','cv':'Hệ số cố kết Cv','co':'Sức kháng cắt không thoát nước c₀','cohesion_c':'Lực dính c','phi_cu_effective':'Góc ma sát hữu hiệu φ′ CU','friction_phi':'Góc ma sát φ cắt','spt_n':'Chỉ số xuyên tiêu chuẩn Nₛₚₜ'}
         unit='10⁻³ cm²/s' if key=='cv' else PARAMS[key][1]
         title=names[key]+(' ('+unit+')' if unit!='—' else ' (không thứ nguyên)')
-        c.create_text(w/2,8,anchor='n',text=PARAMS[key][0]+(' ('+unit+')' if unit!='—' else ' (không thứ nguyên)'),width=w-16,font=('Times New Roman',12,'bold'),fill='#0F172A')
+        c.create_text(w/2,8,anchor='n',text=PARAMS[key][0]+(' ('+unit+')' if unit!='—' else ' (không thứ nguyên)'),width=w-16,font=(UI_FONT,12,'bold'),fill='#0F172A')
         if self.plot_kind.get()!='Hằng số':
-            c.create_text(w/2,40,text='y = az + b',font=('Times New Roman',10,'bold'),fill='#15803D')
+            c.create_text(w/2,40,text='y = az + b',font=(UI_FONT,10,'bold'),fill='#15803D')
         c.create_line(left,top,right,top,fill='#334155',width=1.5,arrow='last')
         if self.reference.get()==REFS[2]:
             c.create_line(left,bottom,left,top,fill='#334155',width=1.5,arrow='last')
         else:
             c.create_line(left,top,left,bottom,fill='#334155',width=1.5,arrow='last')
         vertical='H (m)' if self.reference.get()==REFS[2] else 'z (m)'
-        c.create_text(12,(top+bottom)/2,text=vertical,angle=90,font=('Times New Roman',10,'bold'))
+        c.create_text(12,(top+bottom)/2,text=vertical,angle=90,font=(UI_FONT,10,'bold'))
         ticks=min(5,max(3,int((right-left)/65)+1))
         settings=self._chart_axes.get((key,self.reference.get()),{})
         self._chart_limits=(xmin,xmax,zmin,zmax)
@@ -987,10 +987,10 @@ class GeologyStatistics(ttk.Frame):
             return [i*step for i in range(first,last+1)]
         for x in axis_ticks(xmin,xmax,settings['xstep']/scale if settings.get('xstep') else None,ticks):
             if settings.get('vertical',True):c.create_line(px(x),top,px(x),bottom,fill='#E2E8F0')
-            c.create_text(px(x),top-15,text=chart_number(x,key),font=('Times New Roman',10))
+            c.create_text(px(x),top-15,text=chart_number(x,key),font=(UI_FONT,10))
         for z in axis_ticks(zmin,zmax,settings.get('zstep'),min(12,max(3,int((bottom-top)/90)+1))):
             if settings.get('horizontal',True):c.create_line(left,py(z),right,py(z),fill='#E2E8F0')
-            c.create_text(left-5,py(z),text=chart_number(z),anchor='e',font=('Times New Roman',10))
+            c.create_text(left-5,py(z),text=chart_number(z),anchor='e',font=(UI_FONT,10))
         selected=set(self.sample_tree.selection())
         for x,z,sample in points:
             if not (xmin<=x<=xmax and zmin<=z<=zmax):continue
@@ -1003,7 +1003,7 @@ class GeologyStatistics(ttk.Frame):
         def endpoint_label(value,x,y):
             c.create_oval(x-3,y-3,x+3,y+3,fill='#16A34A',outline='#16A34A')
             label=c.create_text(x+7,min(bottom-10,max(top+10,y)),anchor='w',
-                                text=chart_number(value,key),font=('Times New Roman',10,'bold'),fill='#15803D')
+                                text=chart_number(value,key),font=(UI_FONT,10,'bold'),fill='#15803D')
             bounds=c.bbox(label)
             if bounds:
                 if bounds[2]>right-3:c.move(label,right-3-bounds[2],0)
@@ -1067,17 +1067,17 @@ class GeologyStatistics(ttk.Frame):
         c.create_line(divider,table_top,divider,table_top+52,fill='#94A3B8')
         c.create_line(table_left,table_top+26,table_right,table_top+26,fill='#94A3B8')
         coefficient=self.computed.get(key,{}).get('cv')
-        c.create_text(table_left+6,table_top+13,anchor='w',text='Hệ số biến thiên',font=('Times New Roman',10))
-        c.create_text((divider+table_right)/2,table_top+13,text=f'{coefficient:.3f}' if coefficient is not None else '—',font=('Times New Roman',10))
-        c.create_text(table_left+6,table_top+39,anchor='w',text='Giá trị trung bình',font=('Times New Roman',10,'bold'))
-        c.create_text((divider+table_right)/2,table_top+39,text=chart_number(mean,key) if mean is not None else '—',font=('Times New Roman',10,'bold'),fill='#15803D')
+        c.create_text(table_left+6,table_top+13,anchor='w',text='Hệ số biến thiên',font=(UI_FONT,10))
+        c.create_text((divider+table_right)/2,table_top+13,text=f'{coefficient:.3f}' if coefficient is not None else '—',font=(UI_FONT,10))
+        c.create_text(table_left+6,table_top+39,anchor='w',text='Giá trị trung bình',font=(UI_FONT,10,'bold'))
+        c.create_text((divider+table_right)/2,table_top+39,text=chart_number(mean,key) if mean is not None else '—',font=(UI_FONT,10,'bold'),fill='#15803D')
         if fitted_display:
             c.create_line(table_left,table_top+52,table_right,table_top+52,fill='#94A3B8')
             if equation_values is not None:
                 a,b,r2=equation_values
                 text=f'a = {a:.4g}; b = {b:.4g}; R² = {r2:.3f}' if r2 is not None else f'a = {a:.4g}; b = {b:.4g}'
             else:text='Chưa đủ dữ liệu lập hàm y = az + b.'
-            c.create_text((table_left+table_right)/2,table_top+65,text=text,font=('Times New Roman',10),fill='#15803D')
+            c.create_text((table_left+table_right)/2,table_top+65,text=text,font=(UI_FONT,10),fill='#15803D')
     def draw_pressure_chart(self):
         """Display laboratory curves; averaging here never changes soil inputs."""
         if not hasattr(self,'pressure_canvas'):return
@@ -1152,7 +1152,7 @@ class GeologyStatistics(ttk.Frame):
         def tick_text(value):
             if abs(value)<ystep*1e-10:value=0.
             return format(value,'.8g')
-        tick_font=tkfont.Font(family='Times New Roman',size=9)
+        tick_font=tkfont.Font(family=UI_FONT,size=9)
         left=max(left,max((tick_font.measure(tick_text(v)) for v in yticks),default=0)+16)
         if right-left<50 or bottom-top<35:
             c.create_text(w/2,h/2,text='Kéo rộng khung để xem biểu đồ.',width=max(100,w-20),fill='#64748B');return
@@ -1160,11 +1160,11 @@ class GeologyStatistics(ttk.Frame):
         def py(v):
             coordinate=math.log10(v) if log_y else v
             return bottom-(coordinate-ylo)/(yhi-ylo)*(bottom-top)
-        c.create_text(w/2,8,anchor='n',text=kind,font=('Times New Roman',12,'bold'),fill='#0F172A')
+        c.create_text(w/2,8,anchor='n',text=kind,font=(UI_FONT,12,'bold'),fill='#0F172A')
         c.create_line(left,33,left+22,33,fill='#DC2626',width=3)
-        c.create_text(left+28,33,anchor='w',text='Trung bình',font=('Times New Roman',10))
-        c.create_text(left,top-13,anchor='w',text='e (không thứ nguyên)' if parameter=='e' else 'Cv (10⁻³ cm²/s) · logarit',font=('Times New Roman',10))
-        c.create_text((left+right)/2,bottom+38,text='P (kgf/cm²) · logarit',font=('Times New Roman',10))
+        c.create_text(left+28,33,anchor='w',text='Trung bình',font=(UI_FONT,10))
+        c.create_text(left,top-13,anchor='w',text='e (không thứ nguyên)' if parameter=='e' else 'Cv (10⁻³ cm²/s) · logarit',font=(UI_FONT,10))
+        c.create_text((left+right)/2,bottom+38,text='P (kgf/cm²) · logarit',font=(UI_FONT,10))
         xstep=settings.get('xstep')
         if xstep:
             start=math.ceil(logmin/xstep);end=math.floor(logmax/xstep)
@@ -1237,7 +1237,7 @@ class GeologyStatistics(ttk.Frame):
                     x,y=px(p),py(v);c.create_oval(x-3,y-3,x+3,y+3,fill='#DC2626',outline='#DC2626')
                     self._pressure_drawn.append((x,y,f'Trung bình {len(stages[p])} mẫu tại P = {fmt(p)} kgf/cm²; {parameter} = {fmt(v)}'))
         table_top=bottom+52
-        c.create_text(w/2,table_top+9,text='P–'+parameter+' · Trung bình theo cấp',font=('Times New Roman',10,'bold'))
+        c.create_text(w/2,table_top+9,text='P–'+parameter+' · Trung bình theo cấp',font=(UI_FONT,10,'bold'))
         table_top+=20
         for block in range(blocks):
             points_at_stage=stage_mean[block*columns:(block+1)*columns]
@@ -1246,15 +1246,15 @@ class GeologyStatistics(ttk.Frame):
             label_width=48;start_x=8+label_width
             c.create_line(8,row_top+26,w-8,row_top+26,fill='#64748B')
             c.create_line(start_x,row_top,start_x,row_top+52,fill='#64748B')
-            c.create_text(8+label_width/2,row_top+13,text='P',font=('Times New Roman',10,'bold'))
-            c.create_text(8+label_width/2,row_top+39,text=parameter+' TB',font=('Times New Roman',10,'bold'))
+            c.create_text(8+label_width/2,row_top+13,text='P',font=(UI_FONT,10,'bold'))
+            c.create_text(8+label_width/2,row_top+39,text=parameter+' TB',font=(UI_FONT,10,'bold'))
             if points_at_stage:
                 cell_width=(w-8-start_x)/len(points_at_stage)
                 for index,(pressure,value) in enumerate(points_at_stage):
                     x=start_x+index*cell_width
                     if index:c.create_line(x,row_top,x,row_top+52,fill='#64748B')
-                    c.create_text(x+cell_width/2,row_top+13,text=f'{pressure:.5g}',font=('Times New Roman',10))
-                    c.create_text(x+cell_width/2,row_top+39,text=f'{value:.3f}',font=('Times New Roman',10,'bold'))
+                    c.create_text(x+cell_width/2,row_top+13,text=f'{pressure:.5g}',font=(UI_FONT,10))
+                    c.create_text(x+cell_width/2,row_top+39,text=f'{value:.3f}',font=(UI_FONT,10,'bold'))
             else:c.create_text((start_x+w-8)/2,row_top+39,text='—')
         detail=f'{len(curves)} đường cong mẫu; {len(used)} mẫu được dùng. Đường đỏ đậm: trung bình.'
         detail+='\nTrung bình theo cấp áp lực thực đo; không nội suy số liệu thiếu.'
@@ -1554,7 +1554,7 @@ class GeologyStatistics(ttk.Frame):
                     1 if sample.get('use',True) else 0,*(sample.get(key) for key in PARAMS),sample.get('reason',''),sample.get('source','')])
             detail.freeze_panes='E2';detail.auto_filter.ref=detail.dimensions
             for cell in detail[1]:
-                cell.font=Font(name='Times New Roman',size=11,bold=True,color='FFFFFF')
+                cell.font=Font(name=UI_FONT,size=11,bold=True,color='FFFFFF')
                 cell.fill=PatternFill('solid',fgColor='17365D');cell.alignment=Alignment(wrap_text=True)
             for row in detail.iter_rows(min_row=2):
                 for cell in row:
@@ -1578,7 +1578,7 @@ class GeologyStatistics(ttk.Frame):
             def section(sheet,row,text,last):
                 sheet.merge_cells(start_row=row,start_column=1,end_row=row,end_column=last)
                 cell=sheet.cell(row,1,text);cell.fill=PatternFill('solid',fgColor='DCE6F1')
-                cell.font=Font(name='Times New Roman',size=12,bold=True,color='17365D')
+                cell.font=Font(name=UI_FONT,size=12,bold=True,color='17365D')
                 sheet.row_dimensions[row].height=26
             def formula_rows(sheet,first,last,columns,label_end):
                 # Hidden per-observation helpers exclude omitted/blank cells without
@@ -1597,7 +1597,7 @@ class GeologyStatistics(ttk.Frame):
                               'cv':f'IF(COUNT({rng})<2,"",IF(AVERAGE({rng})=0,"",STDEV({rng})/ABS(AVERAGE({rng}))))'}[metric]
                         cell=sheet.cell(row,col,'='+expr)
                         cell.number_format='0' if metric=='n' else '0.000'
-                        cell.font=Font(name='Times New Roman',size=11,bold=metric=='mean',color='008000')
+                        cell.font=Font(name=UI_FONT,size=11,bold=metric=='mean',color='008000')
                         cell.fill=PatternFill('solid',fgColor='EAF2F8' if metric=='mean' else 'F4F7FA')
                 return result,bottom+len(metrics)
             overview_headers=['Lớp đất','Chỉ tiêu','Đơn vị','Số mẫu','Lớn nhất','Nhỏ nhất','Trung bình','ĐLC mẫu','Hệ số biến thiên','Giá trị chọn']
@@ -1676,7 +1676,7 @@ class GeologyStatistics(ttk.Frame):
                         for c,value in enumerate(values,1):overview.cell(overview_row,c,value)
                         overview_row+=1
                     for cell in sheet[header_row]:
-                        if cell.column<=len(curve_headers):cell.fill=header_fill;cell.font=Font(name='Times New Roman',size=11,bold=True,color='FFFFFF')
+                        if cell.column<=len(curve_headers):cell.fill=header_fill;cell.font=Font(name=UI_FONT,size=11,bold=True,color='FFFFFF')
                 sheet.freeze_panes='G6';sheet.print_title_rows='1:5';sheet.print_area=f'A1:{get_column_letter(visible_last)}{cursor}'
             for sheet in book:
                 sheet.sheet_view.showGridLines=False
@@ -1689,21 +1689,21 @@ class GeologyStatistics(ttk.Frame):
                     sheet.print_title_rows='1:1';sheet.print_area=sheet.dimensions;sheet.row_dimensions[1].height=36
                     for row in sheet.iter_rows(min_row=2):
                         for cell in row:
-                            cell.font=Font(name='Times New Roman',size=11);cell.border=border
+                            cell.font=Font(name=UI_FONT,size=11);cell.border=border
                     continue
                 for row in sheet:
                     for cell in row:
                         if cell.value is None:continue
-                        if cell.font.name!='Times New Roman':cell.font=Font(name='Times New Roman',size=11,color='000000')
+                        if cell.font.name!=UI_FONT:cell.font=Font(name=UI_FONT,size=11,color='000000')
                         cell.alignment=Alignment(vertical='center',horizontal='center' if cell.column>3 else 'left',wrap_text=True)
                         if cell.row>=5:cell.border=border
                         if cell.data_type=='f':
-                            cell.font=Font(name='Times New Roman',size=11,bold='AVERAGE' in cell.value,color='008000')
+                            cell.font=Font(name=UI_FONT,size=11,bold='AVERAGE' in cell.value,color='008000')
                             if sheet is overview:cell.number_format='0' if cell.column==4 else '0.000'
                     sheet.row_dimensions[row[0].row].height=max(sheet.row_dimensions[row[0].row].height or 0,24)
-                sheet.cell(1,1).font=Font(name='Times New Roman',size=16,bold=True,color='17365D')
+                sheet.cell(1,1).font=Font(name=UI_FONT,size=16,bold=True,color='17365D')
                 for cell in sheet[5]:
-                    if cell.value is not None:cell.font=Font(name='Times New Roman',size=11,bold=True,color='FFFFFF');cell.fill=header_fill
+                    if cell.value is not None:cell.font=Font(name=UI_FONT,size=11,bold=True,color='FFFFFF');cell.fill=header_fill
                 sheet.row_dimensions[5].height=42
                 for col in range(1,sheet.max_column+1):
                     dimension=sheet.column_dimensions[get_column_letter(col)]

@@ -27,7 +27,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from utils import ScrollableFrame, number
-from ui_theme import COLORS
+from ui_theme import COLORS, UI_FONT, UI_FONT_MONO
 from model import pressure, effective_overburden, void_ratio
 from ui_i18n import english as _english_ui
 
@@ -560,7 +560,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
     tk.Label(header,
              text=L("THIẾT KẾ XỬ LÝ NỀN BẰNG CỌC XI MĂNG ĐẤT (CDM) - BS 8006 & TCVN 9906"),
              bg=COLORS['background'], fg=COLORS['nav'],
-             font=('Times New Roman', 12, 'bold')).pack(anchor='w')
+             font=(UI_FONT, 12, 'bold')).pack(anchor='w')
 
     input_frame = tk.Frame(inner, bg=COLORS['background'])
     input_frame.pack(fill='x', padx=10)
@@ -619,7 +619,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
     lbl_htt_note = ttk.Label(
         box_emb,
         text=L("(*) Cọc treo: H_tt = H_kcad + H_tk + H_bl | Cọc chống: H_tk + H_kcad"),
-        font=('Times New Roman', 9, 'italic'), foreground='#0369A1')
+        font=(UI_FONT, 9, 'italic'), foreground='#0369A1')
     lbl_htt_note.grid(row=2, column=2, columnspan=6, sticky='w',
                       padx=10, pady=(6, 2))
 
@@ -752,12 +752,12 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
 
     add_field(box_subgrade, 0, 0, L("Chiều sâu đào đất hm (m):"), vars_subgrade['hm'], width=9)
     add_readonly_field(box_subgrade, 0, 1, L("Tải móng q = γ_đào*hm:"), vars_subgrade['q_mong'], width=9)
-    lbl_q_note = ttk.Label(box_subgrade, text="", font=('Times New Roman', 8, 'italic'),
+    lbl_q_note = ttk.Label(box_subgrade, text="", font=(UI_FONT, 9, 'italic'),
                            foreground='#0369A1')
     lbl_q_note.grid(row=0, column=4, sticky='w', padx=4)
 
     add_readonly_field(box_subgrade, 1, 0, L("Dung trọng γ' (T/m³):"), vars_subgrade['gamma_sub'], width=9)
-    lbl_gamma_note = ttk.Label(box_subgrade, text="", font=('Times New Roman', 8, 'italic'),
+    lbl_gamma_note = ttk.Label(box_subgrade, text="", font=(UI_FONT, 9, 'italic'),
                                foreground='#0369A1')
     lbl_gamma_note.grid(row=1, column=2, columnspan=3, sticky='w', padx=4)
 
@@ -778,7 +778,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
                             state='readonly', width=12)
     cb_layer.pack(side='left', padx=4)
     lbl_co_disp = ttk.Label(f_co, text=L("Co = --- T/m² (Mặc định φ = 0)"),
-                            font=('Times New Roman', 9, 'bold'),
+                            font=(UI_FONT, 9, 'bold'),
                             foreground=COLORS['nav_active'])
     lbl_co_disp.pack(side='left', padx=10)
 
@@ -993,22 +993,22 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
     tree_lun.tag_configure('even', background='#FFFFFF')
     tree_lun.tag_configure('odd', background='#F8FAFC')
     tree_lun.tag_configure('total', background='#FEF3C7',
-                           font=('Times New Roman', 8, 'bold'))
+                           font=(UI_FONT, 9, 'bold'))
     tree_lun.tag_configure('cdm_row', background='#E0F2FE',
-                           font=('Times New Roman', 8, 'bold'))
+                           font=(UI_FONT, 9, 'bold'))
 
     bind_mousewheel(tree_lun)
     tree_lun.pack(side='top', fill='x')
 
     lbl_eval_lun = ttk.Label(tab_lun,
                              text=L("Đánh giá Lún dư: Chờ tính toán"),
-                             font=('Times New Roman', 11, 'bold'),
+                             font=(UI_FONT, 11, 'bold'),
                              foreground='#64748B')
     lbl_eval_lun.pack(anchor='w', pady=(10, 0))
 
     # --- TAB 2: KẾT QUẢ ỨNG SUẤT ---
     def create_res_lbl(parent, row, col, text, color='#1E293B'):
-        lbl = ttk.Label(parent, text=text, font=('Times New Roman', 10, 'bold'),
+        lbl = ttk.Label(parent, text=text, font=(UI_FONT, 10, 'bold'),
                         foreground=color)
         lbl.grid(row=row, column=col, sticky='w', padx=(0, 30), pady=6)
         return lbl
@@ -1028,7 +1028,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
                                                         columnspan=2, sticky='ew', pady=10)
     ttk.Label(tab_stress,
               text=L("A. KIỂM TOÁN CƯỜNG ĐỘ CỌC (TTGH1 & TTGH2)"),
-              font=('Times New Roman', 11, 'bold'),
+              font=(UI_FONT, 11, 'bold'),
               foreground='#1E3A8A').grid(row=3, column=0, columnspan=2,
                                          sticky='w', pady=4)
 
@@ -1050,7 +1050,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
                                                         columnspan=2, sticky='ew', pady=10)
     ttk.Label(tab_stress,
               text=L("B. KIỂM TOÁN ỨNG SUẤT ĐẤT NỀN"),
-              font=('Times New Roman', 11, 'bold'),
+              font=(UI_FONT, 11, 'bold'),
               foreground='#1E3A8A').grid(row=8, column=0, columnspan=2,
                                          sticky='w', pady=4)
 
@@ -1063,7 +1063,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
         tab_stress,
         text=L("Bề rộng Bxl = --- m | Lực dính c = --- T/m² | Góc ma sát φ = ---°")
              + '\n' + L("Tra bảng: A = ---, B = ---, D = ---"),
-        font=('Times New Roman', 9, 'italic'),
+        font=(UI_FONT, 9, 'italic'),
         foreground=COLORS['muted'])
     lbl_c_soil.grid(row=10, column=0, columnspan=2, sticky='w', pady=2)
 
@@ -1104,7 +1104,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
 
     lbl_no_geo = ttk.Label(tab_geo,
                            text=L("Không sử dụng vật liệu gia cường."),
-                           font=('Times New Roman', 12, 'italic'),
+                           font=(UI_FONT, 12, 'italic'),
                            foreground=COLORS['muted'])
 
     refresh_project_data()
@@ -1558,14 +1558,14 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
 
         ttk.Label(f_dlg,
                   text=L("1. Khoảng cách cọc s (m) [làm tròn 1 số thập phân]:"),
-                  font=('Times New Roman', 9, 'bold')).grid(
+                  font=(UI_FONT, 9, 'bold')).grid(
                       row=0, column=0, columnspan=2, sticky='w', pady=(0, 2))
         add_dlg_row(1, L("  • s nhỏ nhất (m):"), var_s_min)
         add_dlg_row(2, L("  • s lớn nhất (m):"), var_s_max)
         add_dlg_row(3, L("  • Bước nhảy s (m):"), var_s_step)
 
         ttk.Label(f_dlg, text=L("2. Chiều dài cọc Lc (m):"),
-                  font=('Times New Roman', 9, 'bold')).grid(
+                  font=(UI_FONT, 9, 'bold')).grid(
                       row=4, column=0, columnspan=2, sticky='w', pady=(6, 2))
         add_dlg_row(5, L("  • Lc nhỏ nhất (m):"), var_lc_min)
         add_dlg_row(6, L("  • Lc lớn nhất (m):"), var_lc_max)
@@ -1580,7 +1580,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
 
         if var_use_geo.get():
             ttk.Label(f_dlg, text=L("3. Số lớp vải địa kỹ thuật n:"),
-                      font=('Times New Roman', 9, 'bold')).grid(
+                      font=(UI_FONT, 9, 'bold')).grid(
                           row=8, column=0, columnspan=2, sticky='w', pady=(6, 2))
             add_dlg_row(9, L("  • Số lớp nhỏ nhất (lớp):"), var_n_min)
             add_dlg_row(10, L("  • Số lớp lớn nhất (lớp):"), var_n_max)

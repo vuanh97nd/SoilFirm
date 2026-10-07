@@ -20,7 +20,7 @@ from model import (
     effective_overburden, pressure
 )
 from utils import number, number_or_zero, ScrollableFrame
-from ui_theme import COLORS, soil_parameter_keys
+from ui_theme import COLORS, soil_parameter_keys, UI_FONT, UI_FONT_MONO
 from ui_i18n import english as _english_ui
 
 
@@ -51,8 +51,8 @@ def _compact_heading(label, font, limit=105):
 
 def _fit_tree_columns(tree, headers, parent, *, caps=None, minimum=45):
     """Cột theo nội dung, tiêu đề tối đa hai dòng, không tự giãn quá khung."""
-    head_font = tkfont.Font(parent, family='Times New Roman', size=8, weight='bold')
-    body_font = tkfont.Font(parent, family='Times New Roman', size=8)
+    head_font = tkfont.Font(parent, family=UI_FONT, size=9, weight='bold')
+    body_font = tkfont.Font(parent, family=UI_FONT, size=8)
     for i, (cid, label) in enumerate(zip(tree['columns'], headers)):
         display = _compact_heading(label, head_font)
         tree.heading(cid, text=display)
@@ -233,7 +233,7 @@ class SoilDialog(tk.Toplevel):
 
         btn_update = tk.Button(
             buttons, text=L('✔ Cập nhật (Enter)'),
-            font=('Times New Roman', 9, 'bold'),
+            font=(UI_FONT, 9, 'bold'),
             bg=COLORS['accent'], fg='white',
             activebackground='#0C6175', activeforeground='white',
             relief='flat', cursor='hand2', padx=18, pady=5,
@@ -312,7 +312,7 @@ class SoilDialog(tk.Toplevel):
             text=L('Phương pháp tính lún:') + f" [{self.method}] · "
                  + L('Nhập Cc, Cs, Pc bên dưới.'),
             foreground='#1E3A8A',
-            font=('Times New Roman', 9, 'italic')
+            font=(UI_FONT, 9, 'italic')
         )
         lbl_info.pack(anchor='w', pady=(0, 6))
 
@@ -336,7 +336,7 @@ class SoilDialog(tk.Toplevel):
         self._lab_grid(self.mv_frame, 'mvp', 'mv', soil.mvp, soil.mv,
                        L('Áp lực P (kg/cm²)'), L('Mv (m²/T)'))
 
-        scalar_cv = ttk.Frame(cv_body); scalar_cv.pack(fill='x', pady=(0, 8))
+        scalar_cv = ttk.Frame(cv_body); scalar_cv.pack(fill='x', pady=(0, 9))
         field(scalar_cv, 'cv_constant', L('Cv trung bình (10⁻³ cm²/s)'),
               '' if soil.cv_constant is None else str(soil.cv_constant), 0)
         self._lab_grid(cv_body, 'cvp', 'cv', soil.cvp, soil.cv,
@@ -355,13 +355,13 @@ class SoilDialog(tk.Toplevel):
                              padding=10)
         box.pack(anchor='w', fill='x')
         ttk.Label(box, text=_L('STT', self.language),
-                  font=('Times New Roman', 9, 'bold')).grid(row=0, column=0,
+                  font=(UI_FONT, 9, 'bold')).grid(row=0, column=0,
                                                             padx=10, pady=(0, 4))
         ttk.Label(box, text=xlabel,
-                  font=('Times New Roman', 9, 'bold')).grid(row=0, column=1,
+                  font=(UI_FONT, 9, 'bold')).grid(row=0, column=1,
                                                             padx=10, pady=(0, 4))
         ttk.Label(box, text=ylabel,
-                  font=('Times New Roman', 9, 'bold')).grid(row=0, column=2,
+                  font=(UI_FONT, 9, 'bold')).grid(row=0, column=2,
                                                             padx=10, pady=(0, 4))
         self.grid_vars[xkey], self.grid_vars[ykey] = [], []
         for i, (x, y) in enumerate(zip(xvals, yvals), 1):
@@ -486,14 +486,14 @@ def show_unpenetrated_window(parent, project: Project, unp_res: dict):
 
     warn_title = L("⚠️ CẢNH BÁO:") + f" {drain_title.upper()} " + L("CẮM LƠ LỬNG (CHƯA XUYÊN HẾT TẦNG ĐẤT YẾU)")
     tk.Label(top_frame, text=warn_title,
-             font=('Times New Roman', 10, 'bold'),
+             font=(UI_FONT, 10, 'bold'),
              fg='#92400E', bg='#FEF3C7').pack(anchor='w')
 
     desc_txt = (L("Chiều dài cắm:") + f" L = {project.drain_length:.2f} m  •  "
                 + L("Chiều dày đới đất nén lún chưa xử lý còn lại:") + f" ΔH = {h_remain:.2f} m\n"
                 + L("Độ lún cố kết đới dưới (Tim):") + f" Sc = {sc_tim:.2f} cm  •  "
                 + L("Sc dư đới dưới =") + f" {res_tim:.2f} cm")
-    tk.Label(top_frame, text=desc_txt, font=('Times New Roman', 9),
+    tk.Label(top_frame, text=desc_txt, font=(UI_FONT, 9),
              fg='#B45309', bg='#FEF3C7', justify='left').pack(anchor='w', pady=(3, 0))
 
     tbl_frame = ttk.Frame(dlg, padding=8)
@@ -510,9 +510,9 @@ def show_unpenetrated_window(parent, project: Project, unp_res: dict):
 
     style = ttk.Style(dlg)
     style.configure("Unp.Treeview.Heading",
-                    font=('Times New Roman', 8, 'bold'), padding=(3, 5))
+                    font=(UI_FONT, 9, 'bold'), padding=(3, 5))
     style.configure("Unp.Treeview",
-                    font=('Times New Roman', 8), rowheight=21)
+                    font=(UI_FONT, 9), rowheight=21)
 
     tree = ttk.Treeview(tbl_frame, columns=cols, show='headings', style="Unp.Treeview")
     sb_y = ttk.Scrollbar(tbl_frame, orient='vertical', command=tree.yview)
@@ -527,7 +527,7 @@ def show_unpenetrated_window(parent, project: Project, unp_res: dict):
     tree.tag_configure('even', background='#FFFFFF')
     tree.tag_configure('odd', background='#F8FAFC')
     tree.tag_configure('total', background='#FEF3C7',
-                       font=('Times New Roman', 8, 'bold'))
+                       font=(UI_FONT, 9, 'bold'))
 
     tree.pack(side='left', fill='both', expand=True)
     sb_y.pack(side='right', fill='y')
@@ -552,7 +552,7 @@ def show_unpenetrated_window(parent, project: Project, unp_res: dict):
     tree.insert('', 'end', values=tot_row, tags=('total',))
     csv_rows.append(list(tot_row))
 
-    bot_bar = ttk.Frame(dlg, padding=(10, 8))
+    bot_bar = ttk.Frame(dlg, padding=(10, 9))
     bot_bar.pack(fill='x')
 
     def export_csv():
@@ -641,7 +641,7 @@ def show_stage_strength_dialog(parent, project: Project, tdc: float, horiz_type:
     else:
         horiz_str = L("Thoát nước ngang:") + f" {horiz_type}"
     info_txt = L("Phương án:") + f" {project.treatment}   |   {horiz_str}"
-    tk.Label(top_bar, text=info_txt, font=('Times New Roman', 9, 'bold'),
+    tk.Label(top_bar, text=info_txt, font=(UI_FONT, 9, 'bold'),
              fg='#1E3A8A', bg='#F1F5F9').pack(side='left')
 
     table_frame = tk.Frame(dlg, padx=8, pady=6)
@@ -670,9 +670,9 @@ def show_stage_strength_dialog(parent, project: Project, tdc: float, horiz_type:
 
     style = ttk.Style(dlg)
     style.configure("Excel.Treeview",
-                    font=('Times New Roman', 8), rowheight=20)
+                    font=(UI_FONT, 9), rowheight=20)
     style.configure("Excel.Treeview.Heading",
-                    font=('Times New Roman', 8, 'bold'), padding=(3, 4))
+                    font=(UI_FONT, 9, 'bold'), padding=(3, 4))
 
     tree = ttk.Treeview(table_frame, columns=col_ids, show='headings',
                         style="Excel.Treeview", selectmode='browse')
@@ -868,7 +868,7 @@ def show_help_dialog(parent):
     nb.add(tab_theory, text=L('📐 2. Cơ Sở Lý Thuyết & Công Thức Tính Toán (TCVN & TCCS)'))
 
     def setup_text(p_tab, content):
-        txt = tk.Text(p_tab, wrap='word', font=('Times New Roman', 9),
+        txt = tk.Text(p_tab, wrap='word', font=(UI_FONT, 9),
                       padx=16, pady=16, bg='#F8FAFC', fg='#0F172A')
         sb = ttk.Scrollbar(p_tab, orient='vertical', command=txt.yview)
         txt.configure(yscrollcommand=sb.set)

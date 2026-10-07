@@ -3,6 +3,7 @@ import json
 import sqlite3
 import threading
 import tkinter as tk
+from ui_theme import UI_FONT, UI_FONT_MONO
 from pathlib import Path
 from tkinter import ttk, messagebox
 from geotech_memory import GeotechMemory, active_project, project_scope
@@ -25,7 +26,7 @@ def show_memory_dialog(app):
     for key,label,width in [('source','Nguồn biểu mẫu',500),('columns','Số cột',70),('type','Loại ghi nhớ',180)]:
         template_tree.heading(key,text=label);template_tree.column(key,width=width)
     template_tree.pack(fill='both',expand=True,padx=8,pady=5)
-    template_detail=tk.Text(templates,wrap='word',height=10,font=('Times New Roman',10));template_detail.pack(fill='both',expand=True,padx=8,pady=5)
+    template_detail=tk.Text(templates,wrap='word',height=10,font=(UI_FONT,10));template_detail.pack(fill='both',expand=True,padx=8,pady=5)
     template_items={};template_notice=tk.StringVar()
     ttk.Label(templates,textvariable=template_notice,wraplength=w-35).pack(fill='x',padx=8)
     def template_refresh():
@@ -52,7 +53,7 @@ def show_memory_dialog(app):
     for key,label in [('time','Thời điểm'),('kind','Loại ghi nhớ'),('actor','Người xác nhận'),('source','Nguồn')]:
         tree.heading(key,text=label);tree.column(key,width=160)
     tree.pack(fill='both',expand=True)
-    detail=tk.Text(history,wrap='word',height=10,font=('Times New Roman',10));detail.pack(fill='both',expand=True)
+    detail=tk.Text(history,wrap='word',height=10,font=(UI_FONT,10));detail.pack(fill='both',expand=True)
     events={}
     def history_refresh():
         tree.delete(*tree.get_children());events.clear()
@@ -84,7 +85,7 @@ def show_memory_dialog(app):
         ttk.Label(form,text=label).grid(row=row,column=0,sticky='w',padx=5,pady=4)
         widget=ttk.Combobox(form,textvariable=var,values=topics,state='readonly') if row==0 else ttk.Entry(form,textvariable=var)
         widget.grid(row=row,column=1,sticky='ew',padx=5)
-    body=tk.Text(knowledge,wrap='word',height=7,font=('Times New Roman',10));body.pack(fill='x',padx=12)
+    body=tk.Text(knowledge,wrap='word',height=7,font=(UI_FONT,10));body.pack(fill='x',padx=12)
     ttk.Checkbutton(knowledge,text='Tôi xác nhận nội dung và nguồn',variable=confirmed).pack(anchor='w',padx=12,pady=5)
     notice=tk.StringVar();ttk.Label(knowledge,textvariable=notice,wraplength=w-35).pack(fill='x',padx=12)
     table=ttk.Treeview(knowledge,columns=('topic','title','confirmed','active'),show='headings',height=6)
@@ -116,7 +117,7 @@ def show_memory_dialog(app):
     shared_tree=ttk.Treeview(shared,columns=('kind','state','owner'),show='headings',height=8)
     for key,label in [('kind','Nội dung'),('state','Trạng thái'),('owner','Người gửi / xác nhận')]:shared_tree.heading(key,text=label)
     shared_tree.pack(fill='both',expand=True,padx=8)
-    shared_detail=tk.Text(shared,wrap='word',height=10,font=('Times New Roman',10));shared_detail.pack(fill='both',expand=True,padx=8,pady=5)
+    shared_detail=tk.Text(shared,wrap='word',height=10,font=(UI_FONT,10));shared_detail.pack(fill='both',expand=True,padx=8,pady=5)
     shared_items={};shared_busy={'value':False};shared_offset={'value':0};shared_buttons=[]
     def show_shared(items=None):
         shared_tree.delete(*shared_tree.get_children());shared_items.clear()

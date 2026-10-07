@@ -75,13 +75,14 @@ def build_view(parent):
     """Trang menu 10, bóc khối lượng của các phân đoạn đã chọn ở menu 8."""
     import csv
     import tkinter as tk
+from ui_theme import UI_FONT, UI_FONT_MONO
     from tkinter import filedialog, messagebox, ttk
 
     app = parent.winfo_toplevel()
     header = ttk.Frame(parent, padding=10)
     header.pack(fill='x')
     ttk.Label(header, text='TÍNH TOÁN KHỐI LƯỢNG XỬ LÝ',
-              font=('Times New Roman', 12, 'bold')).pack(side='left')
+              font=(UI_FONT, 12, 'bold')).pack(side='left')
     frame = ttk.Frame(parent, padding=(10, 3, 10, 10))
     frame.pack(fill='both', expand=True)
     frame.rowconfigure(0, weight=1)
@@ -253,7 +254,7 @@ def build_view(parent):
         if missing_lengths:
             notice.set(notice.get() + ' Chưa tính khối lượng STT ' + ', '.join(missing_lengths) + ': thiếu chiều dài phân đoạn.')
         app.report_result('Khối lượng xử lý', notice.get())
-    tree.tag_configure('total', background='#FEF3C7', font=('Times New Roman', 9, 'bold'))
+    tree.tag_configure('total', background='#FEF3C7', font=(UI_FONT, 9, 'bold'))
 
     def export_csv():
         if not records():

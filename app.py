@@ -80,7 +80,7 @@ from graphics import (
     draw_cad_grid, draw_soil_hatching, draw_dim_h, draw_dim_v,
     draw_rotated_text, SOIL_PALETTE, render_chart_view
 )
-from ui_theme import COLORS, configure_theme, style_action_button
+from ui_theme import COLORS, configure_theme, style_action_button, UI_FONT, UI_FONT_MONO
 from ui_i18n import english as _english_ui
 from cdm import build_view as build_cdm_view
 from treatment_optimizer import optimize_mechanical, optimize_drainage_time
@@ -621,10 +621,10 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
             if layer_h >= 14:
                 s_name = s.name.strip() if s.name.strip() else f"Lớp {i+1}"
                 c.create_text(x_soil_left + 14, (y_curr + next_y) / 2 - 2, anchor='w',
-                              text=s_name, fill='#1E293B', font=('Times New Roman', 8, 'bold'))
+                              text=s_name, fill='#1E293B', font=(UI_FONT, 9, 'bold'))
 
             c.create_text(x_soil_left + 14, next_y - 6, text=f"▽ {z_tn - cum_depth:+.2f} m",
-                          fill='#64748B', font=('Times New Roman', 7), anchor='w')
+                          fill='#64748B', font=(UI_FONT, 7), anchor='w')
             y_curr = next_y
 
     # Ký hiệu nền chính đã xử lý đặt chìm dưới phương án nền mở rộng.
@@ -668,7 +668,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                                  fill='#E2E8F0', stipple='gray50', outline='#94A3B8',
                                  width=1, tags='old_main_treatment')
                 c.create_text(cx, (ground_y+base_y)/2, text='ĐÀO THAY ĐẤT',
-                              fill='#64748B', font=('Times New Roman', 7),
+                              fill='#64748B', font=(UI_FONT, 7),
                               tags='old_main_treatment')
             if project.main_treatment == 'Cơ học' and pile_end > excavation:
                 start_edge = old_edge(excavation or pile_depth)
@@ -686,9 +686,9 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                                   fill='#94A3B8', width=1, tags='old_main_treatment')
                 pile_label = 'CỌC TRE' if project.main_bamboo_depth else 'CỪ TRÀM'
                 c.create_text(cx, end_y+9, text=pile_label, fill='#64748B',
-                              font=('Times New Roman', 7), tags='old_main_treatment')
+                              font=(UI_FONT, 7), tags='old_main_treatment')
         c.create_text(cx, ground_y+12, text=f'PHƯƠNG ÁN ĐÃ XỬ LÝ CỦA NỀN CHÍNH: {project.main_treatment}',
-                      fill='#64748B', font=('Times New Roman', 7),
+                      fill='#64748B', font=(UI_FONT, 7),
                       tags='old_main_treatment')
 
     # Đường mặt đất tự nhiên Ztn
@@ -698,12 +698,12 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
     c.create_polygon(ztn_box_x, ground_y, ztn_box_x - 5, ground_y - 7, ztn_box_x + 5, ground_y - 7,
                      fill='#1E293B', outline='#0F172A')
     c.create_text(ztn_box_x + 8, ground_y + 17, text=f"Ztn = {z_tn:+.2f} m",
-                  fill='#0F172A', font=('Times New Roman', 8, 'bold'), anchor='w')
+                  fill='#0F172A', font=(UI_FONT, 9, 'bold'), anchor='w')
 
     # Trục tim đường (tự nâng khi có gia tải)
     y_tim_top = (top_y - extra_h_top * scale - 45) if has_sc else (top_y - 45)
     c.create_line(cx, y_tim_top, cx, bottom_y + 10, fill='#DC2626', dash=(12, 4, 3, 4), width=1.6)
-    c.create_text(cx, y_tim_top - 5, text="TIM ĐƯỜNG", fill='#DC2626', font=('Times New Roman', 8, 'bold'), anchor='s')
+    c.create_text(cx, y_tim_top - 5, text="TIM ĐƯỜNG", fill='#DC2626', font=(UI_FONT, 9, 'bold'), anchor='s')
 
     # 2. Vẽ hình học thân nền đắp chính
     toe_x = right_b * scale + a * scale
@@ -779,10 +779,10 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                                   fill='#147D8A', dash=(6, 4), width=2)
                     c.create_text((x_inner+x_outer)/2, y-10,
                                   text=f"b={project.expansion_width:.2f}m",
-                                  fill='#075A65', font=('Times New Roman', 8, 'bold'))
+                                  fill='#075A65', font=(UI_FONT, 9, 'bold'))
                     c.create_text((x_outer+x_toe)/2+sign*10, (y+ground_y)/2,
                                   text=f"1:{ext_slope:.2f}", fill='#075A65',
-                                  font=('Times New Roman', 8, 'bold'))
+                                  font=(UI_FONT, 9, 'bold'))
                     x_dim = x_outer+sign*9
                     y_htk = ground_y-ext_htk*vertical_ratio*scale
                     c.create_line(x_dim, y_htk, x_dim, ground_y,
@@ -790,7 +790,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                     c.create_text(x_dim+sign*4, (y_htk+ground_y)/2,
                                   text=f"htk={ext_htk:.2f}m",
                                   anchor='w' if sign > 0 else 'e',
-                                  fill='#075A65', font=('Times New Roman', 8, 'bold'))
+                                  fill='#075A65', font=(UI_FONT, 9, 'bold'))
 
         # NÂNG ĐƯỜNG KÍCH THƯỚC B, a LÊN ĐỈNH GIA TẢI
         dim_y = (top_y - extra_h_top * scale - 20) if has_sc else (top_y - 20)
@@ -803,12 +803,12 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
             c.create_line(xp - 3, dim_y + 3, xp + 3, dim_y - 3, fill='#0F172A', width=1.6)
 
         if a > 0:
-            c.create_text(cx - (left_b * scale + left_reach_px) / 2, dim_y - 8, text=f"a={a:.2f}m", fill='#0F172A', font=('Times New Roman', 8, 'bold'))
-            c.create_text(cx + (right_b * scale + main_reach_px) / 2, dim_y - 8, text=f"a={a:.2f}m", fill='#0F172A', font=('Times New Roman', 8, 'bold'))
+            c.create_text(cx - (left_b * scale + left_reach_px) / 2, dim_y - 8, text=f"a={a:.2f}m", fill='#0F172A', font=(UI_FONT, 9, 'bold'))
+            c.create_text(cx + (right_b * scale + main_reach_px) / 2, dim_y - 8, text=f"a={a:.2f}m", fill='#0F172A', font=(UI_FONT, 9, 'bold'))
         if b_total > 0:
             c.create_text(cx+(right_b-left_b)*scale/2, dim_y - 8,
                           text=f"B={left_b+right_b:.2f}m", fill='#0F172A',
-                          font=('Times New Roman', 8, 'bold'))
+                          font=(UI_FONT, 9, 'bold'))
 
         if htk > 0:
             draw_dim_v(c, cx + toe_x, top_y, ground_y, f"Htk = {htk:.2f}m", offset=26)
@@ -829,7 +829,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
 
         txt_mnn = "MNN = ±0.00 m" if abs(water_elevation) < 1e-4 else f"MNN = {water_elevation:+.2f} m"
         c.create_text(x_mnn - 12, wy - 8, text=txt_mnn, fill='#0369A1',
-                      anchor='e', font=('Times New Roman', 8, 'bold'))
+                      anchor='e', font=(UI_FONT, 9, 'bold'))
 
     zone_boundary = None if extension_cdm or project.expansion_width > 0 else main_zone_boundary(project)
     if current_step >= 1 and zone_boundary is not None:
@@ -845,7 +845,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
             c.create_text(boundary_px+sign*4, bottom_y-12,
                           text=f'Ranh giới {project.main_treatment}',
                           anchor='w' if sign > 0 else 'e',
-                          fill='#64748B', font=('Times New Roman', 7),
+                          fill='#64748B', font=(UI_FONT, 7),
                           tags='main_zone_boundary')
 
     if current_step == 6 and cdm_overlay:
@@ -878,7 +878,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
             c.create_text((x0+x1)/2, tip_y+10,
                           text=f'{"NỀN MỞ RỘNG" if project.expansion_width > 0 or data["scope"] == "Nền mở rộng" else "NỀN ĐƯỜNG"} · '
                                f'{"ALiCC" if method == "alicc" else "CDM"} · Lc={depth:.2f}m',
-                          fill='#075985', font=('Times New Roman', 8, 'bold'),
+                          fill='#075985', font=(UI_FONT, 9, 'bold'),
                           tags='cdm_overlay')
 
     # Ghi nhận các nét phân tích để đưa lên trên lớp bấc thấm/cọc cát.
@@ -922,10 +922,10 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                         c.create_line(px,reference_y,px,reference_y+drop,fill='#475569',dash=(3,3))
                     c.create_text((x0+x1)/2,reference_y+drop+14,
                                   text=f'{settlement_label}={value:.2f} cm · {"ALiCC" if method == "alicc" else "CDM"}',
-                                  fill='#B91C1C',font=('Times New Roman',8,'bold'))
+                                  fill='#B91C1C',font=(UI_FONT,8,'bold'))
             elif current_step == 6 or (not settlement_elements and settlement_totals is None):
                 c.create_text(w - 12, h - 25, anchor='e', text='Bấm tính lún để xem đường nén lún',
-                              fill='#475569', font=('Times New Roman', 8))
+                              fill='#475569', font=(UI_FONT, 9))
             else:
                 totals = (list(settlement_totals) if settlement_totals is not None else
                           [sum(e['St_list'][i] for e in settlement_elements)
@@ -965,10 +965,10 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                     c.create_text(px, py+10+(idx%3)*12,
                                   text=f'{label}\n{settlement_label}={s_cm:.2f} cm', anchor='n',
                                   justify='center', fill='#B91C1C',
-                                  font=('Times New Roman', 7, 'bold'))
+                                  font=(UI_FONT, 7, 'bold'))
                 if stage_label:
                     c.create_text(w-12, h-25, anchor='e', text=stage_label,
-                                  fill='#B91C1C', font=('Times New Roman', 8, 'bold'))
+                                  fill='#B91C1C', font=(UI_FONT, 9, 'bold'))
         else:
             hydro = plot_mode == 'Áp lực nước tĩnh'
             pore = plot_mode == 'Áp lực nước lỗ rỗng'
@@ -988,7 +988,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
             unit_scale = arrow_span / max_value
             c.create_text(x_soil_left + 8, ground_y + 12,
                           text=f'{plot_mode}: {symbol} (T/m²)', anchor='w',
-                          fill=plot_color, font=('Times New Roman', 8, 'bold'))
+                          fill=plot_color, font=(UI_FONT, 9, 'bold'))
             # Đường đứng tại Tim/Vai/Chân và đường bao áp lực đối xứng hai bên.
             for idx, (label, x_m, x_display, axis_idx) in enumerate(positions):
                 for side in ((1,) if asymmetric else (-1, 1)):
@@ -1017,7 +1017,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                         c.create_text(baseline, bottom_y-8-idx*12,
                                       text=f'{symbol}={water_pressure(total_depth, x_m, axis_idx):.2f}',
                                       anchor='s', fill=plot_color,
-                                      font=('Times New Roman', 7, 'bold'))
+                                      font=(UI_FONT, 7, 'bold'))
                     if (stress_add or stress_self) and (idx > 0 or side == 1):
                         depths = [first_z]
                         for soil in project.soils:
@@ -1031,7 +1031,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                             c.create_text(x_curve+sign*5, y+(-7 if boundary_index % 2 else 7),
                                           text=f'{symbol}={value:.2f}',
                                           anchor='w' if sign > 0 else 'e',
-                                          fill=plot_color, font=('Times New Roman', 7, 'bold'))
+                                          fill=plot_color, font=(UI_FONT, 7, 'bold'))
                     if idx > 0 or side == 1:
                         # z=0 chính là đáy nền đắp, ghi riêng phía trên để không bị
                         # đường thoát nước ngang và nhãn ở ranh giới lớp che khuất.
@@ -1042,14 +1042,14 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                                       fill=plot_color, width=1, dash=(3, 2))
                         c.create_text(baseline, top_y_label,
                                       text=f'{symbol}={top_value:.2f}', anchor='s',
-                                      fill=plot_color, font=('Times New Roman', 7, 'bold'))
+                                      fill=plot_color, font=(UI_FONT, 7, 'bold'))
             if pore or plot_mode == 'Áp lực nước thặng dư':
                 c.create_text(w-12, h-25, anchor='e',
                               text='Áp lực thặng dư ước tính theo U trung bình',
-                              fill='#475569', font=('Times New Roman', 7))
+                              fill='#475569', font=(UI_FONT, 7))
             if stage_label:
                 c.create_text(w-12, h-38, anchor='e', text=stage_label,
-                              fill=plot_color, font=('Times New Roman', 8, 'bold'))
+                              fill=plot_color, font=(UI_FONT, 9, 'bold'))
 
     overlay_after = max(c.find_all(), default=overlay_before)
     for overlay_id in range(overlay_before + 1, overlay_after + 1):
@@ -1094,7 +1094,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                         c.create_line(x,ground_y,x,tip,fill=color,width=2 if is_pvd else 4)
                 c.create_text((left+right)/2,tip+10,
                               text=f'{mode} · L={length:.2f} m · s={spacing:.2f} m',
-                              font=('Times New Roman',8),fill=color)
+                              font=(UI_FONT,8),fill=color)
         if shallow_depths:
             replacement = shallow_depths.get('replacement_depth',0.0)
             start_y = ground_y+(bottom_y-ground_y)*min(replacement,total_depth)/total_depth
@@ -1116,9 +1116,9 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                         toe_x = left if (left+right)/2 < cx else right
                         bottom_x = bottom_left if (left+right)/2 < cx else bottom_right
                         c.create_text((toe_x+bottom_x)/2,(ground_y+start_y)/2-10,
-                                      text='m=1',fill='#334155',font=('Times New Roman',8,'bold'))
+                                      text='m=1',fill='#334155',font=(UI_FONT,8,'bold'))
                     c.create_text((left+right)/2,(ground_y+start_y)/2,
-                                  text=f'ĐÀO THAY {replacement:.2f} m',font=('Times New Roman',8),fill='#334155')
+                                  text=f'ĐÀO THAY {replacement:.2f} m',font=(UI_FONT,8),fill='#334155')
                 for key,title in (('bamboo_depth','CỌC TRE'),('cajuput_depth','CỪ TRÀM')):
                     depth = shallow_depths.get(key,0.0)
                     if depth <= 0:
@@ -1129,18 +1129,18 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                         c.create_line(x,start_y,x,tip,fill='#475569',width=2)
                         c.create_line(x-3,tip-5,x,tip,x+3,tip-5,fill='#475569')
                     c.create_text((left+right)/2,tip+10,text=f'{title} L={depth:.2f} m',
-                                  font=('Times New Roman',8),fill='#334155')
+                                  font=(UI_FONT,8),fill='#334155')
         if is_extension:
             for left,right in ranges:
                 if has_sc:
                     c.create_rectangle(left,top_y-extra_h_top*scale,right,top_y,
                                        fill='#FEF08A',outline='#D97706')
-                    c.create_text((left+right)/2,top_y-extra_h_top*scale/2,text='GT',font=('Times New Roman',8))
+                    c.create_text((left+right)/2,top_y-extra_h_top*scale/2,text='GT',font=(UI_FONT,8))
                 if vacuum_enabled:
                     c.create_line(left,ground_y-sc_px-4,right,ground_y-sc_px-4,fill='#DC2626',width=3)
                     c.create_line(left,ground_y-sc_px-4,left,ground_y+12,fill='#DC2626',width=2)
                     c.create_line(right,ground_y-sc_px-4,right,ground_y+12,fill='#DC2626',width=2)
-                    c.create_text((left+right)/2,ground_y-sc_px-14,text='MÀNG KÍN KHÍ',font=('Times New Roman',8),fill='#DC2626')
+                    c.create_text((left+right)/2,ground_y-sc_px-14,text='MÀNG KÍN KHÍ',font=(UI_FONT,8),fill='#DC2626')
 
         # =========================================================================
         # VẼ LỚP GIA TẢI TRƯỚC (SURCHARGE) KÝ HIỆU RÚT GỌN (GT)
@@ -1162,7 +1162,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
 
             # Nhãn rút gọn GT
             c.create_text(cx, (top_y + top_y - extra_h_top * scale) / 2,
-                          text="GT", fill='#92400E', font=('Times New Roman', 10, 'bold'))
+                          text="GT", fill='#92400E', font=(UI_FONT, 10, 'bold'))
             draw_dim_v(c, cx + b * scale + 10, top_y - extra_h_top * scale, top_y, f"hs = {hs_val:.2f}m", offset=16)
 
         # =========================================================================
@@ -1185,19 +1185,19 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
 
             c.create_rectangle(toe_l - 34, ground_y, toe_l - 22, ground_y + trench_depth, fill='#FECA57', outline='#DC2626')
             c.create_rectangle(toe_r + 22, ground_y, toe_r + 34, ground_y + trench_depth, fill='#FECA57', outline='#DC2626')
-            c.create_text(toe_l - 38, ground_y + 8, text="Rãnh neo khí", fill='#DC2626', font=('Times New Roman', 7, 'italic'), anchor='e')
-            c.create_text(toe_r + 38, ground_y + 8, text="Rãnh neo khí", fill='#DC2626', font=('Times New Roman', 7, 'italic'), anchor='w')
+            c.create_text(toe_l - 38, ground_y + 8, text="Rãnh neo khí", fill='#DC2626', font=(UI_FONT, 7, 'italic'), anchor='e')
+            c.create_text(toe_r + 38, ground_y + 8, text="Rãnh neo khí", fill='#DC2626', font=(UI_FONT, 7, 'italic'), anchor='w')
 
             pump_x = toe_l - 55
             pump_y = membrane_y - 20
             c.create_rectangle(pump_x - 16, pump_y - 12, pump_x + 16, pump_y + 12, fill='#1E293B', outline='#0284C7', width=1.5)
-            c.create_text(pump_x, pump_y, text="BƠM CK", fill='#FFFFFF', font=('Times New Roman', 6, 'bold'))
+            c.create_text(pump_x, pump_y, text="BƠM CK", fill='#FFFFFF', font=(UI_FONT, 6, 'bold'))
             c.create_line(pump_x + 16, pump_y, toe_l - 28, membrane_y, fill='#0284C7', width=1.6, dash=(3, 2))
 
             c.create_rectangle(cx - 145, membrane_y - 19, cx + 145, membrane_y - 4, fill='#FEF2F2', outline='#DC2626', width=1)
             c.create_text(cx, membrane_y - 11,
                           text=f"MÀNG KÍN KHÍ & HÚT CHÂN KHÔNG (Pvac = -{p_vac:.2f} T/m²)",
-                          fill='#DC2626', font=('Times New Roman', 7, 'bold'))
+                          fill='#DC2626', font=(UI_FONT, 7, 'bold'))
 
     if project.expansion_width > 0 and project.expansion_side != 'Không':
         for left,right in display_treatment_ranges():
@@ -1208,7 +1208,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                           arrow='both',arrowshape=(4,5,2),tags='bxl_dimension')
             label=c.create_text((left+right)/2,dim_y-10,
                                 text=f'Bxl = {(right-left)/scale:.2f} m',
-                                fill='#075985',font=('Times New Roman',7),tags='bxl_dimension')
+                                fill='#075985',font=(UI_FONT,7),tags='bxl_dimension')
 
     c.tag_raise('cad_analysis_overlay')
     c.tag_raise('main_zone_boundary')
@@ -1219,7 +1219,7 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
     c.create_line(20, h - 19, 20, h - 9, fill='#0F172A', width=2)
     c.create_line(120, h - 19, 120, h - 9, fill='#0F172A', width=2)
     scale_meters = (100 / max(scale, 1e-3))
-    c.create_text(70, h - 22, text=f"Thước tỷ lệ: ~{scale_meters:.2f} m", font=('Times New Roman', 7, 'bold'), fill='#475569')
+    c.create_text(70, h - 22, text=f"Thước tỷ lệ: ~{scale_meters:.2f} m", font=(UI_FONT, 7, 'bold'), fill='#475569')
 
 
 # ==============================================================================
@@ -1280,12 +1280,12 @@ class StartupLoginDialog(tk.Toplevel):
         self.language_selector = ttk.Combobox(
             language_row, textvariable=self.parent.ui_language,
             values=('Tiếng Việt', 'English'), state='readonly', width=11,
-            font=('Times New Roman', 9))
+            font=(UI_FONT, 9))
         self.language_selector._sf_language_selector = True
         self.language_selector.pack(side='right')
         tk.Label(language_row, text='Ngôn ngữ / Language:',
                  bg=COLORS['nav'], fg='#D8E6EF',
-                 font=('Times New Roman', 9)).pack(side='right', padx=(0, 8))
+                 font=(UI_FONT, 9)).pack(side='right', padx=(0, 8))
         self.language_selector.bind('<<ComboboxSelected>>', self.parent._set_ui_language)
         brand = tk.Frame(header, bg=COLORS['nav'])
         brand.pack()
@@ -1301,7 +1301,7 @@ class StartupLoginDialog(tk.Toplevel):
 
         trap_pts = [lx - 30, ly - 34, lx + 30, ly - 34, lx + 60, ly + 22, lx - 60, ly + 22]
         c_head.create_polygon(trap_pts, fill='#17384D', outline=COLORS['accent'], width=2)
-        c_head.create_text(lx, ly - 6, text="SF", fill='#FFFFFF', font=('Times New Roman', 20, 'bold'))
+        c_head.create_text(lx, ly - 6, text="SF", fill='#FFFFFF', font=(UI_FONT, 20, 'bold'))
 
         for arr_x in [lx - 16, lx, lx + 16]:
             c_head.create_line(arr_x, ly - 54, arr_x, ly - 38, fill='#E5A642', width=2.5, arrow='last', arrowshape=(6, 9, 3))
@@ -1320,15 +1320,15 @@ class StartupLoginDialog(tk.Toplevel):
         login_wordmark = tk.Frame(titles, bg=COLORS['nav'])
         login_wordmark.pack(anchor='w', pady=(30, 8))
         tk.Label(login_wordmark, text='SOILFIRM', fg='white', bg=COLORS['nav'],
-                 font=('Times New Roman', 20, 'bold')).grid(row=0, column=0)
+                 font=(UI_FONT, 20, 'bold')).grid(row=0, column=0)
         tk.Label(login_wordmark, text=' PRO', bg=COLORS['nav'], fg='#00D4E8',
-                 font=('Times New Roman', 20, 'bold')).grid(row=0, column=1, sticky='w')
+                 font=(UI_FONT, 20, 'bold')).grid(row=0, column=1, sticky='w')
         tk.Label(login_wordmark, text='AI', fg='#00D4E8', bg=COLORS['nav'],
-                 font=('Times New Roman', 9, 'bold')).grid(row=0, column=2, sticky='nw', padx=(2,0))
+                 font=(UI_FONT, 9, 'bold')).grid(row=0, column=2, sticky='nw', padx=(2,0))
         tk.Label(titles, text="Hỗ trợ thiết kế xử lý nền đất yếu",
-                 fg='#B8CEDD', bg=COLORS['nav'], font=('Times New Roman', 10)).pack(anchor='w')
+                 fg='#B8CEDD', bg=COLORS['nav'], font=(UI_FONT, 10)).pack(anchor='w')
         tk.Label(titles, text="Phiên bản 2026.11",
-                 fg='#8DA8BB', bg=COLORS['nav'], font=('Times New Roman', 9)).pack(anchor='w', pady=(8, 0))
+                 fg='#8DA8BB', bg=COLORS['nav'], font=(UI_FONT, 9)).pack(anchor='w', pady=(8, 0))
 
         center_frame = tk.Frame(parent_frame)
         center_frame.pack(fill='y', expand=True, pady=30)
@@ -1339,23 +1339,23 @@ class StartupLoginDialog(tk.Toplevel):
         info_banner = tk.Frame(form_frame, bg='#FEF3C7', relief='solid', bd=1, padx=16, pady=10)
         info_banner.pack(fill='x', pady=(0, 18))
         tk.Label(info_banner, text="📞 LIÊN HỆ SĐT/ZALO: 0869233097 ĐỂ ĐĂNG NHẬP",
-                 font=('Times New Roman', 10, 'bold'), fg='#92400E', bg='#FEF3C7').pack(anchor='center')
+                 font=(UI_FONT, 10, 'bold'), fg='#92400E', bg='#FEF3C7').pack(anchor='center')
         tk.Label(info_banner, text="Tác giả: Vũ Ngọc Ánh • Vui lòng nhập Key bản quyền được cấp bên dưới.",
-                 font=('Times New Roman', 9), fg='#B45309', bg='#FEF3C7').pack(anchor='center', pady=(3, 0))
+                 font=(UI_FONT, 9), fg='#B45309', bg='#FEF3C7').pack(anchor='center', pady=(3, 0))
 
         tk.Label(form_frame, text="Tên tài khoản (Username):", bg=COLORS['surface'], fg=COLORS['text'],
-                 font=('Times New Roman', 10, 'bold')).pack(anchor='w', pady=(5, 3))
-        self.ent_user = ttk.Entry(form_frame, font=('Times New Roman', 11), width=42)
+                 font=(UI_FONT, 10, 'bold')).pack(anchor='w', pady=(5, 3))
+        self.ent_user = ttk.Entry(form_frame, font=(UI_FONT, 11), width=42)
         self.ent_user.pack(fill='x', ipady=4, pady=(0, 12))
 
         tk.Label(form_frame, text="Khóa kích hoạt (Key / Password):", bg=COLORS['surface'], fg=COLORS['text'],
-                 font=('Times New Roman', 10, 'bold')).pack(anchor='w', pady=(5, 3))
-        self.ent_key = ttk.Entry(form_frame, font=('Times New Roman', 11), show="*", width=42)
+                 font=(UI_FONT, 10, 'bold')).pack(anchor='w', pady=(5, 3))
+        self.ent_key = ttk.Entry(form_frame, font=(UI_FONT, 11), show="*", width=42)
         self.ent_key.pack(fill='x', ipady=4, pady=(0, 10))
 
         self.var_remember = tk.BooleanVar(value=True)
         cb_style = ttk.Style()
-        cb_style.configure("Login.TCheckbutton", font=('Times New Roman', 9))
+        cb_style.configure("Login.TCheckbutton", font=(UI_FONT, 9))
         cb_rem = ttk.Checkbutton(form_frame, text=" Ghi nhớ tài khoản và mật khẩu trên máy này",
                                  variable=self.var_remember, style="Login.TCheckbutton")
         cb_rem.pack(anchor='w', pady=(0, 5))
@@ -1369,21 +1369,21 @@ class StartupLoginDialog(tk.Toplevel):
 
         self.btn_login = tk.Button(btn_box, text='Đăng nhập', bg=COLORS['accent'], fg='white',
                                    activebackground='#0C6175', activeforeground='white',
-                                   font=('Times New Roman', 11, 'bold'), relief='flat', cursor='hand2',
+                                   font=(UI_FONT, 11, 'bold'), relief='flat', cursor='hand2',
                                    command=self.submit_login)
         self.btn_login.pack(side='left', fill='x', expand=True, ipady=8, padx=(0, 10))
         ttk.Button(form_frame, text='Tạo tài khoản dùng thử', command=self.open_registration).pack(fill='x', pady=(12, 0))
 
         btn_exit = tk.Button(btn_box, text="Thoát", bg='#E2E8F0', fg='#334155',
-                             font=('Times New Roman', 10, 'bold'), relief='flat', cursor='hand2',
+                             font=(UI_FONT, 10, 'bold'), relief='flat', cursor='hand2',
                              command=self.on_cancel)
         btn_exit.pack(side='right', ipady=8, ipadx=20)
 
-        self.lbl_status = tk.Label(form_frame, text="", bg=COLORS['surface'], fg=COLORS['muted'], font=('Times New Roman', 9))
+        self.lbl_status = tk.Label(form_frame, text="", bg=COLORS['surface'], fg=COLORS['muted'], font=(UI_FONT, 9))
         self.lbl_status.pack(pady=(12, 0))
         tk.Label(parent_frame, text='Đăng ký bản quyền phần mềm',
                  bg=COLORS['background'], fg=COLORS['muted'],
-                 font=('Times New Roman', 9)).pack(pady=(0, 10))
+                 font=(UI_FONT, 9)).pack(pady=(0, 10))
 
         self.bind('<Return>', lambda _e: self.submit_login())
         self.ent_user.focus_set()
@@ -1557,11 +1557,11 @@ class App(tk.Tk):
         self.minsize(min(win_w, 750), min(win_h, 500))
         configure_theme(self)
         for font_name in tkfont.names(self):
-            tkfont.nametofont(font_name, root=self).configure(family='Times New Roman')
+            tkfont.nametofont(font_name, root=self).configure(family=UI_FONT)
         style = ttk.Style(self)
         for style_name in ('TLabel', 'TEntry', 'TCombobox', 'TCheckbutton',
                            'TRadiobutton', 'TLabelframe.Label', 'Treeview', 'Treeview.Heading'):
-            style.configure(style_name, font=('Times New Roman', 9))
+            style.configure(style_name, font=(UI_FONT, 9))
         self.bind_all('<Map>', _popup_mapped, add='+')
         self.bind_all('<Map>', _install_scroll_route, add='+')
         for sequence in ('<MouseWheel>', '<Shift-MouseWheel>', '<Button-4>', '<Button-5>'):
@@ -1652,7 +1652,7 @@ class App(tk.Tk):
             c_logo.create_polygon(trap_pts, fill='#1A384F', outline='#38BDF8', width=1.5)
 
             # 5. Chữ lồng "SF" sắc nét ở lõi nền đắp
-            c_logo.create_text(24, 22, text="SF", fill='#FFFFFF', font=('Times New Roman', 8, 'bold'))
+            c_logo.create_text(24, 22, text="SF", fill='#FFFFFF', font=(UI_FONT, 9, 'bold'))
 
             # 6. Nhãn AI trên biểu tượng SoilFirm
             c_logo.create_text(24, 9, text="AI", fill='#38BDF8', font=('Arial', 7, 'bold'))
@@ -1663,11 +1663,11 @@ class App(tk.Tk):
         wordmark = tk.Frame(brand_text, bg=COLORS['header'])
         wordmark.pack(anchor='w', pady=(18, 0))
         tk.Label(wordmark, text='SOILFIRM', bg=COLORS['header'], fg='#FFFFFF',
-                 font=('Times New Roman', 20, 'bold')).grid(row=0, column=0, sticky='w')
+                 font=(UI_FONT, 20, 'bold')).grid(row=0, column=0, sticky='w')
         tk.Label(wordmark, text=' PRO', bg=COLORS['header'], fg='#00D4E8',
-                 font=('Times New Roman', 20, 'bold')).grid(row=0, column=1, sticky='w')
+                 font=(UI_FONT, 20, 'bold')).grid(row=0, column=1, sticky='w')
         tk.Label(wordmark, text='AI', bg=COLORS['header'], fg='#00D4E8',
-                 font=('Times New Roman', 9, 'bold')).grid(row=0, column=2, sticky='nw', padx=(2, 0))
+                 font=(UI_FONT, 9, 'bold')).grid(row=0, column=2, sticky='nw', padx=(2, 0))
         
         self.project_caption = tk.StringVar(value='Dự án mới')
 
@@ -1681,7 +1681,7 @@ class App(tk.Tk):
                 parent, text=text, command=command,
                 bg=bg, fg=fg, activebackground=hover_bg, activeforeground=fg,
                 relief='flat', bd=0, cursor='hand2',
-                font=('Times New Roman', 8, 'bold'),
+                font=(UI_FONT, 9, 'bold'),
                 padx=8, pady=3
             )
             btn.bind('<Enter>', lambda _e: btn.configure(bg=hover_bg))
@@ -1700,7 +1700,7 @@ class App(tk.Tk):
         sep_header = tk.Frame(actions, bg='#53758B', width=1, height=18)
         f_ai_grp = tk.Frame(actions, bg=COLORS['header'])
         tk.Label(f_ai_grp, text='AI:', bg=COLORS['header'], fg='#EAF4FB',
-                 font=('Times New Roman', 8, 'bold')).pack(side='left', padx=(0,4))
+                 font=(UI_FONT, 9, 'bold')).pack(side='left', padx=(0,4))
         self.ai_provider_var = tk.StringVar(value=self._calculation_preferences.get('provider', 'NVIDIA AI'))
         self.ai_web_search_var = tk.BooleanVar(value=self._calculation_preferences.get('web_search', True))
         self.header_ai_selector = ttk.Combobox(f_ai_grp,
@@ -1728,7 +1728,7 @@ class App(tk.Tk):
         self.header_language_selector = ttk.Combobox(
             actions, textvariable=self.ui_language,
             values=('Tiếng Việt', 'English'), state='readonly', width=9,
-            font=('Times New Roman', 8))
+            font=(UI_FONT, 9))
         self.header_language_selector._sf_language_selector = True
         self.header_language_selector.pack(side='left', pady=22)
         self.header_language_selector.bind('<<ComboboxSelected>>', self._set_ui_language)
@@ -1737,7 +1737,7 @@ class App(tk.Tk):
         footer.pack_propagate(False)
         self.status_text = tk.StringVar(value='Sẵn sàng')
         tk.Label(footer, textvariable=self.status_text, bg='#E7EDF2', fg=COLORS['muted'],
-                 font=('Times New Roman', 8)).pack(side='left', padx=16, pady=4)
+                 font=(UI_FONT, 9)).pack(side='left', padx=16, pady=4)
 
         self.paned = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
         self.paned.pack(fill='both', expand=True, padx=10, pady=(10, 6))
@@ -1752,7 +1752,7 @@ class App(tk.Tk):
                        '08   AI phân tích & lựa chọn phương án',
                        '09   Bảng tổng hợp kết quả xử lý',
                        '10   Tính toán khối lượng xử lý']
-        nav_font = tkfont.Font(self, family='Times New Roman', size=9, weight='bold')
+        nav_font = tkfont.Font(self, family=UI_FONT, size=9, weight='bold')
         sidebar_width = 212
         self.sidebar = tk.Frame(left_container, bg=COLORS['nav'], width=sidebar_width)
         self.sidebar.pack(side='left', fill='y')
@@ -1767,12 +1767,12 @@ class App(tk.Tk):
         support_row.rowconfigure(1,weight=1)
         self.chat_sidebar_button = tk.Button(
             support_row, text='Liên hệ quản trị viên', command=self.open_chat,
-            font=('Times New Roman', 9, 'bold'), bg='#0284C7', fg='#FFFFFF',
+            font=(UI_FONT, 9, 'bold'), bg='#0284C7', fg='#FFFFFF',
             activebackground='#0369A1', activeforeground='#FFFFFF',
             relief='flat', bd=0, cursor='hand2', wraplength=sidebar_width-24)
         self.ai_sidebar_button = tk.Button(
             support_row, text='Hỗ trợ AI', command=self.open_ai_support,
-            font=('Times New Roman', 9, 'bold'), bg='#0F766E', fg='#FFFFFF',
+            font=(UI_FONT, 9, 'bold'), bg='#0F766E', fg='#FFFFFF',
             activebackground='#115E59', activeforeground='#FFFFFF',
             relief='flat', bd=0, cursor='hand2', wraplength=sidebar_width-24)
         self.chat_sidebar_button.grid(row=1,column=0,sticky='nsew',ipady=8,pady=(4,0))
@@ -1823,7 +1823,7 @@ class App(tk.Tk):
                             self.tab_result_summary, self.tab_treatment_boq, self.tab_geology_statistics, self.tab_ai_boreholes, self.tab_ai_sections, self.tab_export_records, self.ai_material_host]
         self.step_buttons: list[tk.Button] = []
 
-        self._sidebar_heading_font = tkfont.Font(self, family='Times New Roman', size=10, weight='bold')
+        self._sidebar_heading_font = tkfont.Font(self, family=UI_FONT, size=10, weight='bold')
         # Giữ chiều rộng đã chọn; tên mục dài xuống dòng bằng wraplength.
         self.sidebar.configure(width=sidebar_width)
         nav_canvas.configure(width=sidebar_width-14)
@@ -1857,9 +1857,9 @@ class App(tk.Tk):
         self.workspace_heading = tk.StringVar(value=step_headings[0])
         self.workspace_subtitle = tk.StringVar(value=self.step_descriptions[0])
         tk.Label(section_header, textvariable=self.workspace_heading, bg=COLORS['background'],
-                 fg=COLORS['nav'], font=('Times New Roman', 15, 'bold')).pack(anchor='w')
+                 fg=COLORS['nav'], font=(UI_FONT, 15, 'bold')).pack(anchor='w')
         tk.Label(section_header, textvariable=self.workspace_subtitle, bg=COLORS['background'],
-                 fg=COLORS['muted'], font=('Times New Roman', 9)).pack(anchor='w', pady=(2, 0))
+                 fg=COLORS['muted'], font=(UI_FONT, 9)).pack(anchor='w', pady=(2, 0))
         self.workspace_pdf_button = ttk.Button(section_header, text='Xuất báo cáo', style='Accent.TButton')
         self.step_headings = step_headings
 
@@ -1875,21 +1875,21 @@ class App(tk.Tk):
         # Keep the existing variables and selector bindings for compatibility.
         mode_box.pack_propagate(False)
         tk.Label(mode_box, text='PHẠM VI TÍNH', bg=COLORS['nav'], fg='#EAF4FB',
-                 font=('Times New Roman', 9, 'bold'), anchor='w').place(
+                 font=(UI_FONT, 9, 'bold'), anchor='w').place(
                      x=8, y=0, relwidth=1, width=-16, height=23)
         self.mode_display = tk.StringVar(value=(
             'Nhiều đoạn' if self.design_mode.get() == 'TÍNH TOÀN TUYẾN'
             else 'Một đoạn') + '  ▾')
         self.mode_selector = tk.Menubutton(
             mode_box, textvariable=self.mode_display, direction='below',
-            font=('Times New Roman', 11, 'bold'), anchor='w',
+            font=(UI_FONT, 11, 'bold'), anchor='w',
             bg='#28556E', fg='#FFFFFF', activebackground='#346D88',
             activeforeground='#FFFFFF', relief='flat', bd=0,
             highlightthickness=2, highlightbackground='#60A5C4',
             highlightcolor='#B9E6F8', padx=12, pady=4, cursor='hand2', takefocus=True)
         self.mode_selector.place(x=0, y=27, relwidth=1, height=33)
         mode_menu = tk.Menu(self.mode_selector, tearoff=False,
-            font=('Times New Roman', 9), bg='#254B61', fg='#FFFFFF',
+            font=(UI_FONT, 9), bg='#254B61', fg='#FFFFFF',
             activebackground='#315E76', activeforeground='#FFFFFF',
             selectcolor='#FFFFFF', relief='flat', bd=1)
         for mode_name in ('TÍNH MỘT ĐOẠN', 'TÍNH TOÀN TUYẾN'):
@@ -2303,22 +2303,22 @@ class App(tk.Tk):
         c_frame = tk.Frame(f, padx=40, pady=30)
         c_frame.pack(fill='both', expand=True)
 
-        tk.Label(c_frame, text="Tài khoản:", font=('Times New Roman', 9, 'bold')).pack(anchor='w', pady=(0, 4))
-        ent_user = ttk.Entry(c_frame, font=('Times New Roman', 10), width=40)
+        tk.Label(c_frame, text="Tài khoản:", font=(UI_FONT, 9, 'bold')).pack(anchor='w', pady=(0, 4))
+        ent_user = ttk.Entry(c_frame, font=(UI_FONT, 10), width=40)
         ent_user.insert(0, self.current_username)
         ent_user.config(state='readonly')
         ent_user.pack(fill='x', pady=(0, 15))
 
-        tk.Label(c_frame, text="Mật khẩu hiện tại:", font=('Times New Roman', 9, 'bold')).pack(anchor='w', pady=(0, 4))
-        ent_old = ttk.Entry(c_frame, font=('Times New Roman', 10), show="*", width=40)
+        tk.Label(c_frame, text="Mật khẩu hiện tại:", font=(UI_FONT, 9, 'bold')).pack(anchor='w', pady=(0, 4))
+        ent_old = ttk.Entry(c_frame, font=(UI_FONT, 10), show="*", width=40)
         ent_old.pack(fill='x', pady=(0, 15))
 
-        tk.Label(c_frame, text="Mật khẩu mới:", font=('Times New Roman', 9, 'bold')).pack(anchor='w', pady=(0, 4))
-        ent_new = ttk.Entry(c_frame, font=('Times New Roman', 10), show="*", width=40)
+        tk.Label(c_frame, text="Mật khẩu mới:", font=(UI_FONT, 9, 'bold')).pack(anchor='w', pady=(0, 4))
+        ent_new = ttk.Entry(c_frame, font=(UI_FONT, 10), show="*", width=40)
         ent_new.pack(fill='x', pady=(0, 15))
 
-        tk.Label(c_frame, text="Nhập lại mật khẩu mới:", font=('Times New Roman', 9, 'bold')).pack(anchor='w', pady=(0, 4))
-        ent_confirm = ttk.Entry(c_frame, font=('Times New Roman', 10), show="*", width=40)
+        tk.Label(c_frame, text="Nhập lại mật khẩu mới:", font=(UI_FONT, 9, 'bold')).pack(anchor='w', pady=(0, 4))
+        ent_confirm = ttk.Entry(c_frame, font=(UI_FONT, 10), show="*", width=40)
         ent_confirm.pack(fill='x', pady=(0, 25))
 
         def submit():
@@ -2970,7 +2970,7 @@ class App(tk.Tk):
         self.nav_group_buttons = []
         for group, (title, steps) in enumerate(self.navigation_groups):
             button = tk.Button(self.nav_groups_host, text=f'{group+1}. {display_group_title(title)}',
-                font=('Times New Roman', 10, 'bold'), anchor='w', justify='left',
+                font=(UI_FONT, 10, 'bold'), anchor='w', justify='left',
                 wraplength=int(self.sidebar.cget('width'))-40, padx=8, relief='flat', bd=0, cursor='hand2',
                 command=lambda g=group: self.switch_step(self._group_last_step[g]))
             button.pack(fill='x', padx=5, pady=2, ipady=7)
@@ -3143,7 +3143,7 @@ class App(tk.Tk):
             self._workspace_tab_buttons = {}
             for target in group_steps if len(group_steps) > 1 else ():
                 button = tk.Button(self.workspace_tabs, text=labels[target],
-                    font=('Times New Roman',10), fg='#163047', relief='flat', bd=0,
+                    font=(UI_FONT,10), fg='#163047', relief='flat', bd=0,
                     padx=12, pady=7, command=lambda t=target:self.switch_step(t))
                 button.pack(side='left',padx=(0,4))
                 self._workspace_tab_buttons[target] = button
@@ -3151,7 +3151,7 @@ class App(tk.Tk):
         for target, button in self._workspace_tab_buttons.items():
             button.configure(bg=COLORS['tab_selected'] if target==index else COLORS['tab_idle'],
                              activebackground=COLORS['tab_hover'], activeforeground=COLORS['control_text'],
-                             font=('Times New Roman',10,'bold' if target==index else 'normal'))
+                             font=(UI_FONT,10,'bold' if target==index else 'normal'))
         target_frame = self.step_frames[index]
         old_frame = getattr(self, '_visible_step_frame', None)
         if old_frame is not None and old_frame is not target_frame:
@@ -3541,11 +3541,11 @@ class App(tk.Tk):
         top_info = tk.Frame(inner, bg='#FEF3C7', padx=20, pady=12)
         top_info.pack(fill='x', side='top', pady=(0, 10))
         tk.Label(top_info, text="QUẢN LÝ HỆ THỐNG — TÀI KHOẢN D1",
-                 font=('Times New Roman', 10, 'bold'), fg='#92400E', bg='#FEF3C7').pack()
+                 font=(UI_FONT, 10, 'bold'), fg='#92400E', bg='#FEF3C7').pack()
         tk.Label(top_info, text=f"👑 Xin chào Admin: {self.current_fullname}  •  Thời hạn: Vô hạn",
-                 font=('Times New Roman', 9, 'italic'), fg='#B45309', bg='#FEF3C7').pack(pady=(4, 0))
+                 font=(UI_FONT, 9, 'italic'), fg='#B45309', bg='#FEF3C7').pack(pady=(4, 0))
         activity_note = tk.StringVar(value='Trạng thái được lấy khi làm mới danh sách.')
-        tk.Label(top_info, textvariable=activity_note, font=('Times New Roman', 9),
+        tk.Label(top_info, textvariable=activity_note, font=(UI_FONT, 9),
                  fg='#92400E', bg='#FEF3C7').pack(pady=(3, 0))
 
         bottom_frame = tk.Frame(inner, pady=6)
@@ -3555,29 +3555,29 @@ class App(tk.Tk):
         f_action.pack()
 
         # Dòng 1: Họ tên & User
-        tk.Label(f_action, text="Họ và tên:", font=('Times New Roman', 9, 'bold')).grid(row=0, column=0, padx=5, pady=4, sticky='e')
-        e_fullname = ttk.Entry(f_action, width=28, font=('Times New Roman', 10))
+        tk.Label(f_action, text="Họ và tên:", font=(UI_FONT, 9, 'bold')).grid(row=0, column=0, padx=5, pady=4, sticky='e')
+        e_fullname = ttk.Entry(f_action, width=28, font=(UI_FONT, 10))
         e_fullname.grid(row=0, column=1, padx=5, pady=4)
 
-        tk.Label(f_action, text="Tên tài khoản (User):", font=('Times New Roman', 9, 'bold')).grid(row=0, column=2, padx=5, pady=4, sticky='e')
-        e_user = ttk.Entry(f_action, width=22, font=('Times New Roman', 10))
+        tk.Label(f_action, text="Tên tài khoản (User):", font=(UI_FONT, 9, 'bold')).grid(row=0, column=2, padx=5, pady=4, sticky='e')
+        e_user = ttk.Entry(f_action, width=22, font=(UI_FONT, 10))
         e_user.grid(row=0, column=3, padx=5, pady=4)
 
         # Dòng 2: Mật khẩu, Phân loại & Thời hạn dùng
-        tk.Label(f_action, text="Mật khẩu (Key):", font=('Times New Roman', 9, 'bold')).grid(row=1, column=0, padx=5, pady=4, sticky='e')
-        e_key = ttk.Entry(f_action, width=28, font=('Times New Roman', 10))
+        tk.Label(f_action, text="Mật khẩu (Key):", font=(UI_FONT, 9, 'bold')).grid(row=1, column=0, padx=5, pady=4, sticky='e')
+        e_key = ttk.Entry(f_action, width=28, font=(UI_FONT, 10))
         e_key.grid(row=1, column=1, padx=5, pady=4)
 
-        tk.Label(f_action, text="Phân loại:", font=('Times New Roman', 9, 'bold')).grid(row=1, column=2, padx=5, pady=4, sticky='e')
-        cb_tier = ttk.Combobox(f_action, values=('trial', 'oem'), state='readonly', width=20, font=('Times New Roman', 10))
+        tk.Label(f_action, text="Phân loại:", font=(UI_FONT, 9, 'bold')).grid(row=1, column=2, padx=5, pady=4, sticky='e')
+        cb_tier = ttk.Combobox(f_action, values=('trial', 'oem'), state='readonly', width=20, font=(UI_FONT, 10))
         cb_tier.set('trial')
         cb_tier.grid(row=1, column=3, padx=5, pady=4)
 
-        tk.Label(f_action, text="Thời hạn dùng:", font=('Times New Roman', 9, 'bold')).grid(row=2, column=0, padx=5, pady=4, sticky='e')
-        cb_expiry = ttk.Combobox(f_action, values=('Vĩnh viễn', '30 ngày', '90 ngày', '180 ngày', '1 năm'), width=26, font=('Times New Roman', 10))
+        tk.Label(f_action, text="Thời hạn dùng:", font=(UI_FONT, 9, 'bold')).grid(row=2, column=0, padx=5, pady=4, sticky='e')
+        cb_expiry = ttk.Combobox(f_action, values=('Vĩnh viễn', '30 ngày', '90 ngày', '180 ngày', '1 năm'), width=26, font=(UI_FONT, 10))
         cb_expiry.set('1 năm')
         cb_expiry.grid(row=2, column=1, padx=5, pady=4)
-        tk.Label(f_action, text="(Hoặc gõ ngày YYYY-MM-DD)", font=('Times New Roman', 8, 'italic'), fg='#64748B').grid(row=2, column=2, sticky='w')
+        tk.Label(f_action, text="(Hoặc gõ ngày YYYY-MM-DD)", font=(UI_FONT, 9, 'italic'), fg='#64748B').grid(row=2, column=2, sticky='w')
 
         btn_row = tk.Frame(bottom_frame, pady=4)
         btn_row.pack()
@@ -3590,17 +3590,17 @@ class App(tk.Tk):
         table_area.rowconfigure(0, weight=1)
 
         style = ttk.Style(admin_win)
-        style.configure("Admin.Treeview.Heading", font=('Times New Roman', 9, 'bold'),
+        style.configure("Admin.Treeview.Heading", font=(UI_FONT, 9, 'bold'),
                         padding=(3, 5))
-        style.configure("Admin.Treeview", font=('Times New Roman', 9), rowheight=22)
+        style.configure("Admin.Treeview", font=(UI_FONT, 9), rowheight=22)
 
         tree = ttk.Treeview(table_area, columns=("Fullname", "User", "Key", "Tier", "Expiry", "Status", "LastSeen", "Usage"), show="headings", height=14, style="Admin.Treeview")
         admin_headers = {'Fullname': 'Họ và tên', 'User': 'Tên tài khoản (User)',
                          'Key': 'Khóa kích hoạt (Password)', 'Tier': 'Phân loại',
                          'Expiry': 'Thời hạn dùng', 'Status': 'Trạng thái hoạt động',
                          'LastSeen': 'Hoạt động gần nhất', 'Usage': 'Thời gian sử dụng'}
-        admin_font = tkfont.Font(admin_win, family='Times New Roman', size=9, weight='bold')
-        admin_body_font = tkfont.Font(admin_win, family='Times New Roman', size=9)
+        admin_font = tkfont.Font(admin_win, family=UI_FONT, size=9, weight='bold')
+        admin_body_font = tkfont.Font(admin_win, family=UI_FONT, size=9)
         admin_caps = {'Fullname': 220, 'User': 175, 'Key': 210,
                       'Tier': 90, 'Expiry': 125, 'Status': 155,
                       'LastSeen': 155, 'Usage': 155}
@@ -3756,7 +3756,7 @@ class App(tk.Tk):
         window.transient(self)
         ttk.Label(window, text='Tin nhắn sẽ được gửi đến tất cả tài khoản thành viên, kể cả đang offline.',
                   wraplength=540).pack(anchor='w', padx=16, pady=(16, 8))
-        editor = tk.Text(window, height=10, wrap='word', font=('Times New Roman', 12))
+        editor = tk.Text(window, height=10, wrap='word', font=(UI_FONT, 12))
         editor.pack(fill='both', expand=True, padx=16, pady=8)
         status = tk.StringVar(value='Nhập nội dung, tối đa 2000 ký tự.')
         ttk.Label(window, textvariable=status, wraplength=540).pack(anchor='w', padx=16, pady=6)
@@ -3876,8 +3876,8 @@ class App(tk.Tk):
 
         ttk.Label(box_proj, text='Mặt cắt tính toán:').grid(row=4, column=0, sticky='w', pady=7)
         s_km_box = ttk.Frame(box_proj)
-        ttk.Label(s_km_box, text='KM', font=('Times New Roman', 8, 'bold'), foreground='#2563EB').pack(side='left', padx=(0, 6))
-        e_st = ttk.Entry(s_km_box, textvariable=self.vars['station'], width=20, font=('Times New Roman', 8, 'bold'))
+        ttk.Label(s_km_box, text='KM', font=(UI_FONT, 9, 'bold'), foreground='#2563EB').pack(side='left', padx=(0, 6))
+        e_st = ttk.Entry(s_km_box, textvariable=self.vars['station'], width=20, font=(UI_FONT, 9, 'bold'))
         e_st.pack(side='left')
         s_km_box.grid(row=4, column=1, sticky='w', pady=7)
 
@@ -3894,16 +3894,16 @@ class App(tk.Tk):
                                    values=('Nền đắp thông thường', 'Gần mố cầu', 'Hai bên cống hoặc cống chui'))
         self.cb_loc.grid(row=6, column=1, sticky='ew', pady=7)
 
-        ttk.Label(box_proj, text='Độ lún cho phép [ΔS]:', font=('Times New Roman', 8, 'bold'), foreground='#B45309').grid(row=7, column=0, sticky='w', pady=7)
+        ttk.Label(box_proj, text='Độ lún cho phép [ΔS]:', font=(UI_FONT, 9, 'bold'), foreground='#B45309').grid(row=7, column=0, sticky='w', pady=7)
         f_limit = ttk.Frame(box_proj)
-        self.ent_residual = ttk.Entry(f_limit, textvariable=self.vars['residual_limit_cm'], width=10, font=('Times New Roman', 8, 'bold'))
+        self.ent_residual = ttk.Entry(f_limit, textvariable=self.vars['residual_limit_cm'], width=10, font=(UI_FONT, 9, 'bold'))
         self.ent_residual.pack(side='left')
-        ttk.Label(f_limit, text='cm   ', font=('Times New Roman', 8, 'bold'), foreground='#B45309').pack(side='left')
-        self.lbl_limit_hint = ttk.Label(f_limit, text='(Tự động theo TCVN 9355 / 22 TCN 262)', font=('Times New Roman', 8, 'italic'), foreground='#64748B')
+        ttk.Label(f_limit, text='cm   ', font=(UI_FONT, 9, 'bold'), foreground='#B45309').pack(side='left')
+        self.lbl_limit_hint = ttk.Label(f_limit, text='(Tự động theo TCVN 9355 / 22 TCN 262)', font=(UI_FONT, 9, 'italic'), foreground='#64748B')
         f_limit.grid(row=7, column=1, sticky='w', pady=7)
         ttk.Label(box_proj,
                   text='Lưu ý: Chọn chức năng tính toán phù hợp với số liệu đầu vào và thiết lập hiện tại.',
-                  font=('Times New Roman', 9, 'italic'), foreground='#475569',
+                  font=(UI_FONT, 9, 'italic'), foreground='#475569',
                   wraplength=760).grid(row=8, column=0, columnspan=2, sticky='w', pady=(4, 0))
 
         self.vars['road_class'].trace_add('write', self.update_residual_limit)
@@ -4236,7 +4236,7 @@ class App(tk.Tk):
         dialog.transient(self)
         ttk.Label(dialog, text='PVD/SD/Chờ lún: khai báo chỉ tiêu từng lớp; bề dày giữ như địa chất chung.').pack(
             anchor='w', padx=12, pady=10)
-        listing = tk.Listbox(dialog, height=12, font=('Times New Roman', 10))
+        listing = tk.Listbox(dialog, height=12, font=(UI_FONT, 10))
         listing.pack(fill='both', expand=True, padx=12)
 
         def refresh():
@@ -4326,19 +4326,19 @@ class App(tk.Tk):
         top_bar = ttk.Frame(inner)
         top_bar.pack(fill='x', pady=(0, 6))
 
-        lbl = ttk.Label(top_bar, text="DANH SÁCH ĐỊA TẦNG ĐỊA CHẤT", font=('Times New Roman', 10, 'bold'), foreground='#1E3A8A')
+        lbl = ttk.Label(top_bar, text="DANH SÁCH ĐỊA TẦNG ĐỊA CHẤT", font=(UI_FONT, 10, 'bold'), foreground='#1E3A8A')
         lbl.pack(side='left')
         
-        lbl_hint = ttk.Label(top_bar, text="(Nhấp đúp chuột vào ô 'Dày H (m)' để nhập trực tiếp)", font=('Times New Roman', 8, 'italic'), foreground='#2563EB')
+        lbl_hint = ttk.Label(top_bar, text="(Nhấp đúp chuột vào ô 'Dày H (m)' để nhập trực tiếp)", font=(UI_FONT, 9, 'italic'), foreground='#2563EB')
         lbl_hint.pack(side='left', padx=10)
 
         mnn_info = ttk.Frame(top_bar)
         mnn_info.pack(side='right')
-        ttk.Label(mnn_info, text="Ztn:", font=('Times New Roman', 9)).pack(side='left')
-        ttk.Label(mnn_info, textvariable=self.vars['ground_elevation'], font=('Times New Roman', 9, 'bold'), foreground='#1E293B').pack(side='left', padx=(2, 10))
-        ttk.Label(mnn_info, text="MNN:", font=('Times New Roman', 9)).pack(side='left')
-        ttk.Label(mnn_info, textvariable=self.vars['water_elevation'], font=('Times New Roman', 9, 'bold'), foreground='#0284C7').pack(side='left', padx=2)
-        ttk.Label(mnn_info, text="m", font=('Times New Roman', 9)).pack(side='left')
+        ttk.Label(mnn_info, text="Ztn:", font=(UI_FONT, 9)).pack(side='left')
+        ttk.Label(mnn_info, textvariable=self.vars['ground_elevation'], font=(UI_FONT, 9, 'bold'), foreground='#1E293B').pack(side='left', padx=(2, 10))
+        ttk.Label(mnn_info, text="MNN:", font=(UI_FONT, 9)).pack(side='left')
+        ttk.Label(mnn_info, textvariable=self.vars['water_elevation'], font=(UI_FONT, 9, 'bold'), foreground='#0284C7').pack(side='left', padx=2)
+        ttk.Label(mnn_info, text="m", font=(UI_FONT, 9)).pack(side='left')
 
         borehole_bar = ttk.Frame(inner)
         borehole_bar.pack(fill='x', pady=(0, 8))
@@ -4351,8 +4351,8 @@ class App(tk.Tk):
         soil_container.pack(fill='both', expand=True)
 
         style = ttk.Style(self)
-        self._soil_body_font = tkfont.Font(self, family='Times New Roman', size=9)
-        self._soil_heading_font = tkfont.Font(self, family='Times New Roman', size=9, weight='bold')
+        self._soil_body_font = tkfont.Font(self, family=UI_FONT, size=9)
+        self._soil_heading_font = tkfont.Font(self, family=UI_FONT, size=9, weight='bold')
         style.configure("Soil.Treeview.Heading", font=self._soil_heading_font,
                         padding=(4, 5), background='#E9F0F4', foreground='#172D46')
         style.configure("Soil.Treeview", font=self._soil_body_font,
@@ -4591,7 +4591,7 @@ class App(tk.Tk):
         box_hbl.pack(fill='x', pady=(0, 4))
         
         self.htt_label = tk.StringVar(value='Htk = 3.00 m  |  Hkcad = 0.15 m  |  Hbl = 0.00 m  ==>  Htt = 3.15 m')
-        ttk.Label(box_hbl, textvariable=self.htt_label, font=('Times New Roman', 10, 'bold'), foreground='#B45309').pack(anchor='w', pady=(0, 6))
+        ttk.Label(box_hbl, textvariable=self.htt_label, font=(UI_FONT, 10, 'bold'), foreground='#B45309').pack(anchor='w', pady=(0, 6))
         
         f_row = ttk.Frame(box_hbl)
         f_row.pack(fill='x', pady=2)
@@ -4620,7 +4620,7 @@ class App(tk.Tk):
         
         f_tbl_head = ttk.Frame(self.result_table_frame)
         f_tbl_head.pack(fill='x', pady=(0, 6))
-        self.lbl_tbl_title = ttk.Label(f_tbl_head, text='Kết quả phân tố đất · Tim', font=('Times New Roman', 9, 'bold'), foreground='#1E293B')
+        self.lbl_tbl_title = ttk.Label(f_tbl_head, text='Kết quả phân tố đất · Tim', font=(UI_FONT, 9, 'bold'), foreground='#1E293B')
         self.lbl_tbl_title.pack(side='left')
         
         position_bar = ttk.Frame(f_tbl_head)
@@ -4632,7 +4632,7 @@ class App(tk.Tk):
         self.cb_before_pos.pack(side='left')
         self.cb_before_pos.bind('<<ComboboxSelected>>', self._on_before_position_change)
 
-        self.ha_badge = tk.Label(f_tbl_head, text='ha = --- m', font=('Times New Roman', 8, 'bold'),
+        self.ha_badge = tk.Label(f_tbl_head, text='ha = --- m', font=(UI_FONT, 9, 'bold'),
                                  fg='#0369A1', bg='#E0F2FE', padx=8, pady=2, relief='solid', bd=1)
         self.ha_badge.pack(side='right')
 
@@ -4644,9 +4644,9 @@ class App(tk.Tk):
         tree_scroll_y = ttk.Scrollbar(result_area, orient='vertical')
         
         style = ttk.Style(self)
-        style.configure("Res.Treeview.Heading", font=('Times New Roman', 8, 'bold'),
+        style.configure("Res.Treeview.Heading", font=(UI_FONT, 9, 'bold'),
                         padding=(3, 5))
-        style.configure("Res.Treeview", font=('Times New Roman', 8), rowheight=21)
+        style.configure("Res.Treeview", font=(UI_FONT, 9), rowheight=21)
 
         self.result_tree = ttk.Treeview(result_area, show='headings',
                                         xscrollcommand=tree_scroll_x.set, yscrollcommand=tree_scroll_y.set,
@@ -4801,7 +4801,7 @@ class App(tk.Tk):
 
         f_hd1 = ttk.Frame(self.box_horiz_drain)
         f_hd1.pack(fill='x', pady=2)
-        ttk.Label(f_hd1, text='Chọn loại thoát nước ngang:', font=('Times New Roman', 8, 'bold')).pack(side='left')
+        ttk.Label(f_hd1, text='Chọn loại thoát nước ngang:', font=(UI_FONT, 9, 'bold')).pack(side='left')
         cb_hd = ttk.Combobox(f_hd1, textvariable=self.treatment_vars['horizontal_drain_type'],
                              values=('Bấc thấm ngang', 'Lớp đệm cát'), state='readonly', width=18)
         cb_hd.pack(side='left', padx=8)
@@ -4825,7 +4825,7 @@ class App(tk.Tk):
         stage_grid = ttk.Frame(self.box_stages)
         stage_grid.pack(fill='x')
         for col, label in enumerate(('Giai đoạn', 'Chiều cao đợt (m)', 'Tốc độ (cm/ngày)', 'Chờ sau đắp (ngày)')):
-            ttk.Label(stage_grid, text=label, font=('Times New Roman', 8, 'bold')).grid(row=0, column=col, padx=4, pady=4)
+            ttk.Label(stage_grid, text=label, font=(UI_FONT, 9, 'bold')).grid(row=0, column=col, padx=4, pady=4)
         
         self.stage_vars: list[list[tk.StringVar]] = []
         self.stage_flags = {2: tk.BooleanVar(value=False), 3: tk.BooleanVar(value=False)}
@@ -4877,8 +4877,8 @@ class App(tk.Tk):
         self.treatment_vars['pvd_diameter'] = tk.StringVar(value='6.62')
         self.treatment_vars['pvd_length'] = tk.StringVar(value='0.0')
 
-        ttk.Label(self.box_pvd, text='Khoảng cách cắm d (m):', font=('Times New Roman', 8, 'bold'), foreground='#1E3A8A').grid(row=0, column=0, sticky='w', pady=4)
-        self.ent_pvd_d = ttk.Entry(self.box_pvd, textvariable=self.treatment_vars['pvd_spacing'], width=12, font=('Times New Roman', 8, 'bold'))
+        ttk.Label(self.box_pvd, text='Khoảng cách cắm d (m):', font=(UI_FONT, 9, 'bold'), foreground='#1E3A8A').grid(row=0, column=0, sticky='w', pady=4)
+        self.ent_pvd_d = ttk.Entry(self.box_pvd, textvariable=self.treatment_vars['pvd_spacing'], width=12, font=(UI_FONT, 9, 'bold'))
         self.ent_pvd_d.grid(row=0, column=1, sticky='w', padx=6, pady=4)
 
         ttk.Label(self.box_pvd, text='Sơ đồ cắm bấc:').grid(row=0, column=2, sticky='w', padx=(14, 0), pady=4)
@@ -4898,8 +4898,8 @@ class App(tk.Tk):
         self.treatment_vars['sd_diameter'] = tk.StringVar(value='40.0')
         self.treatment_vars['sd_length'] = tk.StringVar(value='0.0')
 
-        ttk.Label(self.box_sd, text='Khoảng cách cọc d (m):', font=('Times New Roman', 8, 'bold'), foreground='#B45309').grid(row=0, column=0, sticky='w', pady=4)
-        self.ent_sd_d = ttk.Entry(self.box_sd, textvariable=self.treatment_vars['sd_spacing'], width=12, font=('Times New Roman', 8, 'bold'))
+        ttk.Label(self.box_sd, text='Khoảng cách cọc d (m):', font=(UI_FONT, 9, 'bold'), foreground='#B45309').grid(row=0, column=0, sticky='w', pady=4)
+        self.ent_sd_d = ttk.Entry(self.box_sd, textvariable=self.treatment_vars['sd_spacing'], width=12, font=(UI_FONT, 9, 'bold'))
         self.ent_sd_d.grid(row=0, column=1, sticky='w', padx=6, pady=4)
 
         ttk.Label(self.box_sd, text='Sơ đồ cắm cọc:').grid(row=0, column=2, sticky='w', padx=(14, 0), pady=4)
@@ -5000,9 +5000,9 @@ class App(tk.Tk):
         post_scroll_y = ttk.Scrollbar(post_area, orient='vertical')
         
         style = ttk.Style(self)
-        style.configure("Post.Treeview.Heading", font=('Times New Roman', 8, 'bold'),
+        style.configure("Post.Treeview.Heading", font=(UI_FONT, 9, 'bold'),
                         padding=(3, 5))
-        style.configure("Post.Treeview", font=('Times New Roman', 8), rowheight=21)
+        style.configure("Post.Treeview", font=(UI_FONT, 9), rowheight=21)
 
         self.post_tree = ttk.Treeview(post_area, show='headings', height=5, 
                                       xscrollcommand=post_scroll_x.set, yscrollcommand=post_scroll_y.set,
@@ -5322,14 +5322,14 @@ class App(tk.Tk):
         cad_bar = tk.Frame(self.box_geom, bg=COLORS['surface_soft'])
         cad_bar.pack(fill='x', side='top', pady=(0, 4))
         tk.Label(cad_bar, text='CUỘN: THU PHÓNG     •     KÉO: DI CHUYỂN     •     NHẤP ĐÚP: VỀ MẶC ĐỊNH',
-                 font=('Times New Roman', 8), fg=COLORS['muted'], bg=COLORS['surface_soft']).pack(side='left', padx=8, pady=4)
+                 font=(UI_FONT, 9), fg=COLORS['muted'], bg=COLORS['surface_soft']).pack(side='left', padx=8, pady=4)
         self.cad_plot_select = ttk.Combobox(
             cad_bar, textvariable=self.cad_plot_display, state='readonly', width=25,
             values=('Mặt cắt', 'Độ lún', 'Ứng suất tăng thêm', 'Ứng suất bản thân', 'Áp lực nước tĩnh',
                     'Áp lực nước lỗ rỗng', 'Áp lực nước thặng dư'))
         self.cad_plot_select.pack(side='right', padx=8)
         tk.Label(cad_bar, text='Biểu đồ:', bg=COLORS['surface_soft'],
-                 font=('Times New Roman', 8)).pack(side='right')
+                 font=(UI_FONT, 9)).pack(side='right')
         self.cad_plot_select.bind('<<ComboboxSelected>>', self._choose_cad_plot)
         metric_select = ttk.Combobox(cad_bar, textvariable=self.cad_settlement_metric,
                                        values=('Sc dư', 'S', 'St', 'Sc'), state='readonly', width=7)
@@ -5338,7 +5338,7 @@ class App(tk.Tk):
         self.cad_stage_select = ttk.Combobox(cad_bar, textvariable=self.cad_stage_display,
                                              state='readonly', width=25, values=())
         self.cad_stage_label = tk.Label(cad_bar, text='Giai đoạn:', bg=COLORS['surface_soft'],
-                                         font=('Times New Roman', 8))
+                                         font=(UI_FONT, 9))
         self.cad_stage_select.bind('<<ComboboxSelected>>', self._choose_cad_stage)
 
         self.canvas_diag = tk.Canvas(self.box_geom, bg=COLORS['surface_soft'], highlightthickness=1,
@@ -5411,15 +5411,15 @@ class App(tk.Tk):
         tk.Frame(card, bg=color, width=3).pack(side='left', fill='y', padx=(0, 8))
         info_box = tk.Frame(card, bg=COLORS['surface_soft'])
         info_box.pack(side='left', fill='both', expand=True)
-        caption = tk.Label(info_box, text=title, font=('Times New Roman', 7, 'bold'), fg=COLORS['muted'],
+        caption = tk.Label(info_box, text=title, font=(UI_FONT, 7, 'bold'), fg=COLORS['muted'],
                            bg=COLORS['surface_soft'])
         caption.pack(anchor='w')
         if title == 'Sc dư':
             self.card_res_caption = caption
-            self.card_res_context = tk.Label(info_box, text='', font=('Times New Roman', 7),
+            self.card_res_context = tk.Label(info_box, text='', font=(UI_FONT, 7),
                                              fg=COLORS['muted'], bg=COLORS['surface_soft'])
             self.card_res_context.pack(anchor='w')
-        lbl = tk.Label(info_box, text=val, font=('Times New Roman', 10, 'bold'), fg=color,
+        lbl = tk.Label(info_box, text=val, font=(UI_FONT, 10, 'bold'), fg=color,
                        bg=COLORS['surface_soft'])
         lbl.pack(anchor='w', pady=(2, 0))
         return lbl
@@ -6643,8 +6643,8 @@ class App(tk.Tk):
         tree.tag_configure('odd', background='#F8FAFC')
         tree['columns'] = tuple(str(i) for i in range(len(headers)))
         
-        heading_font = tkfont.Font(family='Times New Roman', size=8, weight='bold')
-        data_font = tkfont.Font(family='Times New Roman', size=8)
+        heading_font = tkfont.Font(family=UI_FONT, size=9, weight='bold')
+        data_font = tkfont.Font(family=UI_FONT, size=8)
         preferred = []
         
         for i, h in enumerate(headers):
@@ -7232,7 +7232,7 @@ class App(tk.Tk):
 
         trap_pts = [lx - 25, ly - 30, lx + 25, ly - 30, lx + 50, ly + 20, lx - 50, ly + 20]
         c_head.create_polygon(trap_pts, fill='#17384D', outline=COLORS['accent'], width=2)
-        c_head.create_text(lx, ly - 6, text="SF", fill='#FFFFFF', font=('Times New Roman', 18, 'bold'))
+        c_head.create_text(lx, ly - 6, text="SF", fill='#FFFFFF', font=(UI_FONT, 18, 'bold'))
 
         for arr_x in [lx - 15, lx, lx + 15]:
             c_head.create_line(arr_x, ly - 50, arr_x, ly - 35, fill='#E5A642', width=2, arrow='last', arrowshape=(5, 8, 3))
@@ -7247,7 +7247,7 @@ class App(tk.Tk):
             pass
 
         tk.Label(f_main, text="SOILFIRM PRO", fg='white', bg=COLORS['nav'],
-                 font=('Times New Roman', 14, 'bold'), pady=12).pack(fill='x')
+                 font=(UI_FONT, 14, 'bold'), pady=12).pack(fill='x')
 
         f_info = tk.Frame(f_main, bg=COLORS['background'], padx=40, pady=30)
         f_info.pack(fill='both', expand=True)
@@ -7263,7 +7263,7 @@ class App(tk.Tk):
             "• 22 TCN 262-2000 - Khảo sát thiết kế nền đường ô tô đắp trên đất yếu."
         )
 
-        tk.Label(f_info, text=info_text, justify='left', font=('Times New Roman', 9), bg=COLORS['background']).pack(anchor='w', pady=(0, 20))
+        tk.Label(f_info, text=info_text, justify='left', font=(UI_FONT, 9), bg=COLORS['background']).pack(anchor='w', pady=(0, 20))
 
         btn_box = tk.Frame(f_info, bg=COLORS['background'])
         btn_box.pack(fill='x', side='bottom', pady=(0, 10))

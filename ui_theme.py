@@ -1,7 +1,19 @@
 """Shared visual palette and Tk style defaults."""
+import sys
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font as tkfont
+
+# Font stack: Segoe UI trên Windows, SF Pro / Helvetica Neue trên macOS, DejaVu Sans trên Linux
+def _ui_font():
+    if sys.platform == 'win32':
+        return 'Segoe UI'
+    if sys.platform == 'darwin':
+        return 'SF Pro Text'
+    return 'DejaVu Sans'
+
+UI_FONT = _ui_font()
+UI_FONT_MONO = 'Consolas' if sys.platform == 'win32' else 'DejaVu Sans Mono'
 
 COLORS = {
     'background': '#F4F7FA', 'surface': '#FFFFFF', 'surface_soft': '#EDF3F6',
@@ -14,29 +26,33 @@ COLORS = {
 
 
 def configure_theme(root):
-    for name in ('TkDefaultFont', 'TkTextFont', 'TkMenuFont', 'TkHeadingFont', 'TkCaptionFont', 'TkSmallCaptionFont', 'TkIconFont', 'TkTooltipFont', 'TkFixedFont'):
-        tkfont.nametofont(name, root=root).configure(family='Times New Roman')
-    root.option_add('*Font', ('Times New Roman', 9))
+    _f = UI_FONT
+    _fm = UI_FONT_MONO
+    for name in ('TkDefaultFont', 'TkTextFont', 'TkMenuFont', 'TkHeadingFont',
+                 'TkCaptionFont', 'TkSmallCaptionFont', 'TkIconFont', 'TkTooltipFont'):
+        tkfont.nametofont(name, root=root).configure(family=_f)
+    tkfont.nametofont('TkFixedFont', root=root).configure(family=_fm)
+    root.option_add('*Font', (_f, 10))
     style = ttk.Style(root)
     if 'clam' in style.theme_names():
         style.theme_use('clam')
-    style.configure('.', font=('Times New Roman', 9))
+    style.configure('.', font=(_f, 10))
     style.configure('Workspace.TFrame', background=COLORS['background'])
     configure_tab_style(style)
-    style.configure('TButton', font=('Times New Roman', 10),
+    style.configure('TButton', font=(_f, 10),
                     foreground=COLORS['control_text'], background=COLORS['tab_idle'],
                     padding=(12, 7), bordercolor=COLORS['border'])
     style.map('TButton',
               background=[('disabled', '#E2E8F0'), ('pressed', COLORS['tab_selected']),
                           ('active', COLORS['tab_hover'])],
               foreground=[('disabled', '#94A3B8'), ('!disabled', COLORS['control_text'])])
-    style.configure('Accent.TButton', font=('Times New Roman', 10, 'bold'),
+    style.configure('Accent.TButton', font=(_f, 10, 'bold'),
                     foreground='white', background=COLORS['nav_active'], padding=(12, 7))
     style.map('Accent.TButton', background=[('disabled', '#94A3B8'), ('active', '#0284C7')],
               foreground=[('disabled', '#E2E8F0'), ('!disabled', 'white')])
 
     style.configure('WorkflowMode.TCombobox',
-                    font=('Times New Roman', 12, 'bold'), padding=(8, 9),
+                    font=(_f, 12, 'bold'), padding=(8, 9),
                     foreground='white', fieldbackground=COLORS['nav_active'],
                     background=COLORS['nav_active'], arrowcolor='white',
                     bordercolor=COLORS['nav_hover'], lightcolor=COLORS['nav_active'],
@@ -53,16 +69,17 @@ def configure_theme(root):
 
 def configure_tab_style(style):
     """One tab appearance for every native notebook in either data workflow."""
+    _f = UI_FONT
     style.configure('TNotebook', background=COLORS['background'], borderwidth=0)
-    style.configure('TNotebook.Tab', font=('Times New Roman', 10),
+    style.configure('TNotebook.Tab', font=(_f, 10),
                     padding=(12, 7), foreground=COLORS['control_text'],
                     background=COLORS['tab_idle'], bordercolor=COLORS['border'])
     style.map('TNotebook.Tab',
               background=[('disabled', '#E2E8F0'), ('selected', COLORS['tab_selected']),
                           ('active', COLORS['tab_hover']), ('!selected', COLORS['tab_idle'])],
               foreground=[('disabled', '#94A3B8'), ('!disabled', COLORS['control_text'])],
-              font=[('selected', ('Times New Roman', 10, 'bold')),
-                    ('!selected', ('Times New Roman', 10))])
+              font=[('selected', (_f, 10, 'bold')),
+                    ('!selected', (_f, 10))])
 
 
 def style_action_button(widget, primary=False):
@@ -70,7 +87,7 @@ def style_action_button(widget, primary=False):
     if isinstance(widget, ttk.Button):
         widget.configure(style='Accent.TButton' if primary else 'TButton')
     elif isinstance(widget, tk.Button):
-        widget.configure(font=('Times New Roman', 10, 'bold' if primary else 'normal'),
+        widget.configure(font=(UI_FONT, 10, 'bold' if primary else 'normal'),
                          bg=COLORS['nav_active'] if primary else COLORS['tab_idle'],
                          fg='white' if primary else COLORS['control_text'],
                          activebackground=COLORS['accent'] if primary else COLORS['tab_hover'],

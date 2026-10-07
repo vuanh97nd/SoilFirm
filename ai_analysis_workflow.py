@@ -133,7 +133,7 @@ class AnalysisWorkspace(ttk.Frame):
         header = ttk.Frame(self, padding=(12, 10))
         header.pack(fill='x')
         ttk.Label(header, text='Chọn phân đoạn và so sánh phương án',
-                  font=('Times New Roman', 13, 'bold'), foreground='#123B56').pack(side='left')
+                  font=(UI_FONT, 13, 'bold'), foreground='#123B56').pack(side='left')
         ttk.Combobox(header, textvariable=self.provider, values=('Cloudflare AI','Gemini','DeepSeek','DeepSeek (g4f)','deepseek-r1:8b', 'qwen3:8b', 'qwen3:4b-q4_K_M', 'qwen3:4b-q8_0','Groq','Grok (xAI)','ChatGPT','NVIDIA AI','Kimi AI'),
                      state='readonly', width=22).pack(side='right')
         controls = ttk.Frame(self, padding=(12, 0))
@@ -210,7 +210,7 @@ class AnalysisWorkspace(ttk.Frame):
         self.section_tree = self.table(pages[2], ('STT','Lý trình','L (m)','Htk (m)','B (m)','ΔS (cm)','Lỗ khoan chọn','Nguồn ΔS','Trạng thái'),
                                        (65,210,85,85,85,85,180,200,160))
         self.section_tree.bind('<Double-1>', lambda _e: self.edit_section())
-        ttk.Label(pages[3], textvariable=self.current_label, font=('Times New Roman',11,'bold'), padding=8).pack(fill='x')
+        ttk.Label(pages[3], textvariable=self.current_label, font=(UI_FONT,11,'bold'), padding=8).pack(fill='x')
         bar = ttk.Frame(pages[3]); bar.pack(fill='x', padx=8)
         self.button(bar, 'Thiết lập tính toán', self.edit_settings).pack(side='left', padx=3)
         self.button(bar, 'Xem số liệu đoạn', self.review_current_project).pack(side='left', padx=3)
@@ -584,7 +584,7 @@ class AnalysisWorkspace(ttk.Frame):
         popup=tk.Toplevel(self);popup.title('Phản hồi AI gần nhất');popup.geometry('860x520');popup.transient(self.app)
         ttk.Label(popup,text='Phản hồi dưới đây chưa được nhập vào bộ tính nếu sai cấu trúc. Kiểm tra trước khi đọc lại.',padding=10).pack(fill='x')
         frame=ttk.Frame(popup);frame.pack(fill='both',expand=True,padx=10,pady=6)
-        text=tk.Text(frame,wrap='word',font=('Times New Roman',11))
+        text=tk.Text(frame,wrap='word',font=(UI_FONT,11))
         scrollbar=ttk.Scrollbar(frame,command=text.yview);text.configure(yscrollcommand=scrollbar.set)
         scrollbar.pack(side='right',fill='y');text.pack(fill='both',expand=True)
         text.insert('1.0',self.last_ai_response or 'Chưa có phản hồi lỗi từ AI.');text.configure(state='disabled')
@@ -1048,7 +1048,7 @@ class AnalysisWorkspace(ttk.Frame):
         ttk.Label(popup,text='Python đã đọc ô nguồn. Chỉ bấm Áp dụng mới cập nhật bảng dữ liệu. Kiểm tra đơn vị, lớp đất và các cảnh báo.',wraplength=990).pack(fill='x',padx=10,pady=8)
         if read_summary:
             summary_frame=ttk.Frame(popup);summary_frame.pack(fill='x',padx=10,pady=4)
-            summary_box=tk.Text(summary_frame,height=7,wrap='word',font=('Times New Roman',11))
+            summary_box=tk.Text(summary_frame,height=7,wrap='word',font=(UI_FONT,11))
             summary_scroll=ttk.Scrollbar(summary_frame,command=summary_box.yview)
             summary_box.configure(yscrollcommand=summary_scroll.set)
             summary_box.pack(side='left',fill='both',expand=True)
@@ -1645,7 +1645,7 @@ class AnalysisWorkspace(ttk.Frame):
                 var=tk.StringVar(value='' if hole[key] is None else str(hole[key]));variables[key]=var
                 ttk.Entry(info,textvariable=var,width=24).grid(row=row,column=1,padx=10)
             ttk.Label(popup,text='Mỗi dòng: mã lớp ; bề dày (m). Giữ thứ tự từ trên xuống. Cao độ dùng làm Ztn của mặt cắt.',padding=10,wraplength=740).pack(fill='x')
-            text=tk.Text(popup,height=12,font=('Times New Roman',11));text.pack(fill='both',expand=True,padx=10)
+            text=tk.Text(popup,height=12,font=(UI_FONT,11));text.pack(fill='both',expand=True,padx=10)
             text.insert('1.0','\n'.join(x['code']+' ; '+('' if x['thickness'] is None else str(x['thickness'])) for x in hole['layers']))
             orderbar=ttk.Frame(popup,padding=(10,4));orderbar.pack(fill='x')
             def move_line(direction):

@@ -8,7 +8,7 @@ import time
 import tkinter as tk
 from tkinter import ttk
 
-from ui_theme import COLORS
+from ui_theme import COLORS, UI_FONT, UI_FONT_MONO
 
 
 class SplashScreen(tk.Toplevel):
@@ -48,7 +48,7 @@ class SplashScreen(tk.Toplevel):
                 self._brand_image = ImageTk.PhotoImage(source.convert('RGBA').resize((215, 215), Image.Resampling.LANCZOS), master=self)
             canvas.create_image(145, 155, image=self._brand_image)
         except (OSError, ValueError):
-            canvas.create_text(145, 155, text='AI', fill='#00D4E8', font=('Times New Roman', 50, 'bold'))
+            canvas.create_text(145, 155, text='AI', fill='#00D4E8', font=(UI_FONT, 50, 'bold'))
         # Repaint the pile area as canvas layers so only the piles animate.
         left, top, scale = 37.5, 47.5, 215.0/1280.0
         # Lớp chữ riêng cho màn hình khởi động; ảnh nhận diện gốc giữ nguyên.
@@ -57,7 +57,7 @@ class SplashScreen(tk.Toplevel):
              (350, 785), (315, 742))
             for coordinate in (left+px*scale, top+py*scale)],
             fill='#073A53', outline='')
-        self._logo_ai_font = tkfont.Font(root=self, family='Times New Roman',
+        self._logo_ai_font = tkfont.Font(root=self, family=UI_FONT,
                                           size=-4, weight='bold')
         self._logo_ai_a = canvas.create_text(145, top+620*scale, text='A',
             fill='#FFFFFF', font=self._logo_ai_font, anchor='w')
@@ -86,8 +86,8 @@ class SplashScreen(tk.Toplevel):
                                            fill='#D8E2E8', width=1.8)
             self._animated_piles.append((face, highlight, x, half, pile_top, pile_bottom))
 
-        font = tkfont.Font(root=self, family='Times New Roman', size=29, weight='bold')
-        ai_font = tkfont.Font(root=self, family='Times New Roman', size=11, weight='bold')
+        font = tkfont.Font(root=self, family=UI_FONT, size=29, weight='bold')
+        ai_font = tkfont.Font(root=self, family=UI_FONT, size=11, weight='bold')
         # Đo theo DPI hiện tại để toàn bộ tên và AI luôn nằm trong khung.
         available_width = w - 270 - 30
         while (font.measure('SOILFIRM PRO') + 6 + ai_font.measure('AI') > available_width
@@ -112,7 +112,7 @@ class SplashScreen(tk.Toplevel):
         self._ai_text = canvas.create_text(x+3, y-font.metrics('ascent')*0.45, text='AI',
                            fill='#00D4E8', font=ai_font, anchor='w')
         self._brand_fonts = (font, ai_font)
-        subtitle_font = tkfont.Font(root=self, family='Times New Roman', size=13)
+        subtitle_font = tkfont.Font(root=self, family=UI_FONT, size=13)
         while (subtitle_font.measure('Hỗ trợ thiết kế xử lý nền đất yếu') > available_width
                and subtitle_font.actual('size') > 8):
             subtitle_font.configure(size=subtitle_font.actual('size') - 1)
@@ -124,10 +124,10 @@ class SplashScreen(tk.Toplevel):
         
         # Nhãn trạng thái (Cách đáy 65px)
         self.lbl_status = canvas.create_text(45, h - 65, text="Đang khởi động SoilFirm Pro…",
-                                             fill='#8DA8BB', font=('Times New Roman', 10), anchor='w')
+                                             fill='#8DA8BB', font=(UI_FONT, 10), anchor='w')
         # Nhãn phiên bản
         canvas.create_text(w - 45, h - 65, text="v2026.11", fill='#5C7A92',
-                           font=('Times New Roman', 10, 'bold'), anchor='e')
+                           font=(UI_FONT, 10, 'bold'), anchor='e')
 
         # Thanh tiến trình loading tùy biến (Cách đáy 45px)
         self.bar_bg = canvas.create_rectangle(45, h - 45, w - 45, h - 39, fill='#1A344E', outline='')
@@ -139,7 +139,7 @@ class SplashScreen(tk.Toplevel):
 
         # Bản quyền (Cách đáy 18px)
         canvas.create_text(w / 2, h - 18, text="© 2026 SoilFirm Engineering Systems. All rights reserved.",
-                           fill='#47637A', font=('Times New Roman', 9), anchor='center')
+                           fill='#47637A', font=(UI_FONT, 9), anchor='center')
 
     def animate_logo_letters(self, fraction):
         fraction = min(1.0, max(0.0, fraction))

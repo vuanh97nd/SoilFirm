@@ -2,6 +2,7 @@
 from copy import deepcopy
 import json
 import tkinter as tk
+from ui_theme import UI_FONT, UI_FONT_MONO
 from tkinter import ttk, filedialog, messagebox
 
 
@@ -118,7 +119,7 @@ class SingleSelection(ttk.Frame):
         self.tree = table(pages[0], ('Phương án', 'Thông số xử lý', 'Lún dư (cm)', 'Giới hạn (cm)',
             'Kiểm toán lún', 'Kiểm toán phương án', 'Thời gian'), (230, 350, 110, 110, 140, 160, 160))
         self.tree.bind('<Double-1>', lambda e: self.choose())
-        self.detail = tk.Text(pages[1], wrap='word', font=('Times New Roman', 11), state='disabled')
+        self.detail = tk.Text(pages[1], wrap='word', font=(UI_FONT, 11), state='disabled')
         self.detail.pack(fill='both', expand=True, padx=12, pady=10)
         self.reason = tk.StringVar()
         ttk.Label(pages[1], text='Lý do lựa chọn', padding=8).pack(anchor='w')
@@ -371,10 +372,10 @@ class SegmentBoard(ttk.Frame):
         widths += [160, 160, 240]
         self.tree = table(host, heads, widths)
         if after:
-            ttk.Style(self).configure('DesignDetails.Treeview', rowheight=48, font=('Times New Roman', 10))
+            ttk.Style(self).configure('DesignDetails.Treeview', rowheight=48, font=(UI_FONT, 10))
             self.tree.configure(style='DesignDetails.Treeview')
         detail_box = ttk.Frame(host); detail_box.pack(fill='x', padx=8, pady=6)
-        self.detail = tk.Text(detail_box, height=8, wrap='word', state='disabled', font=('Times New Roman', 10))
+        self.detail = tk.Text(detail_box, height=8, wrap='word', state='disabled', font=(UI_FONT, 10))
         sy = ttk.Scrollbar(detail_box, command=self.detail.yview)
         self.detail.configure(yscrollcommand=sy.set)
         sy.pack(side='right', fill='y'); self.detail.pack(fill='x', expand=True)

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import math
 import tkinter as tk
+from ui_theme import UI_FONT, UI_FONT_MONO
 
 try:
     from PIL import Image, ImageDraw, ImageFont, ImageTk
@@ -44,7 +45,7 @@ def draw_rotated_text(c: tk.Canvas, x: float, y: float, text: str, angle_deg: fl
                       color: str = '#000000', font_size: int = 11, font_name: str = "timesbd.ttf"):
     """Vẽ chữ xoay góc bằng PIL fallback nếu Tkinter canvas không hỗ trợ."""
     if not HAS_PIL:
-        c.create_text(x, y, text=text, fill=color, font=('Times New Roman', font_size, 'bold'))
+        c.create_text(x, y, text=text, fill=color, font=(UI_FONT, font_size, 'bold'))
         return
 
     try:
@@ -78,7 +79,7 @@ def draw_rotated_text(c: tk.Canvas, x: float, y: float, text: str, angle_deg: fl
 
         c.create_image(x, y, image=photo, anchor='center')
     except Exception:
-        c.create_text(x, y, text=text, fill=color, font=('Times New Roman', font_size, 'bold'))
+        c.create_text(x, y, text=text, fill=color, font=(UI_FONT, font_size, 'bold'))
 
 
 def draw_cad_grid(c: tk.Canvas, w: int, h: int, step: int = 35):
@@ -124,7 +125,7 @@ def draw_dim_h(c: tk.Canvas, x1: float, x2: float, y: float, text: str, offset: 
     c.create_line(x2 - 3, dy + 4, x2 + 3, dy - 4, fill='#0F172A', width=1.6)
     mid_x = (x1 + x2) / 2
     c.create_text(mid_x, dy - 8, text=text, fill='#0F172A',
-                  font=('Times New Roman', 8, 'bold'))
+                  font=(UI_FONT, 8, 'bold'))
 
 
 def draw_dim_v(c: tk.Canvas, x: float, y1: float, y2: float, text: str, offset: float = 22):
@@ -136,7 +137,7 @@ def draw_dim_v(c: tk.Canvas, x: float, y1: float, y2: float, text: str, offset: 
     c.create_line(dx - 4, y2 - 3, dx + 4, y2 + 3, fill='#0F172A', width=1.6)
     mid_y = (y1 + y2) / 2
     c.create_text(dx + 8, mid_y, text=text, fill='#0F172A',
-                  font=('Times New Roman', 8, 'bold'), anchor='w')
+                  font=(UI_FONT, 8, 'bold'), anchor='w')
 
 
 def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_vars: dict,
@@ -238,11 +239,11 @@ def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_
                 s_name = s.name.strip() if s.name.strip() else L(f"Lớp {i+1}")
                 c.create_text(x_soil_left + 14, (y_curr + next_y) / 2 - 2, anchor='w',
                               text=s_name, fill='#1E293B',
-                              font=('Times New Roman', 8, 'bold'))
+                              font=(UI_FONT, 8, 'bold'))
 
             c.create_text(x_soil_left + 14, next_y - 6,
                           text=f"▽ {z_tn - cum_depth:+.2f} m",
-                          fill='#64748B', font=('Times New Roman', 7), anchor='w')
+                          fill='#64748B', font=(UI_FONT, 7), anchor='w')
             y_curr = next_y
 
     # Đường mặt đất tự nhiên
@@ -257,13 +258,13 @@ def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_
                   fill='#0F172A', width=1.2)
     c.create_text(ztn_box_x + 8, ground_y - 16,
                   text=f"Ztn = {z_tn:+.2f} m",
-                  fill='#0F172A', font=('Times New Roman', 8, 'bold'), anchor='w')
+                  fill='#0F172A', font=(UI_FONT, 8, 'bold'), anchor='w')
 
     # Trục tim đường
     c.create_line(cx, top_y - 36, cx, bottom_y + 10,
                   fill='#DC2626', dash=(12, 4, 3, 4), width=1.6)
     c.create_text(cx, top_y - 42, text=L("TIM ĐƯỜNG"),
-                  fill='#DC2626', font=('Times New Roman', 8, 'bold'), anchor='s')
+                  fill='#DC2626', font=(UI_FONT, 8, 'bold'), anchor='s')
 
     # =================================================================
     # 2. Vẽ thân nền đắp chính
@@ -337,13 +338,13 @@ def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_
         if a > 0:
             c.create_text(cx - (b * scale + main_reach_px) / 2, dim_y - 8,
                           text=f"a={a:g}m", fill='#0F172A',
-                          font=('Times New Roman', 8, 'bold'))
+                          font=(UI_FONT, 8, 'bold'))
             c.create_text(cx + (b * scale + main_reach_px) / 2, dim_y - 8,
                           text=f"a={a:g}m", fill='#0F172A',
-                          font=('Times New Roman', 8, 'bold'))
+                          font=(UI_FONT, 8, 'bold'))
         if b_total > 0:
             c.create_text(cx, dim_y - 8, text=f"B={b_total:g}m",
-                          fill='#0F172A', font=('Times New Roman', 8, 'bold'))
+                          fill='#0F172A', font=(UI_FONT, 8, 'bold'))
 
         if htk > 0:
             draw_dim_v(c, cx + toe_x, top_y, ground_y, f"Htk = {htk:g}m", offset=26)
@@ -377,7 +378,7 @@ def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_
             txt_mnn = L("▽ MNN = ") + f"{water_elevation:+.2f} m"
         c.create_text(x_mnn + 12, wy - 10, text=txt_mnn,
                       fill='#0369A1', anchor='w',
-                      font=('Times New Roman', 8, 'bold'))
+                      font=(UI_FONT, 8, 'bold'))
 
     # =================================================================
     # 4. Biểu đồ ứng suất (mục 4)
@@ -434,16 +435,16 @@ def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_
                           arrow='last', arrowshape=(6, 8, 3))
 
         c.create_text(cx - 25, ground_y - 14, text="← P₀", fill='#0284C7',
-                      font=('Times New Roman', 8, 'bold'), anchor='e')
+                      font=(UI_FONT, 8, 'bold'), anchor='e')
         c.create_text(cx, ground_y - 14, text="(T/m²)", fill='#64748B',
-                      font=('Times New Roman', 7), anchor='center')
+                      font=(UI_FONT, 7), anchor='center')
         c.create_text(cx + 25, ground_y - 14, text="Δp →", fill='#D97706',
-                      font=('Times New Roman', 8, 'bold'), anchor='w')
+                      font=(UI_FONT, 8, 'bold'), anchor='w')
 
         dp_0 = pressure(project, 0.0, 0.0)
         xk_dp_0 = cx + dp_0 * scale_stress
         c.create_text(xk_dp_0 + 5, ground_y - 3, text=f"{dp_0:.2f}",
-                      fill='#D97706', font=('Times New Roman', 7, 'bold'), anchor='w')
+                      fill='#D97706', font=(UI_FONT, 7, 'bold'), anchor='w')
 
         cum_z = 0.0
         prev_y_label = ground_y
@@ -466,9 +467,9 @@ def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_
             is_last = (s_idx == len(project.soils) - 1)
             if (y_layer_bot - prev_y_label >= 14) or is_last:
                 c.create_text(xk_p0_bot - 5, y_layer_bot, text=f"{p0_bot:.2f}",
-                              fill='#0284C7', font=('Times New Roman', 7, 'bold'), anchor='e')
+                              fill='#0284C7', font=(UI_FONT, 7, 'bold'), anchor='e')
                 c.create_text(xk_dp_bot + 5, y_layer_bot, text=f"{dp_bot:.2f}",
-                              fill='#D97706', font=('Times New Roman', 7, 'bold'), anchor='w')
+                              fill='#D97706', font=(UI_FONT, 7, 'bold'), anchor='w')
                 prev_y_label = y_layer_bot
 
         if ha_found > 0:
@@ -488,7 +489,7 @@ def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_
             c.create_rectangle(cx + 4, y_ha - 16, cx + 64, y_ha - 1,
                                fill='#FFFFFF', outline='#DC2626', width=1)
             c.create_text(cx + 34, y_ha - 9, text=ha_txt,
-                          fill='#DC2626', font=('Times New Roman', 7, 'bold'),
+                          fill='#DC2626', font=(UI_FONT, 7, 'bold'),
                           anchor='center')
 
     # =================================================================
@@ -520,12 +521,12 @@ def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_
                                   fill='#B45309', outline='')
                 label_sc = L("LỚP ĐỆM CÁT THOÁT NƯỚC") + f" (h = {h_sc:g}m)"
                 c.create_text(cx, ground_y - sc_px / 2, text=label_sc,
-                              fill='#92400E', font=('Times New Roman', 7, 'bold'))
+                              fill='#92400E', font=(UI_FONT, 7, 'bold'))
             else:
                 c.create_line(toe_l - 15, ground_y - 4, toe_r + 15, ground_y - 4,
                               fill='#7C3AED', width=3.5, dash=(9, 3))
                 c.create_text(cx, ground_y - 12, text=L("BẤC THẤM NGANG"),
-                              fill='#6D28D9', font=('Times New Roman', 8, 'bold'))
+                              fill='#6D28D9', font=(UI_FONT, 8, 'bold'))
 
             # Thoát nước đứng
             is_pvd = (mode in ('PVD',))
@@ -570,7 +571,7 @@ def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_
 
                 c.create_text(pvd_box_x + 4, pvd_box_y, anchor='w',
                               text=f"{lbl_name} L = {l_drain:g}m\nd = {d_spacing:g}m",
-                              fill=color, font=('Times New Roman', 8, 'bold'))
+                              fill=color, font=(UI_FONT, 8, 'bold'))
 
     # =================================================================
     # 6. Thước tỷ lệ
@@ -581,7 +582,7 @@ def draw_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, treatment_
     scale_meters = (100 / max(scale, 1e-3))
     scale_text = L("Thước tỷ lệ:") + f" ~{scale_meters:.1f} m"
     c.create_text(70, h - 22, text=scale_text,
-                  font=('Times New Roman', 7, 'bold'), fill='#475569')
+                  font=(UI_FONT, 7, 'bold'), fill='#475569')
 
 
 def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
@@ -600,7 +601,7 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
         c.create_rectangle(0, 0, w, h, fill='#F8FAFC', outline='')
         c.create_text(w / 2, h / 2,
                       text=L('Vui lòng thực hiện tính toán để kết xuất biểu đồ kỹ thuật.'),
-                      fill='#64748B', font=('Times New Roman', 9, 'bold'))
+                      fill='#64748B', font=(UI_FONT, 9, 'bold'))
         return
 
     c_type = chart_data.get('type', 'pvd')
@@ -617,7 +618,7 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
         # 2. Tiêu đề chính
         y_title = 18
         c.create_text(w / 2, y_title, text=L("BIỂU ĐỒ LÚN THEO THỜI GIAN"),
-                      font=('Times New Roman', 10, 'bold'),
+                      font=(UI_FONT, 10, 'bold'),
                       fill='#0F172A', anchor='center')
 
         # 3. Chú thích
@@ -636,7 +637,7 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
                            line_mid_x + marker_sz, y_leg + marker_sz,
                            fill='#B0B0B0', outline='#0F172A', width=1.0)
         c.create_text(start_leg_x + line_len + 8, y_leg, text=leg_text,
-                      font=('Times New Roman', 8, 'bold'),
+                      font=(UI_FONT, 8, 'bold'),
                       fill='#0F172A', anchor='w')
 
         # 4. Vùng vẽ đồ thị
@@ -675,14 +676,14 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             else:
                 val_str = f"{-val_s:.2f}"
             c.create_text(left - 8, yp, text=val_str, anchor='e',
-                          font=('Times New Roman', 8), fill='#0F172A')
+                          font=(UI_FONT, 8), fill='#0F172A')
 
         # Tên trục tung xoay dọc
         lbl_y_pos = (top_y + bot_y) / 2
         y_label = L("Sc dư (m)") if residual_view else L("St (m)")
         try:
             c.create_text(26, lbl_y_pos, text=y_label, angle=90,
-                          font=('Times New Roman', 8, 'bold'),
+                          font=(UI_FONT, 8, 'bold'),
                           fill='#0F172A', anchor='center')
         except Exception:
             draw_rotated_text(c, 26, lbl_y_pos, y_label, 90, '#0F172A', 8)
@@ -718,12 +719,12 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             xp = x_coord(val_x)
             c.create_line(xp, top_y, xp, bot_y, fill='#CBD5E1', width=1)
             c.create_text(xp, bot_y + 11, text=f"{val_x:.2f}" if years else f"{int(val_x)}",
-                          font=('Times New Roman', 8),
+                          font=(UI_FONT, 8),
                           fill='#475569', anchor='center')
 
         c.create_text((left + right) / 2, bot_y + 26,
                       text=("TIME (YEARS)" if chart_data.get("language") == "en" else "THỜI GIAN (NĂM)") if years else L("THỜI GIAN (THÁNG)"),
-                      font=('Times New Roman', 8, 'bold'),
+                      font=(UI_FONT, 8, 'bold'),
                       fill='#0F172A', anchor='center')
 
         # 7. Đường nối các điểm lún
@@ -757,9 +758,9 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             shown_time = day/365.25 if years else day
             label_txt = f'{leg_text} · t={shown_time:.2f} {unit}: {value_at(point)*100:.2f} cm'
             c.create_text(xp, bot_y+11, text=f't={shown_time:.2f}', anchor='n',
-                          font=('Times New Roman',8,'bold'), fill='#B91C1C')
+                          font=(UI_FONT,8,'bold'), fill='#B91C1C')
             c.create_text(right - 5, top_y + 11, anchor='ne', text=label_txt,
-                          font=('Times New Roman', 8, 'bold'), fill='#0F172A')
+                          font=(UI_FONT, 8, 'bold'), fill='#0F172A')
 
     else:
         # Biểu đồ đắp phân kỳ và lún PVD / SD
@@ -795,19 +796,19 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             c.create_line(xp, top_y, xp, bot_y, fill='#F1F5F9', width=1)
             if m_idx % step_m == 0 or m_idx == int(total_months):
                 c.create_text(xp, top_y - 12, text=f'{m_idx}',
-                              font=('Times New Roman', 8), fill='#64748B')
+                              font=(UI_FONT, 8), fill='#64748B')
 
         c.create_text(right + 8, top_y - 12, text=L('t (tháng)'), anchor='w',
-                      font=('Times New Roman', 8, 'bold'), fill='#0F172A')
+                      font=(UI_FONT, 8, 'bold'), fill='#0F172A')
 
         for i in range(5):
             vh = max_h * i / 4
             yp = y_h_func(vh)
             c.create_line(left, yp, right, yp, fill='#F1F5F9', width=1)
             c.create_text(left - 8, yp, text=f'{vh:.1f}', anchor='e',
-                          font=('Times New Roman', 8), fill='#1E293B')
+                          font=(UI_FONT, 8), fill='#1E293B')
         c.create_text(left - 8, top_y - 12, text='H (m)', anchor='e',
-                      font=('Times New Roman', 8, 'bold'), fill='#1E293B')
+                      font=(UI_FONT, 8, 'bold'), fill='#1E293B')
 
         c.create_line(left, mid_y, right, mid_y, fill='#0F172A', width=1.6)
 
@@ -816,9 +817,9 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             yp = y_s_func(vs)
             c.create_line(left, yp, right, yp, fill='#F1F5F9', width=1)
             c.create_text(left - 8, yp, text=f'{vs:.0f}', anchor='e',
-                          font=('Times New Roman', 8), fill='#0369A1')
+                          font=(UI_FONT, 8), fill='#0369A1')
         c.create_text(left - 8, bot_y + 12, text='S (cm)', anchor='e',
-                      font=('Times New Roman', 8), fill='#0369A1')
+                      font=(UI_FONT, 8), fill='#0369A1')
 
         c.create_rectangle(left, top_y, right, bot_y, outline='#CBD5E1', width=1.5)
 
@@ -856,7 +857,7 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
                 c.create_oval(xp-3,yp-3,xp+3,yp+3,fill='#0369A1',outline='white')
                 c.create_text(xp,top_y+8+(index%3)*13,anchor='n',
                               text=f'H{stage["giai_đoạn"]} {kind}: {day:.2f} ngày',
-                              font=('Times New Roman',7,'bold'),fill='#0369A1')
+                              font=(UI_FONT,7,'bold'),fill='#0369A1')
 
         if 'assessment_day' in chart_data and rows and 'sc_du_cm' in rows[0]:
             day = chart_data['assessment_day']
@@ -868,7 +869,7 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             label_txt = (L("Sc dư ngày") + f" {day:.0f} = "
                          + f"{point['sc_du_cm']:.2f} cm")
             c.create_text(right - 3, mid_y + 10, anchor='ne', text=label_txt,
-                          font=('Times New Roman', 8, 'bold'), fill='#7C3AED')
+                          font=(UI_FONT, 8, 'bold'), fill='#7C3AED')
 
         leg_y = h - 14
         c.create_rectangle(left, leg_y - 11, right, leg_y + 11,
@@ -888,4 +889,4 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             c.create_line(box_cx + 10, leg_y, box_cx + 28, leg_y,
                           fill=col, width=2.0, dash=dsh)
             c.create_text(box_cx + 34, leg_y, text=name, anchor='w',
-                          font=('Times New Roman', 8, 'bold'), fill=col)
+                          font=(UI_FONT, 8, 'bold'), fill=col)

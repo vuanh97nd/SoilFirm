@@ -13,6 +13,7 @@ import threading
 import time
 from pathlib import Path
 import tkinter as tk
+from ui_theme import UI_FONT, UI_FONT_MONO
 from tkinter import ttk
 import webbrowser
 import xml.etree.ElementTree as ET
@@ -593,7 +594,7 @@ def build_weather_clock(parent):
     news_header.pack(fill='x')
 
     tk.Label(news_header, textvariable=news_header_text, bg=BG_CARD, fg=NEWS_ACCENT,
-             font=('Times New Roman', 7, 'bold')).pack(side='left')
+             font=(UI_FONT, 7, 'bold')).pack(side='left')
 
     btn_toggle_news = tk.Label(news_header, text='▲', bg=BG_CARD, fg='#94A3B8',
                                font=('Segoe UI', 7, 'bold'), cursor='hand2')
@@ -604,7 +605,7 @@ def build_weather_clock(parent):
 
     current_news_url = {'url': ''}
     news_label = tk.Label(news_body, textvariable=news_text, bg=BG_CARD, fg='#E2E8F0',
-                          wraplength=175, justify='left', font=('Times New Roman', 8),
+                          wraplength=175, justify='left', font=(UI_FONT, 8),
                           cursor='hand2')
     news_label.pack(fill='x', anchor='w')
     news_body.bind('<Configure>', lambda event: news_label.configure(wraplength=max(60,event.width-4)))
@@ -637,22 +638,22 @@ def build_weather_clock(parent):
     gold_header.pack(fill='x')
 
     tk.Label(gold_header, text='● VÀNG SJC', bg=BG_CARD, fg=GOLD_ACCENT,
-             font=('Times New Roman', 7, 'bold'), cursor='hand2').pack(side='left')
+             font=(UI_FONT, 7, 'bold'), cursor='hand2').pack(side='left')
 
     btn_toggle_gold = tk.Label(gold_header, text='▼', bg=BG_CARD, fg='#FBBF24',
                                font=('Segoe UI', 7, 'bold'), cursor='hand2')
     btn_toggle_gold.pack(side='left', padx=(4, 0))
 
     tk.Label(gold_header, textvariable=gold_text_sjc_short, bg=BG_CARD, fg='#FDE68A',
-             font=('Times New Roman', 7, 'bold'), cursor='hand2').pack(side='right')
+             font=(UI_FONT, 7, 'bold'), cursor='hand2').pack(side='right')
 
     gold_body = tk.Frame(gold_section, bg=BG_CARD)
 
     tk.Label(gold_body, textvariable=gold_text_world, bg=BG_CARD, fg='#93C5FD',
-             font=('Times New Roman', 7)).pack(anchor='w', pady=(2, 0))
+             font=(UI_FONT, 7)).pack(anchor='w', pady=(2, 0))
 
     tk.Label(gold_body, textvariable=gold_text_sjc_full, bg=BG_CARD, fg='#FEF08A',
-             font=('Times New Roman', 7)).pack(anchor='w', pady=(0, 2))
+             font=(UI_FONT, 7)).pack(anchor='w', pady=(0, 2))
 
     chart_canvas = tk.Canvas(gold_body, width=175, height=20, bg=CHART_BG,
                              highlightthickness=1, highlightbackground=BORDER_COLOR, cursor='hand2')
@@ -685,7 +686,7 @@ def build_weather_clock(parent):
         top.attributes('-topmost', True)
 
         tk.Label(top, text="BẢNG GIÁ VÀNG TRONG NƯỚC & THẾ GIỚI", bg='#0F172A', fg=GOLD_ACCENT,
-                 font=('Times New Roman', 11, 'bold')).pack(pady=(12, 6))
+                 font=(UI_FONT, 11, 'bold')).pack(pady=(12, 6))
 
         info_frame = tk.Frame(top, bg='#1E293B', padx=12, pady=10)
         info_frame.pack(fill='x', padx=14, pady=6)
@@ -694,14 +695,14 @@ def build_weather_clock(parent):
         change_color = "#34D399" if data['change'] >= 0 else "#F87171"
 
         tk.Label(info_frame, text=f"Thế giới (XAU/USD): ${data['world']:,.1f}/oz",
-                 bg='#1E293B', fg='#F8FAFC', font=('Times New Roman', 9, 'bold')).pack(anchor='w')
+                 bg='#1E293B', fg='#F8FAFC', font=(UI_FONT, 9, 'bold')).pack(anchor='w')
         tk.Label(info_frame, text=f"Biến động 24h: {change_sym} {abs(data['change'])} USD",
-                 bg='#1E293B', fg=change_color, font=('Times New Roman', 8, 'bold')).pack(anchor='w', pady=(1, 4))
+                 bg='#1E293B', fg=change_color, font=(UI_FONT, 8, 'bold')).pack(anchor='w', pady=(1, 4))
 
         tk.Label(info_frame, text=f"SJC Mua vào: {data['sjc_buy']:.1f} tr/lượng",
-                 bg='#1E293B', fg='#FDE68A', font=('Times New Roman', 9)).pack(anchor='w')
+                 bg='#1E293B', fg='#FDE68A', font=(UI_FONT, 9)).pack(anchor='w')
         tk.Label(info_frame, text=f"SJC Bán ra:  {data['sjc_sell']:.1f} tr/lượng",
-                 bg='#1E293B', fg='#FDE68A', font=('Times New Roman', 9)).pack(anchor='w')
+                 bg='#1E293B', fg='#FDE68A', font=(UI_FONT, 9)).pack(anchor='w')
 
     chart_canvas.bind('<Button-1>', open_gold_detail)
 
@@ -715,7 +716,7 @@ def build_weather_clock(parent):
     radio_header.pack(fill='x')
 
     tk.Label(radio_header, text='● FM & NHẠC', bg=BG_CARD, fg=RADIO_ACCENT,
-             font=('Times New Roman', 7, 'bold'), cursor='hand2').pack(side='left')
+             font=(UI_FONT, 7, 'bold'), cursor='hand2').pack(side='left')
 
     btn_toggle_radio = tk.Label(radio_header, text='▲', bg=BG_CARD, fg='#94A3B8',
                                 font=('Segoe UI', 7, 'bold'), cursor='hand2')
@@ -723,7 +724,7 @@ def build_weather_clock(parent):
 
     radio_status_text = tk.StringVar(value='■ Sẵn sàng')
     lbl_radio_status = tk.Label(radio_section, textvariable=radio_status_text, bg=BG_CARD, fg='#F87171',
-                                font=('Times New Roman', 7, 'bold'), cursor='hand2')
+                                font=(UI_FONT, 7, 'bold'), cursor='hand2')
     lbl_radio_status.configure(anchor='w', justify='left', wraplength=160)
     lbl_radio_status.pack(fill='x', pady=(2, 1))
     radio_section.bind('<Configure>', lambda event: lbl_radio_status.configure(wraplength=max(60, event.width-4)))
@@ -736,15 +737,15 @@ def build_weather_clock(parent):
     selected_station = tk.StringVar(value=station_names[0])
     station_menu = tk.OptionMenu(radio_body, selected_station, *station_names)
     station_menu.config(bg='#1E293B', fg='#F8FAFC', activebackground='#334155', activeforeground='#F8FAFC',
-                        highlightthickness=0, bd=0, relief='flat', font=('Times New Roman', 8),
+                        highlightthickness=0, bd=0, relief='flat', font=(UI_FONT, 8),
                         anchor='w', padx=4, pady=1, width=1)
-    station_menu['menu'].config(bg='#1E293B', fg='#F8FAFC', activebackground='#0284C7', font=('Times New Roman', 8))
+    station_menu['menu'].config(bg='#1E293B', fg='#F8FAFC', activebackground='#0284C7', font=(UI_FONT, 8))
 
     # Nút điều khiển và âm lượng
     ctrl_row = tk.Frame(radio_body, bg=BG_CARD)
 
     btn_play = tk.Label(ctrl_row, text='▶ Phát', bg='#0284C7', fg='white',
-                        font=('Times New Roman', 8, 'bold'), padx=8, pady=2,
+                        font=(UI_FONT, 8, 'bold'), padx=8, pady=2,
                         cursor='hand2', relief='flat')
     btn_play.pack(side='left', padx=(0, 4))
 
@@ -809,7 +810,7 @@ def build_weather_clock(parent):
         tk.Button(web_row, text=label, command=lambda target=url: open_music_web(target),
                   bg='#1E293B', fg='#C4B5FD', activebackground='#334155',
                   activeforeground='white', relief='flat', bd=0,
-                  font=('Times New Roman', 8), padx=3, pady=2,
+                  font=(UI_FONT, 8), padx=3, pady=2,
                   cursor='hand2').pack(side='left', expand=True, fill='x', padx=1)
 
     def stop_all_music():
@@ -822,7 +823,7 @@ def build_weather_clock(parent):
         lbl_radio_status.config(fg='#F87171')
     tk.Button(radio_body,text='■ Dừng nhạc',command=stop_all_music,
               bg='#1E293B',fg='#FCA5A5',activebackground='#334155',
-              relief='flat',bd=0,font=('Times New Roman',8),cursor='hand2',
+              relief='flat',bd=0,font=(UI_FONT,8),cursor='hand2',
               pady=2).pack(fill='x',pady=(2,0))
 
     btn_play.bind('<Button-1>', toggle_play_radio)
@@ -868,25 +869,25 @@ def build_weather_clock(parent):
     clock_temp_row.pack(anchor='w', pady=(1, 1))
 
     tk.Label(clock_temp_row, textvariable=time_text, bg=BG_CARD, fg=CLOCK_COLOR,
-             font=('Times New Roman', 15, 'bold')).pack(side='left')
+             font=(UI_FONT, 15, 'bold')).pack(side='left')
 
     icon_label = tk.Label(clock_temp_row, text='☀️', bg=BG_CARD, fg='#FBBF24',
                           font=('Segoe UI Emoji', 12))
     icon_label.pack(side='left', padx=(5, 2))
 
     temp_label = tk.Label(clock_temp_row, textvariable=temp_text, bg=BG_CARD, fg=TEMP_COLOR,
-                          font=('Times New Roman', 9, 'bold'))
+                          font=(UI_FONT, 9, 'bold'))
     temp_label.pack(side='left')
 
     date_loc_row = tk.Frame(bottom_section, bg=BG_CARD)
     date_loc_row.pack(fill='x', pady=(2, 1))
 
     tk.Label(date_loc_row, textvariable=date_text, bg=BG_CARD, fg=DATE_COLOR,
-             font=('Times New Roman', 8, 'bold'),
+             font=(UI_FONT, 8, 'bold'),
              justify='left').pack(side='left', anchor='w')
 
     loc_btn = tk.Label(date_loc_row, textvariable=city_name_text, bg=BG_CARD, fg='#94A3B8',
-                       font=('Times New Roman', 8, 'underline'), cursor='hand2')
+                       font=(UI_FONT, 8, 'underline'), cursor='hand2')
     loc_btn.pack(side='right', anchor='e', padx=(2, 0))
 
     def open_city_selector(_event=None):
@@ -897,10 +898,10 @@ def build_weather_clock(parent):
         win.attributes('-topmost', True)
 
         tk.Label(win, text="CHỌN TỈNH / THÀNH PHỐ", bg='#0F172A', fg='#38BDF8',
-                 font=('Times New Roman', 10, 'bold')).pack(pady=(10, 6))
+                 font=(UI_FONT, 10, 'bold')).pack(pady=(10, 6))
 
         box = tk.Listbox(win, bg='#1E293B', fg='#F8FAFC', selectbackground='#0284C7',
-                         font=('Times New Roman', 9), height=9, relief='flat')
+                         font=(UI_FONT, 9), height=9, relief='flat')
         box.pack(fill='both', expand=True, padx=12, pady=4)
 
         for p in PROVINCES:
@@ -920,13 +921,13 @@ def build_weather_clock(parent):
                 fetch_weather_task()
 
         tk.Button(win, text="Xác nhận", command=save_and_close, bg='#0284C7', fg='white',
-                  font=('Times New Roman', 9, 'bold'), relief='flat', padx=10).pack(pady=8)
+                  font=(UI_FONT, 9, 'bold'), relief='flat', padx=10).pack(pady=8)
 
     loc_btn.bind('<Button-1>', open_city_selector)
 
     # ================= 5. NGUỒN CHÂN THẺ =================
     tk.Label(panel, text='Open-Meteo · VnExpress · SJC/Kitco · Radio Online', bg=BG_CARD, fg='#64748B',
-             font=('Times New Roman', 7, 'italic')).pack(anchor='w', pady=(2, 0))
+             font=(UI_FONT, 7, 'italic')).pack(anchor='w', pady=(2, 0))
 
     # ================= LOGIC DỮ LIỆU & LUỒNG =================
     busy = {'running': False}
@@ -937,7 +938,7 @@ def build_weather_clock(parent):
         w, h = 175, 20
         if not history or len(history) < 2:
             chart_canvas.create_text(w // 2, h // 2, text="Đang vẽ...", fill='#64748B',
-                                     font=('Times New Roman', 7))
+                                     font=(UI_FONT, 7))
             return
 
         min_val, max_val = min(history), max(history)

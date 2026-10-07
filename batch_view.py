@@ -161,7 +161,7 @@ def show_batch_dialog(app,ai_mode=False):
     ttk.Label(window, text='Lưu chung một Excel Data, một JSON TXL/SXL và một PDF ghép cho các phân đoạn; '
               'dừng tại giải pháp đạt đầu tiên (bỏ qua các mục để trống).', wraplength=850).grid(
                   row=2, column=0, sticky='w', padx=14, pady=(6, 0))
-    output = tk.Text(window, height=11, font=('Times New Roman', 10), state='disabled')
+    output = tk.Text(window, height=11, font=(UI_FONT, 10), state='disabled')
     output.grid(row=3, column=0, sticky='nsew', padx=10, pady=6)
     footer = ttk.Frame(window, padding=10)
     footer.grid(row=4, column=0, sticky='ew')

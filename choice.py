@@ -7,7 +7,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 
 from utils import ScrollableFrame
-from ui_theme import COLORS
+from ui_theme import COLORS, UI_FONT, UI_FONT_MONO
 from result_summary import collect_calculated_options, project_signature
 from treatment_boq import calculate_section_boq
 
@@ -52,9 +52,9 @@ def build_view(parent: tk.Misc) -> None:
     f_top = tk.Frame(root_cur, bg=COLORS['background'])
     f_top.pack(fill='x', padx=12, pady=(6, 2))
     tk.Label(f_top, text="TỔNG HỢP KẾT QUẢ CÁC PHƯƠNG ÁN ĐÃ TÍNH",
-             font=('Times New Roman', 12, 'bold'), fg=COLORS['nav'], bg=COLORS['background']).pack(anchor='w')
+             font=(UI_FONT, 12, 'bold'), fg=COLORS['nav'], bg=COLORS['background']).pack(anchor='w')
     tk.Label(f_top, text="Sử dụng kết quả tính tại các bước trước; nhóm chưa tính sẽ không được đánh giá.",
-             font=('Times New Roman', 9, 'italic'), fg=COLORS['muted'], bg=COLORS['background']).pack(anchor='w')
+             font=(UI_FONT, 9, 'italic'), fg=COLORS['muted'], bg=COLORS['background']).pack(anchor='w')
 
     box_cfg = ttk.LabelFrame(root_cur, text="Chọn các nhóm kết quả cần tổng hợp", padding=8)
     box_cfg.pack(fill='x', padx=12, pady=4)
@@ -64,39 +64,39 @@ def build_view(parent: tk.Misc) -> None:
     f_g1.pack(fill='x', pady=2)
     var_chk_g1 = tk.BooleanVar(value=True)
     ttk.Checkbutton(f_g1, text="Nhóm 1 - Nền tự nhiên:", variable=var_chk_g1, width=28).pack(side='left')
-    ttk.Label(f_g1, text="Chờ lún tự nhiên theo thời gian t (Kiểm tra điều kiện không cần xử lý)", font=('Times New Roman', 9, 'bold')).pack(side='left', padx=6)
+    ttk.Label(f_g1, text="Chờ lún tự nhiên theo thời gian t (Kiểm tra điều kiện không cần xử lý)", font=(UI_FONT, 9, 'bold')).pack(side='left', padx=6)
 
     # Nhóm 2
     f_g2 = ttk.Frame(box_cfg)
     f_g2.pack(fill='x', pady=2)
     var_chk_g2 = tk.BooleanVar(value=True)
     ttk.Checkbutton(f_g2, text="Nhóm 2 - Gia cường cơ học:", variable=var_chk_g2, width=28).pack(side='left')
-    ttk.Label(f_g2, text="Lấy chiều sâu đào, cọc tre/cừ tràm và lún dư từ lần tính cơ học.", font=('Times New Roman', 9, 'bold'), foreground='#0369A1').pack(side='left', padx=6)
+    ttk.Label(f_g2, text="Lấy chiều sâu đào, cọc tre/cừ tràm và lún dư từ lần tính cơ học.", font=(UI_FONT, 9, 'bold'), foreground='#0369A1').pack(side='left', padx=6)
 
     # Nhóm 3
     f_g3 = ttk.Frame(box_cfg)
     f_g3.pack(fill='x', pady=2)
     var_chk_g3 = tk.BooleanVar(value=True)
     ttk.Checkbutton(f_g3, text="Nhóm 3 - Cố kết thoát nước:", variable=var_chk_g3, width=28).pack(side='left')
-    ttk.Label(f_g3, text="Lấy PVD, SD hoặc chờ lún cùng U và lún dư của lần tính thoát nước.", font=('Times New Roman', 9, 'bold'), foreground='#7C3AED').pack(side='left', padx=6)
+    ttk.Label(f_g3, text="Lấy PVD, SD hoặc chờ lún cùng U và lún dư của lần tính thoát nước.", font=(UI_FONT, 9, 'bold'), foreground='#7C3AED').pack(side='left', padx=6)
 
     # Nhóm 4
     f_g4 = ttk.Frame(box_cfg)
     f_g4.pack(fill='x', pady=2)
     var_chk_g4 = tk.BooleanVar(value=True)
     ttk.Checkbutton(f_g4, text="Nhóm 4 - Trộn sâu CDM:", variable=var_chk_g4, width=28).pack(side='left')
-    ttk.Label(f_g4, text="Lấy kết quả TCVN/BS và ALiCC của phạm vi đang chọn tại Bước 7.", font=('Times New Roman', 9, 'bold'), foreground='#B45309').pack(side='left', padx=6)
+    ttk.Label(f_g4, text="Lấy kết quả TCVN/BS và ALiCC của phạm vi đang chọn tại Bước 7.", font=(UI_FONT, 9, 'bold'), foreground='#B45309').pack(side='left', padx=6)
 
     bar_action = tk.Frame(root_cur, bg='#E2E8F0', padx=12, pady=8, relief='solid', bd=1)
     bar_action.pack(fill='x', padx=12, pady=6)
 
     lbl_info_mcn = tk.Label(bar_action, text="Mặt cắt: ---  |  Htk: --- m  |  [ΔS] cho phép: --- cm  |  Thời gian: --- ngày",
-                            font=('Times New Roman', 9, 'bold'), fg='#1E293B', bg='#E2E8F0')
+                            font=(UI_FONT, 9, 'bold'), fg='#1E293B', bg='#E2E8F0')
     lbl_info_mcn.pack(side='left')
 
     btn_run_all = tk.Button(bar_action, text='Làm mới bảng',
                             bg='#0284C7', fg='white', activebackground='#0369A1', activeforeground='white',
-                            font=('Times New Roman', 10, 'bold'), relief='flat', cursor='hand2')
+                            font=(UI_FONT, 10, 'bold'), relief='flat', cursor='hand2')
     btn_run_all.pack(side='right', ipady=4, ipadx=10)
 
     box_matrix = ttk.LabelFrame(root_cur, text="Ma trận kết quả phương án & đánh giá", padding=8)
@@ -110,8 +110,8 @@ def build_view(parent: tk.Misc) -> None:
     widths = [36, 130, 190, 210, 100, 90, 110, 115, 120, 260]
 
     style = ttk.Style(parent)
-    style.configure("Choice.Treeview.Heading", font=('Times New Roman', 8, 'bold'), padding=(3, 5))
-    style.configure("Choice.Treeview", font=('Times New Roman', 8), rowheight=24)
+    style.configure("Choice.Treeview.Heading", font=(UI_FONT, 9, 'bold'), padding=(3, 5))
+    style.configure("Choice.Treeview", font=(UI_FONT, 9), rowheight=24)
 
     tree_frame = ttk.Frame(box_matrix)
     tree_frame.pack(fill='both', expand=True)
@@ -133,15 +133,15 @@ def build_view(parent: tk.Misc) -> None:
         tree.column(cid, width=w, minwidth=w,
                     anchor='w' if cid in ('opt_name', 'params', 'notes') else 'center', stretch=False)
 
-    tree.tag_configure('pass', foreground='#047857', font=('Times New Roman', 8, 'bold'))
-    tree.tag_configure('fail', foreground='#DC2626', font=('Times New Roman', 8, 'bold'))
+    tree.tag_configure('pass', foreground='#047857', font=(UI_FONT, 9, 'bold'))
+    tree.tag_configure('fail', foreground='#DC2626', font=(UI_FONT, 9, 'bold'))
     tree.tag_configure('even', background='#FFFFFF')
     tree.tag_configure('odd', background='#F8FAFC')
 
     box_recommend = ttk.LabelFrame(root_cur, text="Nhận xét kết quả đã tính cho mặt cắt", padding=8)
     box_recommend.pack(fill='x', padx=12, pady=4)
 
-    txt_recommend = tk.Text(box_recommend, height=4, wrap='word', font=('Times New Roman', 9),
+    txt_recommend = tk.Text(box_recommend, height=4, wrap='word', font=(UI_FONT, 9),
                             bg='#F1F5F9', fg='#0F172A', relief='solid', bd=1, padx=8, pady=6)
     txt_recommend.pack(fill='x')
     txt_recommend.insert('1.0', "Tính từng phương án tại các bước trước, sau đó bấm 'CẬP NHẬT KẾT QUẢ ĐÃ TÍNH'.")
@@ -152,33 +152,33 @@ def build_view(parent: tk.Misc) -> None:
 
     f_d1 = ttk.Frame(box_decision)
     f_d1.pack(fill='x', pady=3)
-    ttk.Label(f_d1, text="Phương án lựa chọn:", font=('Times New Roman', 9, 'bold')).pack(side='left', padx=(0, 10))
+    ttk.Label(f_d1, text="Phương án lựa chọn:", font=(UI_FONT, 9, 'bold')).pack(side='left', padx=(0, 10))
     var_chosen = tk.StringVar()
-    cb_chosen = ttk.Combobox(f_d1, textvariable=var_chosen, state='readonly', width=55, font=('Times New Roman', 9, 'bold'))
+    cb_chosen = ttk.Combobox(f_d1, textvariable=var_chosen, state='readonly', width=55, font=(UI_FONT, 9, 'bold'))
     cb_chosen.pack(side='left', padx=(0, 15))
-    lbl_chosen_status = ttk.Label(f_d1, text="", font=('Times New Roman', 9, 'bold'))
+    lbl_chosen_status = ttk.Label(f_d1, text="", font=(UI_FONT, 9, 'bold'))
     lbl_chosen_status.pack(side='left')
 
     f_d2 = ttk.Frame(box_decision)
     f_d2.pack(fill='x', pady=4)
     ttk.Label(f_d2, text="Chiều dài phân đoạn L (m):").pack(side='left', padx=(0, 4))
     var_section_len = tk.StringVar(value="100.0")
-    ent_section_len = ttk.Entry(f_d2, textvariable=var_section_len, width=10, font=('Times New Roman', 9, 'bold'))
+    ent_section_len = ttk.Entry(f_d2, textvariable=var_section_len, width=10, font=(UI_FONT, 9, 'bold'))
     ent_section_len.pack(side='left', padx=(0, 20))
 
     ttk.Label(f_d2, text="Ghi chú kỹ thuật:").pack(side='left', padx=(0, 6))
     var_note = tk.StringVar(value="Đạt độ lún dư cho phép, đảm bảo an toàn chịu lực và tối ưu chi phí đầu tư.")
-    ent_note = ttk.Entry(f_d2, textvariable=var_note, width=50, font=('Times New Roman', 9))
+    ent_note = ttk.Entry(f_d2, textvariable=var_note, width=50, font=(UI_FONT, 9))
     ent_note.pack(side='left', fill='x', expand=True)
 
     f_d3 = ttk.Frame(box_decision)
     f_d3.pack(fill='x', pady=(8, 2))
     btn_apply = tk.Button(f_d3, text='Xác nhận phương án',
                           bg='#047857', fg='white', activebackground='#065F46', activeforeground='white',
-                          font=('Times New Roman', 9, 'bold'), relief='flat', cursor='hand2')
+                          font=(UI_FONT, 9, 'bold'), relief='flat', cursor='hand2')
     btn_apply.pack(side='left', padx=(0, 15), ipady=5, ipadx=12)
 
-    lbl_applied_msg = ttk.Label(f_d3, text="", font=('Times New Roman', 9, 'bold'), foreground='#047857')
+    lbl_applied_msg = ttk.Label(f_d3, text="", font=(UI_FONT, 9, 'bold'), foreground='#047857')
     lbl_applied_msg.pack(side='left', padx=10)
 
     # =========================================================================
@@ -220,8 +220,8 @@ def build_view(parent: tk.Misc) -> None:
         tree_summary.column(cid, width=w, minwidth=w,
                             anchor='w' if cid in ('opt_name', 'params', 'notes') else 'center', stretch=False)
 
-    tree_summary.tag_configure('pass', foreground='#047857', font=('Times New Roman', 8, 'bold'))
-    tree_summary.tag_configure('fail', foreground='#DC2626', font=('Times New Roman', 8, 'bold'))
+    tree_summary.tag_configure('pass', foreground='#047857', font=(UI_FONT, 9, 'bold'))
+    tree_summary.tag_configure('fail', foreground='#DC2626', font=(UI_FONT, 9, 'bold'))
     tree_summary.tag_configure('even', background='#FFFFFF')
     tree_summary.tag_configure('odd', background='#F8FAFC')
 
@@ -255,7 +255,7 @@ def build_view(parent: tk.Misc) -> None:
 
     tree_boq.tag_configure('even', background='#FFFFFF')
     tree_boq.tag_configure('odd', background='#F8FAFC')
-    tree_boq.tag_configure('total', background='#FEF3C7', font=('Times New Roman', 8, 'bold'))
+    tree_boq.tag_configure('total', background='#FEF3C7', font=(UI_FONT, 9, 'bold'))
 
     f_sum_actions = tk.Frame(tab_summary, padx=12, pady=8)
     f_sum_actions.pack(fill='x')

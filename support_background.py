@@ -3,6 +3,7 @@ from queue import Empty, Queue
 import threading
 import time
 import tkinter as tk
+from ui_theme import UI_FONT, UI_FONT_MONO
 from tkinter import ttk
 import requests
 from PIL import Image, ImageDraw, ImageFont, ImageTk
@@ -164,7 +165,7 @@ class SupportBackground:
         x=max(0,min(button.winfo_rootx(),self.app.winfo_screenwidth()-width))
         y=max(0,min(button.winfo_rooty()-height-8,self.app.winfo_screenheight()-height-40))
         popup.geometry(f'{width}x{height}+{x}+{y}')
-        ttk.Label(popup,text=sender,font=('Times New Roman',12,'bold')).pack(anchor='w',padx=14,pady=(12,6))
+        ttk.Label(popup,text=sender,font=(UI_FONT,12,'bold')).pack(anchor='w',padx=14,pady=(12,6))
         count=int(thread.get('unread_count',1))
         ttk.Label(popup,text=f'{count} '+self.T('tin nhắn mới','new messages')).pack(anchor='w',padx=14)
         controls=ttk.Frame(popup);controls.pack(fill='x',padx=14,pady=12)
