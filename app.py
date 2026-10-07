@@ -5509,7 +5509,25 @@ class App(tk.Tk):
         lbl = tk.Label(info_box, text=val, font=(UI_FONT, 10, 'bold'), fg=color,
                        bg=COLORS['surface_soft'])
         lbl.pack(anchor='w', pady=(2, 0))
+        if title == 'Sc dư':
+            self._gauge_canvas = tk.Canvas(info_box, height=5, bg=COLORS['surface_soft'],
+                                           highlightthickness=0)
+            self._gauge_canvas.pack(fill='x', pady=(3, 0))
         return lbl
+
+    def _update_gauge(self, residual_cm, limit_cm):
+        if not hasattr(self, '_gauge_canvas'):
+            return
+        gc = self._gauge_canvas
+        gc.update_idletasks()
+        gw = gc.winfo_width()
+        if gw < 4:
+            return
+        gc.delete('all')
+        gc.create_rectangle(0, 0, gw, 5, fill='#E2E8F0', outline='')
+        ratio = min(1.0, residual_cm / limit_cm) if limit_cm > 0 else 0.0
+        fill_color = '#166534' if ratio < 0.7 else '#B45309' if ratio < 1.0 else '#B91C1C'
+        gc.create_rectangle(0, 0, int(gw * ratio), 5, fill=fill_color, outline='')
 
     def _show_natural_kpis(self, *, force=False):
         # Chỉ sử dụng kết quả đã bấm tính của mục hiện tại.
@@ -5600,6 +5618,7 @@ class App(tk.Tk):
         self.card_res.configure(text=f'{residual:.2f} cm')
         self.card_limit.configure(text=f'{limit:.2f} cm')
         self.card_res_context.configure(text='CDM · ' + ('Tiêu chuẩn' if method == 'standard' else 'ALiCC'))
+        self.after(50, lambda: self._update_gauge(residual, limit))
         passed = residual <= limit
         if method == 'standard':
             stress = result['stress']
@@ -6817,6 +6836,9 @@ class App(tk.Tk):
         self.card_res_caption.config(text='Sc dư')
         self.card_res_context.config(text=context)
         self.card_res.config(text=f'{item[1]:.2f} cm' if item else '--- cm')
+        if item:
+            lim = getattr(self.project, 'residual_limit_cm', 20.0)
+            self.after(50, lambda v=item[1], l=lim: self._update_gauge(v, l))
         if hasattr(self, 'card_status'):
             if item:
                 passed = item[1] <= self.project.residual_limit_cm

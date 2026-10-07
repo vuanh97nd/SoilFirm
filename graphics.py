@@ -815,10 +815,11 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             xp = x_func(day_val)
             c.create_line(xp, top_y, xp, bot_y, fill='#F1F5F9', width=1)
             if m_idx % step_m == 0 or m_idx == int(total_months):
-                c.create_text(xp, top_y - 12, text=f'{m_idx}',
-                              font=(UI_FONT, 8), fill='#64748B')
+                c.create_text(xp, bot_y + 10, text=f'{m_idx}',
+                              font=(UI_FONT, 8), fill='#64748B', anchor='n')
 
-        c.create_text(right + 8, top_y - 12, text=L('t (tháng)'), anchor='w',
+        c.create_text((left + right) / 2, bot_y + 26, anchor='center',
+                      text=L('THỜI GIAN (THÁNG)'),
                       font=(UI_FONT, 8, 'bold'), fill='#0F172A')
 
         for i in range(5):
@@ -895,9 +896,13 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             day = chart_data['assessment_day']
             point = min(rows, key=lambda r: abs(r['ngày'] - day))
             xp, yp = x_func(point['ngày']), y_s_func(point['sc_du_cm'])
-            c.create_line(xp, top_y, xp, bot_y, fill='#64748B', dash=(3, 3))
+            c.create_line(xp, top_y, xp, bot_y, fill='#7C3AED', dash=(4, 3), width=1.2)
             c.create_oval(xp - 4, yp - 4, xp + 4, yp + 4,
                           fill='#7C3AED', outline='white')
+            # Tick nhãn trên trục X tại ngày đánh giá
+            day_months = day / 30.0
+            c.create_text(xp, bot_y + 10, anchor='n',
+                          text=f'{day_months:.1f}', font=(UI_FONT, 8, 'bold'), fill='#7C3AED')
             label_txt = (L("Sc dư ngày") + f" {day:.0f} = "
                          + f"{point['sc_du_cm']:.2f} cm")
             c.create_text(right - 3, mid_y + 10, anchor='ne', text=label_txt,
