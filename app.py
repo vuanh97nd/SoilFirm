@@ -1594,6 +1594,7 @@ class App(tk.Tk):
         self._drag_start_x = 0
         self._drag_start_y = 0
         self.current_step = 0
+        self._visited_groups: set[int] = set()  # theo dõi nhóm bước đã ghé thăm
 
         self.vars: dict[str, tk.StringVar] = {}
         self.treatment_vars: dict[str, tk.StringVar] = {}
@@ -1830,7 +1831,19 @@ class App(tk.Tk):
         nav_canvas.configure(width=sidebar_width-14)
         tk.Label(nav_items, text='QUY TRÌNH THIẾT KẾ', bg=COLORS['nav'], fg='#EAF4FB',
                  font=self._sidebar_heading_font, anchor='w', justify='left',
-                 wraplength=sidebar_width-16).pack(fill='x', padx=8, pady=(18, 8))
+                 wraplength=sidebar_width-16).pack(fill='x', padx=8, pady=(18, 4))
+        # Thanh tiến trình mỏng dưới tiêu đề sidebar
+        self._progress_bar_canvas = tk.Canvas(
+            nav_items, bg=COLORS['nav'], height=4, highlightthickness=0)
+        self._progress_bar_canvas.pack(fill='x', padx=8, pady=(0, 6))
+        self._progress_bar_fill = self._progress_bar_canvas.create_rectangle(
+            0, 0, 0, 4, fill='#38BDF8', outline='', width=0)
+        self._progress_bar_track = self._progress_bar_canvas.create_rectangle(
+            0, 0, sidebar_width - 16, 4, fill='#254B61', outline='', width=0)
+        self._progress_bar_canvas.tag_lower(self._progress_bar_fill)
+        self._progress_bar_canvas.tag_raise(self._progress_bar_track)
+        self._progress_bar_canvas.tag_lower(self._progress_bar_track)
+        self._progress_bar_canvas.tag_raise(self._progress_bar_fill)
 
         step_headings = ['Dữ liệu dự án', 'Hình học nền đắp', 'Địa tầng và chỉ tiêu đất',
                          'Lún tự nhiên', 'Xử lý nền bằng biện pháp cơ học',
@@ -2963,10 +2976,47 @@ class App(tk.Tk):
         y=max(0, (window.winfo_screenheight()-height)//2)
         window.geometry(f'{width}x{height}+{x}+{y}'); window.grab_set()
 
+    def _update_stepper(self, active_group: int):
+        """Cập nhật chỉ thị tiến trình: ● đang ở, ✓ đã qua, ○ chưa tới."""
+        n = len(self.nav_group_buttons)
+        if n == 0:
+            return
+        self._visited_groups.add(active_group)
+        for i, btn in enumerate(self.nav_group_buttons):
+            if i == active_group:
+                indicator = '●'
+                fg_color = 'white'
+                bg_color = COLORS['nav_active']
+            elif i in self._visited_groups:
+                indicator = '✓'
+                fg_color = '#7DD3FC'
+                bg_color = COLORS['nav']
+            else:
+                indicator = '○'
+                fg_color = '#60819A'
+                bg_color = COLORS['nav']
+            # Bỏ số thứ tự cũ, thêm indicator
+            raw = btn.cget('text')
+            # text có dạng "N. Tên nhóm" hoặc đã có indicator ở đầu
+            import re as _re
+            clean = _re.sub(r'^[●✓○]\s*', '', raw)
+            btn.configure(text=f'{indicator} {clean}',
+                          bg=bg_color, fg=fg_color,
+                          activebackground=COLORS['nav_active'] if i == active_group else COLORS['nav_hover'],
+                          activeforeground='white')
+        # Cập nhật thanh tiến trình
+        canvas = getattr(self, '_progress_bar_canvas', None)
+        if canvas and canvas.winfo_exists():
+            total_w = canvas.winfo_width() or (int(self.sidebar.cget('width')) - 16)
+            fill_w = max(4, int(total_w * (active_group + 1) / n))
+            canvas.coords(self._progress_bar_fill, 0, 0, fill_w, 4)
+            canvas.coords(self._progress_bar_track, 0, 0, total_w, 4)
+
     def _rebuild_workflow_navigation(self):
         from design_workflow import navigation_groups, display_group_title
         self.navigation_groups = self._configured_navigation_groups()
         self._group_last_step = {i: steps[0] for i, (_, steps) in enumerate(self.navigation_groups)}
+        self._visited_groups = set()  # reset khi rebuild (đổi chế độ hoặc nạp dự án mới)
         for child in self.nav_groups_host.winfo_children(): child.destroy()
         self.nav_group_buttons = []
         for group, (title, steps) in enumerate(self.navigation_groups):
@@ -3128,9 +3178,7 @@ class App(tk.Tk):
         else:
             self.workspace_pdf_button.place_forget()
         self.status_text.set(f'{self.design_mode.get()} · Mục {group+1}/{len(self.navigation_groups)} · {self.step_headings[index]}')
-        for i,btn in enumerate(self.nav_group_buttons):
-            active=i==group
-            btn.configure(bg=COLORS['nav_active'] if active else COLORS['nav'],fg='white' if active else '#C8D8E4',activebackground=COLORS['nav_active'] if active else COLORS['nav_hover'],activeforeground='white')
+        self._update_stepper(group)
         labels={0:'Dữ liệu dự án',1:'Hình học nền đắp',2:'Địa tầng',3:'Kiểm toán lún',4:'Xử lý cơ học',5:'Cố kết và thoát nước',6:'CDM / ALiCC',7:'AI phân tích & chọn phương án',8:'Tổng hợp phương án',9:'Khối lượng xử lý nền',10:'Thống kê số liệu',11:'Khai báo lỗ khoan' if self.calculation_settings()['data_processed'] else 'Địa tầng lỗ khoan',12:'Phân đoạn tính toán',13:'Xuất hồ sơ',14:'Bảng tổng hợp chỉ tiêu',15:'Kiểm toán các phân đoạn',16:'Bảng tổng hợp xử lý',17:'Lựa chọn phương án',18:'Tổng hợp kết quả xử lý'}
         group_steps = tuple(self.navigation_groups[group][1])
         if len(group_steps) > 1:
