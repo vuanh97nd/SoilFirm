@@ -264,7 +264,7 @@ class GeologyStatistics(ttk.Frame):
         top=ttk.Frame(left_area,padding=(6,6));top.grid(row=0,column=0,sticky='ew')
         reads=ttk.Frame(top);reads.pack(side='left',fill='x',expand=True)
         read_buttons=[]
-        for column,(label,kind) in enumerate((('Đọc bảng chỉ tiêu đất','geology'),('Đọc chỉ tiêu sức kháng','strength'),('Đọc kết quả xuyên tiêu chuẩn','spt'),('Đọc số liệu cố kết','curves'))):
+        for column,(label,kind) in enumerate((('📋 Chỉ tiêu đất','geology'),('🔬 Sức kháng','strength'),('📊 Xuyên tiêu chuẩn','spt'),('🔩 Cố kết','curves'))):
             button=ttk.Button(reads,text=label,command=lambda selected=kind:self.read_ai_table(selected))
             read_buttons.append(button)
             workspace=getattr(self.app,'_ai_analysis_workspace',None)
@@ -288,7 +288,7 @@ class GeologyStatistics(ttk.Frame):
             workspace=getattr(self.app,'_ai_analysis_workspace',None)
             if workspace is not None:workspace.buttons.append(button)
         for label,action in [('Xóa lớp','delete'),('Xóa dữ liệu bảng','reset'),('Xóa dữ liệu tuyến','reset_all')]:
-            button=ttk.Button(toolbar,text=label,command=lambda selected=action:self.layer_action(selected))
+            button=ttk.Button(toolbar,text=label,style='Danger.TButton',command=lambda selected=action:self.layer_action(selected))
             button.pack(side='left',padx=2)
             workspace=getattr(self.app,'_ai_analysis_workspace',None)
             if workspace is not None:workspace.buttons.append(button)

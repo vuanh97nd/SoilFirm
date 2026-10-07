@@ -57,15 +57,22 @@ def configure_theme(root):
     configure_tab_style(style)
     style.configure('TButton', font=(_f, 10),
                     foreground=COLORS['control_text'], background=COLORS['tab_idle'],
-                    padding=(12, 7), bordercolor=COLORS['border'])
+                    padding=(8, 5), bordercolor=COLORS['border'])
     style.map('TButton',
               background=[('disabled', '#E2E8F0'), ('pressed', COLORS['tab_selected']),
                           ('active', COLORS['tab_hover'])],
               foreground=[('disabled', '#94A3B8'), ('!disabled', COLORS['control_text'])])
     style.configure('Accent.TButton', font=(_f, 10, 'bold'),
-                    foreground='white', background=COLORS['nav_active'], padding=(12, 7))
-    style.map('Accent.TButton', background=[('disabled', '#94A3B8'), ('active', '#0284C7')],
+                    foreground='white', background=COLORS['nav_active'], padding=(8, 5))
+    style.map('Accent.TButton', background=[('disabled', '#94A3B8'), ('active', COLORS['accent']),
+                                            ('pressed', COLORS['nav_hover'])],
               foreground=[('disabled', '#E2E8F0'), ('!disabled', 'white')])
+    style.configure('Danger.TButton', font=(_f, 10),
+                    foreground='#B91C1C', background='#FEE2E2', padding=(8, 5),
+                    bordercolor='#FCA5A5')
+    style.map('Danger.TButton',
+              background=[('disabled', '#E2E8F0'), ('pressed', '#FECACA'), ('active', '#FECACA')],
+              foreground=[('disabled', '#94A3B8'), ('!disabled', '#B91C1C')])
 
     style.configure('WorkflowMode.TCombobox',
                     font=(_f, 12, 'bold'), padding=(8, 9),
@@ -191,17 +198,26 @@ def configure_tab_style(style):
                     ('!selected', (_f, 10))])
 
 
-def style_action_button(widget, primary=False):
+def style_action_button(widget, primary=False, danger=False):
     """Change presentation only; commands, bindings and disabled states stay intact."""
     if isinstance(widget, ttk.Button):
-        widget.configure(style='Accent.TButton' if primary else 'TButton')
+        if danger:
+            widget.configure(style='Danger.TButton')
+        else:
+            widget.configure(style='Accent.TButton' if primary else 'TButton')
     elif isinstance(widget, tk.Button):
-        widget.configure(font=(UI_FONT, 10, 'bold' if primary else 'normal'),
-                         bg=COLORS['nav_active'] if primary else COLORS['tab_idle'],
-                         fg='white' if primary else COLORS['control_text'],
-                         activebackground=COLORS['accent'] if primary else COLORS['tab_hover'],
-                         activeforeground='white' if primary else COLORS['control_text'],
-                         disabledforeground='#94A3B8', relief='flat', bd=1, padx=12, pady=7)
+        if danger:
+            widget.configure(font=(UI_FONT, 10),
+                             bg='#FEE2E2', fg='#B91C1C',
+                             activebackground='#FECACA', activeforeground='#B91C1C',
+                             disabledforeground='#94A3B8', relief='flat', bd=1, padx=8, pady=5)
+        else:
+            widget.configure(font=(UI_FONT, 10, 'bold' if primary else 'normal'),
+                             bg=COLORS['nav_active'] if primary else COLORS['tab_idle'],
+                             fg='white' if primary else COLORS['control_text'],
+                             activebackground=COLORS['accent'] if primary else COLORS['tab_hover'],
+                             activeforeground='white' if primary else COLORS['control_text'],
+                             disabledforeground='#94A3B8', relief='flat', bd=1, padx=8, pady=5)
 
 
 class ProcessingBar(tk.Canvas):

@@ -134,7 +134,7 @@ def show_batch_dialog(app,ai_mode=False):
     btn_bar = ttk.Frame(choices)
     btn_bar.grid(row=5, column=0, columnspan=2, sticky='w', pady=(6, 0))
     ttk.Button(btn_bar, text='Đặt lại 5 ưu tiên (trống)', command=reset_default_priorities).pack(side='left', padx=(0, 6))
-    ttk.Button(btn_bar, text='Xóa trống tất cả', command=clear_all_priorities).pack(side='left')
+    ttk.Button(btn_bar, text='Xóa trống tất cả', command=clear_all_priorities, style='Danger.TButton').pack(side='left')
 
     if not app.calculation_settings()['after']:
         choices.grid_remove()
@@ -167,7 +167,7 @@ def show_batch_dialog(app,ai_mode=False):
     footer = ttk.Frame(window, padding=10)
     footer.grid(row=4, column=0, sticky='ew')
     ttk.Label(footer, textvariable=status).pack(side='left', fill='x', expand=True)
-    run_button = ttk.Button(footer, text='AI tính hàng loạt' if ai_mode else 'Chạy tính toán theo từng STT')
+    run_button = ttk.Button(footer, text='AI tính hàng loạt' if ai_mode else 'Chạy tính toán theo từng STT', style='Accent.TButton')
     run_button.pack(side='right')
 
     def export_data(single):

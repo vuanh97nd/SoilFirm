@@ -3798,7 +3798,7 @@ class App(tk.Tk):
                     messagebox.showerror("Lỗi", str(e), parent=admin_win)
 
         ttk.Button(btn_row, text="➕ Tạo / Sửa Tài khoản", command=create_user, style='Accent.TButton').pack(side='left', padx=10)
-        ttk.Button(btn_row, text="🗑 Xóa Tài khoản chọn", command=delete_user).pack(side='left', padx=10)
+        ttk.Button(btn_row, text="🗑 Xóa Tài khoản chọn", command=delete_user, style='Danger.TButton').pack(side='left', padx=10)
         ttk.Button(btn_row, text="🔄 Làm mới danh sách", command=load_users).pack(side='left', padx=10)
         ttk.Button(btn_row, text='Chat với tài khoản chọn',
                    command=lambda: self.open_chat(
@@ -4466,7 +4466,7 @@ class App(tk.Tk):
         btn_soil.pack(fill='x', pady=(10, 0))
         ttk.Button(btn_soil, text='+ Thêm lớp đất', command=self.add_soil, style='Accent.TButton').pack(side='left', padx=4)
         ttk.Button(btn_soil, text='Sửa chỉ tiêu đất', command=self.edit_soil).pack(side='left', padx=4)
-        ttk.Button(btn_soil, text='🗑 Xóa lớp', command=self.delete_soil).pack(side='left', padx=4)
+        ttk.Button(btn_soil, text='🗑 Xóa lớp', command=self.delete_soil, style='Danger.TButton').pack(side='left', padx=4)
 
     def open_borehole_input(self):
         def commit(candidate):
@@ -4663,7 +4663,7 @@ class App(tk.Tk):
         ttk.Combobox(f_row, textvariable=self.settlement_factor_var, values=('1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'),
                      width=6, state='readonly').pack(side='left', padx=6)
                      
-        ttk.Button(f_row, text='Tính chiều cao bù lún', command=self.calculate_hbl).pack(side='left', padx=10)
+        ttk.Button(f_row, text='Tính chiều cao bù lún', command=self.calculate_hbl, style='Accent.TButton').pack(side='left', padx=10)
 
         box_calc = ttk.LabelFrame(inner, text='2. Kiểm toán độ lún tự nhiên trước xử lý', padding=10)
         box_calc.pack(fill='x', pady=4)
@@ -4671,7 +4671,7 @@ class App(tk.Tk):
         r_bar.pack(fill='x', pady=2)
         ttk.Button(r_bar, text='Tính lún cố kết', command=self.calculate_settlement,
                    style='Accent.TButton').pack(side='left', padx=4)
-        ttk.Button(r_bar, text='Tính lún theo thời gian', command=self.calculate_before).pack(side='left', padx=4)
+        ttk.Button(r_bar, text='Tính lún theo thời gian', command=self.calculate_before, style='Accent.TButton').pack(side='left', padx=4)
         
         ttk.Label(r_bar, text='Thời gian t lún tự nhiên (ngày):').pack(side='left', padx=(10, 6))
         self.days = self.vars['assessment_days']

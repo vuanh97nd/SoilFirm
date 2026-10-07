@@ -183,7 +183,7 @@ class BoreholeDialog(tk.Toplevel):
                    ttk.Entry(self.layer_body, textvariable=thickness, width=18),
                    ttk.Label(self.layer_body, textvariable=bottom)]
         record = {'soil': soil, 'name': name, 'thickness': thickness, 'bottom': bottom, 'widgets': widgets}
-        remove = ttk.Button(self.layer_body, text=self.L('Xóa lớp'), command=lambda: self.remove_layer(record))
+        remove = ttk.Button(self.layer_body, text=self.L('Xóa lớp'), style='Danger.TButton', command=lambda: self.remove_layer(record))
         widgets.append(remove)
         self.rows.append(record)
         thickness.trace_add('write', lambda *_: self.update_totals())

@@ -266,10 +266,10 @@ def build_view(parent: tk.Misc) -> None:
     btn_export_boq = ttk.Button(f_sum_actions, text='Xuất bảng khối lượng', style='Accent.TButton')
     btn_export_boq.pack(side='left', padx=(0, 16), ipady=3)
 
-    btn_del_section = ttk.Button(f_sum_actions, text="🗑 Xóa phân đoạn chọn")
+    btn_del_section = ttk.Button(f_sum_actions, text="🗑 Xóa phân đoạn chọn", style='Danger.TButton')
     btn_del_section.pack(side='left', padx=(0, 8), ipady=3)
 
-    btn_clear_all = ttk.Button(f_sum_actions, text="🔄 Xóa toàn bộ danh sách")
+    btn_clear_all = ttk.Button(f_sum_actions, text="🔄 Xóa toàn bộ danh sách", style='Danger.TButton')
     btn_clear_all.pack(side='left', ipady=3)
 
     results_list = []
