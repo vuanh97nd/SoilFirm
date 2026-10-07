@@ -24,6 +24,58 @@ from ui_theme import COLORS, soil_parameter_keys, UI_FONT, UI_FONT_MONO
 from ui_i18n import english as _english_ui
 
 
+class _Tooltip:
+    """Tooltip nhỏ xuất hiện khi hover vào widget."""
+    def __init__(self, widget, text):
+        self._widget = widget
+        self._text = text
+        self._tip = None
+        widget.bind('<Enter>', self._show, add='+')
+        widget.bind('<Leave>', self._hide, add='+')
+
+    def _show(self, event=None):
+        if self._tip or not self._text:
+            return
+        x = self._widget.winfo_rootx() + 20
+        y = self._widget.winfo_rooty() + self._widget.winfo_height() + 4
+        self._tip = tw = tk.Toplevel(self._widget)
+        tw.wm_overrideredirect(True)
+        tw.wm_geometry(f'+{x}+{y}')
+        lbl = tk.Label(tw, text=self._text, justify='left', wraplength=320,
+                       background='#FFFBEA', foreground='#1A2C3D',
+                       font=(UI_FONT, 9), relief='solid', borderwidth=1,
+                       padx=8, pady=5)
+        lbl.pack()
+
+    def _hide(self, event=None):
+        if self._tip:
+            self._tip.destroy()
+            self._tip = None
+
+
+# Tooltip giải thích ký hiệu địa kỹ thuật
+_PARAM_TOOLTIPS = {
+    'gamma':          'Dung trọng tự nhiên γ: khối lượng đất trên đơn vị thể tích (T/m³)',
+    'e0':             'Hệ số rỗng ban đầu e₀: tỷ lệ thể tích lỗ rỗng / thể tích hạt đất',
+    'cc':             'Chỉ số nén Cc: độ dốc đường nén theo log áp lực (đường nguyên sinh)',
+    'cs':             'Chỉ số nén lại Cs: độ dốc đường nén lại / giãn nở (thường Cs ≈ Cc/5–Cc/10)',
+    'pc':             'Áp lực tiền cố kết Pc (T/m²): áp lực lớn nhất đất từng chịu trong lịch sử',
+    'co':             'Lực dính ban đầu Co (T/m²): cường độ kháng cắt không thoát nước ban đầu',
+    'cv_constant':    'Cv trung bình (×10⁻³ cm²/s): hệ số cố kết đứng, dùng thay thế bảng Cv–P nếu nhập',
+    'cohesion_c':     'Lực dính c (T/m²): dùng để tính sức chịu tải tiêu chuẩn Rtc',
+    'friction_phi':   'Góc ma sát trong φ (độ): dùng để tính Rtc; 0 ≤ φ < 90°',
+    'spt_n':          'Chỉ số SPT N: số búa trong thí nghiệm xuyên tiêu chuẩn, dùng tính lún cát',
+    'phi_cu_effective': 'φ′ hữu hiệu CU (độ): góc ma sát từ thí nghiệm cắt không thoát nước CU;\n'
+                        'để trống nếu không có, phần mềm dùng hệ số m thay thế',
+    'drainage':       'Số mặt thoát nước: 1 = thoát nước 1 chiều (mặt trên); 2 = hai chiều (trên + dưới)',
+}
+
+# Trường bắt buộc — luôn phải có giá trị hợp lệ
+_REQUIRED_FIELDS = {'name', 'gamma', 'category'}
+_REQUIRED_CLAY   = {'state', 'drainage', 'co'}
+_REQUIRED_SAND   = {'spt_n'}
+
+
 def _get_language(widget):
     """Lấy ngôn ngữ UI hiện tại từ widget cha (an toàn nếu không tìm thấy)."""
     try:
@@ -228,6 +280,9 @@ class SoilDialog(tk.Toplevel):
                            highlightthickness=1, highlightbackground=COLORS['border'])
         buttons.pack(side='bottom', fill='x')
 
+        tk.Label(buttons, text=L('* Trường bắt buộc'), font=(UI_FONT, 9, 'italic'),
+                 fg='#B91C1C', bg=COLORS['surface']).pack(side='left', padx=4)
+
         ttk.Button(buttons, text=L('Hủy bỏ (Esc)'),
                    command=self.destroy).pack(side='right', padx=6)
 
@@ -257,9 +312,40 @@ class SoilDialog(tk.Toplevel):
         tabs.add(cvtab, text=L('3. Cố kết · Cv'))
         self.compression_tab, self.cv_tab = compression, cvtab
 
+        style = ttk.Style(self)
+        style.configure('Required.TEntry', fieldbackground='#FFF8F8',
+                        bordercolor='#FCA5A5')
+        style.configure('Invalid.TEntry', fieldbackground='#FEE2E2',
+                        bordercolor='#EF4444')
+        style.configure('Valid.TEntry', fieldbackground='#FFFFFF',
+                        bordercolor=COLORS['border'])
+
+        def _required_for_category():
+            cat_var = self.vars.get('category')
+            cat = self._canonical(cat_var.get()) if cat_var else 'Đất dính'
+            if cat == 'Đất dính':
+                return _REQUIRED_FIELDS | _REQUIRED_CLAY
+            if cat == 'Đất rời':
+                return _REQUIRED_FIELDS | _REQUIRED_SAND
+            return _REQUIRED_FIELDS
+
+        def _validate_entry(key, entry, v):
+            """Đổi style entry: đỏ nhạt nếu bắt buộc mà trống."""
+            required = _required_for_category()
+            if key in required and not v.get().strip():
+                entry.configure(style='Invalid.TEntry')
+            else:
+                entry.configure(style='Valid.TEntry')
+
         def field(frame, key, label, value, row, choices=None):
-            lbl = ttk.Label(frame, text=label)
+            required = key in _REQUIRED_FIELDS or key in (_REQUIRED_CLAY | _REQUIRED_SAND)
+            lbl_text = (label + ' *') if key in _REQUIRED_FIELDS else label
+            lbl = ttk.Label(frame, text=lbl_text,
+                            foreground='#B91C1C' if key in _REQUIRED_FIELDS else COLORS['text'])
             lbl.grid(row=row, column=0, sticky='w', pady=5)
+            # Thêm tooltip nếu có
+            if key in _PARAM_TOOLTIPS:
+                _Tooltip(lbl, _PARAM_TOOLTIPS[key])
             v = self.vars[key] = tk.StringVar(value=format_number(value, key))
             if choices:
                 entry = ttk.Combobox(frame, textvariable=v, values=choices,
@@ -271,7 +357,13 @@ class SoilDialog(tk.Toplevel):
                 entry.bind("<Button-5>",
                            lambda e: (ScrollableFrame._route_wheel(e), "break")[1])
             else:
-                entry = ttk.Entry(frame, textvariable=v, width=34)
+                entry = ttk.Entry(frame, textvariable=v, width=34,
+                                  style='Required.TEntry' if key in _REQUIRED_FIELDS else 'TEntry')
+                entry.bind('<FocusOut>',
+                           lambda _e, k=key, ent=entry, var=v: _validate_entry(k, ent, var),
+                           add='+')
+                if key in _PARAM_TOOLTIPS:
+                    _Tooltip(entry, _PARAM_TOOLTIPS[key])
             entry.grid(row=row, column=1, sticky='ew', padx=12, pady=5)
             frame.columnconfigure(1, weight=1)
             self.widgets[key] = (lbl, entry)
@@ -401,8 +493,27 @@ class SoilDialog(tk.Toplevel):
             out.append(number(raw, f'{label} hàng {i}') if raw else 0.0)
         return out
 
+    def _highlight_required(self):
+        """Đánh dấu đỏ các Entry bắt buộc đang bị trống."""
+        required = _REQUIRED_FIELDS.copy()
+        cat_var = self.vars.get('category')
+        if cat_var:
+            cat = self._canonical(cat_var.get())
+            if cat == 'Đất dính':
+                required |= _REQUIRED_CLAY
+            elif cat == 'Đất rời':
+                required |= _REQUIRED_SAND
+        for key in required:
+            if key not in self.vars:
+                continue
+            val = self.vars[key].get().strip()
+            pair = self.widgets.get(key, ())
+            if len(pair) >= 2 and isinstance(pair[1], ttk.Entry):
+                pair[1].configure(style='Invalid.TEntry' if not val else 'Valid.TEntry')
+
     def commit(self):
         L = lambda s: _L(s, self.language)
+        self._highlight_required()
         v = self.vars
         try:
             s = replace(self.soil, name=v['name'].get().strip(),
