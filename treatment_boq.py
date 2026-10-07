@@ -75,7 +75,7 @@ def build_view(parent):
     """Trang menu 10, bóc khối lượng của các phân đoạn đã chọn ở menu 8."""
     import csv
     import tkinter as tk
-from ui_theme import UI_FONT, UI_FONT_MONO
+    from ui_theme import UI_FONT, UI_FONT_MONO
     from tkinter import filedialog, messagebox, ttk
 
     app = parent.winfo_toplevel()

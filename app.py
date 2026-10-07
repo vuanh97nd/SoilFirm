@@ -1596,6 +1596,7 @@ class App(tk.Tk):
         self._drag_start_y = 0
         self.current_step = 0
         self._visited_groups: set[int] = set()  # theo dõi nhóm bước đã ghé thăm
+        self.nav_group_buttons: list = []  # khởi tạo để tránh AttributeError trước khi rebuild
 
         self.vars: dict[str, tk.StringVar] = {}
         self.treatment_vars: dict[str, tk.StringVar] = {}
