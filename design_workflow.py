@@ -9,7 +9,7 @@ from tkinter import ttk, filedialog, messagebox
 SINGLE_GROUPS = (
     ('Thông tin và dữ liệu', (0,)),
     ('Thông số nền đắp', (1,)),
-    ('Thông số địa chất', (2,)),
+    ('Địa chất và chỉ tiêu', (2,)),
     ('Kiểm toán trước xử lý', (3,)),
     ('Thiết kế xử lý nền', (4, 5, 6)),
     ('Tổng hợp kết quả xử lý', (18,)),
@@ -19,7 +19,7 @@ MULTI_GROUPS = (
     ('Địa chất và chỉ tiêu', (11, 10, 14)),
     ('Kiểm toán trước xử lý', (15,)),
     ('Thiết kế xử lý nền', (16, 4, 5, 6)),
-    ('Tổng hợp và hồ sơ', (9,)),
+    ('Tổng hợp kết quả xử lý', (9,)),
 )
 
 
@@ -27,10 +27,9 @@ MULTI_GROUPS = (
 GROUP_DISPLAY_TITLES = {
     'Thông tin và dữ liệu': 'Dữ liệu dự án',
     'Thông số nền đắp': 'Hình học nền đắp',
-    'Thông số địa chất': 'Địa tầng và chỉ tiêu đất',
     'Địa chất và chỉ tiêu': 'Địa tầng và chỉ tiêu đất',
     'Lựa chọn và hồ sơ': 'Lựa chọn phương án',
-    'Tổng hợp và hồ sơ': 'Khối lượng xử lý nền',
+    'Tổng hợp kết quả xử lý': 'Tổng hợp và hồ sơ',
 }
 
 

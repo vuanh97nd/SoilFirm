@@ -190,8 +190,8 @@ def build_view(parent: tk.Misc) -> None:
     sub_tab_tech = ttk.Frame(sub_tabs_summary)
     sub_tab_boq = ttk.Frame(sub_tabs_summary)
 
-    sub_tabs_summary.add(sub_tab_tech, text="  9. Bảng tổng hợp kết quả xử lý  ")
-    sub_tabs_summary.add(sub_tab_boq, text="  10. Tính toán khối lượng xử lý  ")
+    sub_tabs_summary.add(sub_tab_tech, text="  Bảng tổng hợp kết quả xử lý  ")
+    sub_tabs_summary.add(sub_tab_boq, text="  Tính toán khối lượng xử lý  ")
 
     # 2.1 Bảng Giải pháp Kỹ thuật
     f_tech_table = ttk.Frame(sub_tab_tech, padding=8)
