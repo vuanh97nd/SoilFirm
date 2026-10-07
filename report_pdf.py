@@ -42,7 +42,7 @@ RIGHT = 42.52
 W = A4[0] - LEFT - RIGHT
 
 # Font size constants — thay đổi tại đây để điều chỉnh toàn bộ báo cáo
-FS_BODY   = 9.0   # chữ ngoài bảng (label + value)
+FS_BODY   = 9.5   # chữ ngoài bảng (label + value)
 FS_TABLE  = 7.5   # bảng ít cột (≤5 cột, bảng công thức)
 FS_WIDE   = 6.5   # bảng nhiều cột (6–10 cột)
 FS_DENSE  = 6.0   # bảng rất nhiều cột (>10 cột)
@@ -228,17 +228,19 @@ def _formula_cell(value):
 class Section(Flowable):
     def __init__(self, label, width=W):
         super().__init__()
-        self.label, self.width, self.height = label, width, 23
+        self.label, self.width, self.height = label, width, 22
         self.keepWithNext = 1
 
     def draw(self):
         c = self.canv
+        c.setFillColor(colors.HexColor('#E8EDF2'))
+        c.rect(0, 0, self.width, self.height - 2, stroke=0, fill=1)
         c.setStrokeColor(INK)
         c.setLineWidth(.8)
         c.line(0, self.height - 2, self.width, self.height - 2)
         c.setFont('SFReportBold', 10)
         c.setFillColor(INK)
-        c.drawString(2, 5, self.label)
+        c.drawString(6, 5, self.label)
 
 
 class CrossSection(Flowable):
@@ -570,10 +572,21 @@ class SettlementChart(Flowable):
         c.restoreState()
         points = [(left+(right-left)*x/xmax, top-(top-bottom)*y/ymax)
                   for x,y in zip(xs,ys)]
-        c.setStrokeColor(INK); c.setFillColor(colors.white)
-        c.setLineWidth(1.0)
-        for a,b in zip(points,points[1:]): c.line(*a,*b)
-        for x,y in points: c.rect(x-2.2,y-2.2,4.4,4.4,stroke=1,fill=1)
+        # Draw fill under curve
+        c.setFillColor(colors.HexColor('#E8EDF2'))
+        path = c.beginPath()
+        path.moveTo(points[0][0], bottom)
+        for px, py in points:
+            path.lineTo(px, py)
+        path.lineTo(points[-1][0], bottom)
+        path.close()
+        c.drawPath(path, stroke=0, fill=1)
+        # Draw smooth line (no markers)
+        c.setStrokeColor(INK)
+        c.setFillColor(INK)
+        c.setLineWidth(1.2)
+        for a, b in zip(points, points[1:]):
+            c.line(*a, *b)
         if self.residual and self.assessment_day is not None:
             reference = self.assessment_day/(1.0 if self.treated else 365.25)
             index = min(range(len(rows)), key=lambda i: abs(xs[i]-reference))
@@ -680,14 +693,34 @@ def _table(rows, widths, normal, bold, *, header=1,
 
 
 def _kv(items, normal, bold, width):
-    rows = [[_p(label, bold), _p(value, normal)] for label,value in items]
-    t = Table(rows, colWidths=[width*.53,width*.47])
-    t.setStyle(TableStyle([
-        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-        ('LEFTPADDING',(0,0),(-1,-1),2),('RIGHTPADDING',(0,0),(-1,-1),2),
-        ('TOPPADDING',(0,0),(-1,-1),2),('BOTTOMPADDING',(0,0),(-1,-1),2),
-    ]))
-    return t
+    if len(items) > 4:
+        # Pack 2 KV pairs per row
+        col_w = width / 2
+        rows = []
+        for i in range(0, len(items), 2):
+            pair = items[i:i+2]
+            if len(pair) == 2:
+                rows.append([_p(pair[0][0], bold), _p(pair[0][1], normal),
+                              _p(pair[1][0], bold), _p(pair[1][1], normal)])
+            else:
+                rows.append([_p(pair[0][0], bold), _p(pair[0][1], normal), '', ''])
+        t = Table(rows, colWidths=[col_w*0.55, col_w*0.45, col_w*0.55, col_w*0.45])
+        t.setStyle(TableStyle([
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+            ('LEFTPADDING',(0,0),(-1,-1),2),('RIGHTPADDING',(0,0),(-1,-1),2),
+            ('TOPPADDING',(0,0),(-1,-1),2),('BOTTOMPADDING',(0,0),(-1,-1),2),
+            ('LINEAFTER',(1,0),(1,-1),0.3,colors.HexColor('#CBD5E1')),
+        ]))
+        return t
+    else:
+        rows = [[_p(label, bold), _p(value, normal)] for label,value in items]
+        t = Table(rows, colWidths=[width*.53,width*.47])
+        t.setStyle(TableStyle([
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+            ('LEFTPADDING',(0,0),(-1,-1),2),('RIGHTPADDING',(0,0),(-1,-1),2),
+            ('TOPPADDING',(0,0),(-1,-1),2),('BOTTOMPADDING',(0,0),(-1,-1),2),
+        ]))
+        return t
 
 
 def _time_rows(project, language='vi'):
@@ -1115,6 +1148,7 @@ def _create_cdm_only_report(project, destination, method, data, language='vi', s
         canvas.line(LEFT, 29, A4[0]-RIGHT, 29)
         canvas.setFont('SFReport', 7)
         canvas.drawString(LEFT, 18, str(project.name or 'DỰ ÁN ...'))
+        canvas.drawCentredString(A4[0]/2, 18, name)  # name is already defined as 'ALiCC' or 'TCVN 9906 + BS 8006'
         canvas.restoreState()
 
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
@@ -1198,6 +1232,8 @@ def create_report(project, destination, evaluation_days=None, scope='full', lang
         c.line(LEFT,29,A4[0]-RIGHT,29)
         c.setFont('SFReport',7)
         c.drawString(LEFT,18,str(project.name or L('DỰ ÁN ...')))
+        rpt_label = heading if 'heading' in dir() else ''
+        c.drawCentredString(A4[0]/2, 18, rpt_label)
         c.drawRightString(A4[0]-RIGHT,18,
                           (L('Trang') if language == 'en' else 'Trang')
                           + f' {d.page}')
