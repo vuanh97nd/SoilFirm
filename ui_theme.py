@@ -15,7 +15,7 @@ def _ui_font():
 UI_FONT = _ui_font()
 UI_FONT_MONO = 'Consolas' if sys.platform == 'win32' else 'DejaVu Sans Mono'
 
-COLORS = {
+_COLORS_LIGHT = {
     'background': '#F4F7FA', 'surface': '#FFFFFF', 'surface_soft': '#EDF3F6',
     'border': '#CFDAE2', 'text': '#172D46', 'muted': '#64748B',
     'nav': '#172D46', 'nav_active': '#0C6175', 'nav_hover': '#254B61',
@@ -23,6 +23,22 @@ COLORS = {
     'tab_selected': '#DCECF6', 'tab_idle': '#F1F5F9',
     'tab_hover': '#E5EEF5', 'control_text': '#163047',
 }
+
+_COLORS_DARK = {
+    'background': '#0F172A', 'surface': '#1E293B', 'surface_soft': '#1A2E40',
+    'border': '#334155', 'text': '#E2E8F0', 'muted': '#94A3B8',
+    'nav': '#0F172A', 'nav_active': '#0E7490', 'nav_hover': '#164E63',
+    'header': '#0C1A2E', 'accent': '#38BDF8',
+    'tab_selected': '#1E3A5F', 'tab_idle': '#1E293B',
+    'tab_hover': '#243447', 'control_text': '#CBD5E1',
+}
+
+COLORS = dict(_COLORS_LIGHT)  # khởi động ở chế độ sáng
+_DARK_MODE_ACTIVE = False
+
+
+def is_dark_mode() -> bool:
+    return _DARK_MODE_ACTIVE
 
 
 def configure_theme(root):
@@ -103,6 +119,53 @@ def configure_treeview_style(style, name='Treeview', *, heading_bg=None, row_hei
         'select_bg': COLORS['tab_selected'],
         'select_fg': COLORS['text'],
     }
+
+
+def apply_theme_mode(root, dark: bool):
+    """Chuyển toàn bộ UI giữa sáng và tối.
+
+    Cập nhật COLORS in-place, tái cấu hình ttk style, rồi duyệt
+    tất cả widget để đổi màu background/foreground theo bảng màu mới.
+    """
+    global _DARK_MODE_ACTIVE
+    _DARK_MODE_ACTIVE = dark
+    palette = _COLORS_DARK if dark else _COLORS_LIGHT
+    COLORS.update(palette)
+    configure_theme(root)
+    # Map màu cũ → màu mới để cập nhật tk widgets tĩnh
+    old = _COLORS_LIGHT if dark else _COLORS_DARK
+    color_map = {old[k]: palette[k] for k in old if old[k] != palette[k]}
+    # Màu cứng phổ biến ngoài palette
+    if dark:
+        color_map.update({
+            '#FFFFFF': '#1E293B', '#F4F7FA': '#0F172A', '#EDF3F6': '#1A2E40',
+            '#E7EDF2': '#1A2533', '#F8FAFC': '#1A2738', '#E4EDF3': '#1E3047',
+            '#FEF3C7': '#2D2410', '#E0F2FE': '#0C2A3A',
+        })
+    else:
+        color_map.update({
+            '#1E293B': '#FFFFFF', '#0F172A': '#F4F7FA', '#1A2E40': '#EDF3F6',
+            '#1A2533': '#E7EDF2', '#1A2738': '#F8FAFC', '#1E3047': '#E4EDF3',
+            '#2D2410': '#FEF3C7', '#0C2A3A': '#E0F2FE',
+        })
+
+    def _recolor(widget):
+        try:
+            opts = widget.configure()
+            if 'background' in opts:
+                cur = widget.cget('background')
+                if cur in color_map:
+                    widget.configure(background=color_map[cur])
+            if 'foreground' in opts:
+                cur = widget.cget('foreground')
+                if cur in color_map:
+                    widget.configure(foreground=color_map[cur])
+        except Exception:
+            pass
+        for child in widget.winfo_children():
+            _recolor(child)
+
+    _recolor(root)
 
 
 def apply_row_stripes(tree, colors=None):

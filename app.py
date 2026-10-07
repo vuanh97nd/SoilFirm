@@ -81,7 +81,8 @@ from graphics import (
     draw_rotated_text, SOIL_PALETTE, render_chart_view
 )
 from ui_theme import (COLORS, configure_theme, style_action_button, UI_FONT, UI_FONT_MONO,
-                      configure_treeview_style, apply_row_stripes)
+                      configure_treeview_style, apply_row_stripes,
+                      apply_theme_mode, is_dark_mode)
 from ui_i18n import english as _english_ui
 from cdm import build_view as build_cdm_view
 from treatment_optimizer import optimize_mechanical, optimize_drainage_time
@@ -1727,6 +1728,13 @@ class App(tk.Tk):
 
         tk.Frame(actions, bg='#53758B', width=1, height=18).pack(
             side='left', padx=8, pady=24)
+        self._dark_mode_var = tk.BooleanVar(value=False)
+        self._dark_btn = make_header_btn(
+            actions, '🌙', self._toggle_dark_mode,
+            bg='#334155', hover_bg='#475569')
+        self._dark_btn.pack(side='left', padx=(0, 8), pady=22)
+        tk.Frame(actions, bg='#53758B', width=1, height=18).pack(
+            side='left', padx=8, pady=24)
         self.header_language_selector = ttk.Combobox(
             actions, textvariable=self.ui_language,
             values=('Tiếng Việt', 'English'), state='readonly', width=9,
@@ -3284,6 +3292,15 @@ class App(tk.Tk):
     def _translate_visible_tab(self):
         self._tab_language_job = None
         self._apply_ui_language()
+
+    def _toggle_dark_mode(self):
+        dark = not is_dark_mode()
+        apply_theme_mode(self, dark)
+        if hasattr(self, '_dark_btn'):
+            self._dark_btn.configure(text='☀' if dark else '🌙')
+        # Làm mới bảng địa tầng để áp màu xen kẽ mới
+        if hasattr(self, 'soil_tree'):
+            self.after_idle(self.refresh_soils)
 
     def _set_ui_language(self, _event=None):
         self._apply_ui_language()
