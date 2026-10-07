@@ -748,7 +748,7 @@ def build_view(parent: tk.Misc) -> None:
             ""
         ]
         tong_lun = r['S_total_cm']
-        lines_1.append((f"[{p['pile_type']}] Độ lún dư ΔSr = {tong_lun:.2f} cm <= {limit:.2f} cm "
+        lines_1.append((f"[{p['pile_type']}] Sc dư = {tong_lun:.2f} cm <= {limit:.2f} cm "
                         f"=> {'ĐẢM BẢO YÊU CẦU' if tong_lun <= limit else 'KHÔNG ĐẠT'}", 
                         'ok' if tong_lun <= limit else 'ng'))
         

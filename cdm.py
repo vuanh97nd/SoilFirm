@@ -1308,23 +1308,23 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
                 if res['sum_sc'] <= END_BEARING_RESIDUAL_TOL_CM:
                     lbl_eval_lun.config(
                         text=L("[Cọc chống] Không còn lún dư dưới mũi cọc")
-                             + f" (ΔS_r = {res['sum_sc']:.2f} cm) ⇒ "
+                             + f" (Sc dư = {res['sum_sc']:.2f} cm) ⇒ "
                              + L("ĐẢM BẢO YÊU CẦU"),
                         foreground='#047857')
                 else:
                     lbl_eval_lun.config(
-                        text=L("[Cọc chống] Còn lún dư dưới mũi cọc") + f" ΔS_r = {res['sum_sc']:.2f} cm ⇒ "
+                        text=L("[Cọc chống] Còn lún dư dưới mũi cọc") + f" Sc dư = {res['sum_sc']:.2f} cm ⇒ "
                              + L("KHÔNG ĐẢM BẢO (cần kéo dài cọc, dùng Tối ưu hóa)"),
                         foreground='#DC2626')
             else:
                 if res['sum_sc'] <= limit_cm:
                     lbl_eval_lun.config(
-                        text=L("[Cọc treo] Độ lún dư") + f" ΔS_r = {res['sum_sc']:.2f} cm ≤ {limit_cm} cm ⇒ "
+                        text=L("[Cọc treo] Sc dư") + f" = {res['sum_sc']:.2f} cm ≤ {limit_cm} cm ⇒ "
                              + L("ĐẢM BẢO YÊU CẦU"),
                         foreground='#047857')
                 else:
                     lbl_eval_lun.config(
-                        text=L("[Cọc treo] Độ lún dư") + f" ΔS_r = {res['sum_sc']:.2f} cm > {limit_cm} cm ⇒ "
+                        text=L("[Cọc treo] Sc dư") + f" = {res['sum_sc']:.2f} cm > {limit_cm} cm ⇒ "
                              + L("KHÔNG ĐẢM BẢO"),
                         foreground='#DC2626')
 

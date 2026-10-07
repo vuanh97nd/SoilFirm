@@ -362,7 +362,7 @@ class SegmentBoard(ttk.Frame):
         widths = [65, 190, 100, 160, 100, 100, 130, 320]
         heads += ['Phương án', 'Thông số xử lý'] if after else []
         widths += [220, 480] if after else []
-        heads += ['S꜀ dư (cm)']
+        heads += ['Sc dư (cm)']
         widths += [130]
         if not after:
             heads += ['Lún cố kết S꜀ (cm)', 'Lún tức thời Sᵢ (cm)', 'Lún tổng S (cm)']
@@ -515,7 +515,7 @@ class SegmentBoard(ttk.Frame):
                     residual = location.get('Sc_dư_cm'); limit = before.get('limit_cm')
                     text += (f'{location.get("vị_trí", "")}: Sc cuối={fmt(location.get("Sc_cuối_cm"))} cm; '
                              f'Sc dư={fmt(residual)} cm; U={fmt(location.get("U_%"))}%\n'
-                             f'Sc dư={fmt(residual)} cm ≤ ΔS={fmt(limit)} cm: '
+                             f'Sc dư={fmt(residual)} cm ≤ [ΔS]={fmt(limit)} cm: '
                              f'{"ĐẠT" if residual is not None and limit is not None and residual <= limit else "CHƯA ĐẠT"}\n')
                     for layer in location.get('phân_tố', []):
                         text += ' · '.join(f'{k}: {fmt(v) if not isinstance(v, (list, dict)) else str(v)}' for k, v in layer.items()) + '\n'
@@ -539,7 +539,7 @@ class SegmentBoard(ttk.Frame):
                 text += '\nChi tiết xử lý:\n' + ('\n'.join(lines) if lines else 'Chưa có dữ liệu')
                 residual, limit = attempt.get('residual_cm'), attempt.get('limit_cm')
                 if residual is not None and limit is not None:
-                    text += f'\nKiểm toán lún: S꜀ dư = {fmt(residual)} cm ≤ [ΔS] = {fmt(limit)} cm: ' + ('ĐẠT' if residual <= limit else 'CHƯA ĐẠT')
+                    text += f'\nKiểm toán lún: Sc dư = {fmt(residual)} cm ≤ [ΔS] = {fmt(limit)} cm: ' + ('ĐẠT' if residual <= limit else 'CHƯA ĐẠT')
                 report = attempt.get('calculation') or option.get('calculation_report') or option.get('details') or {}
                 if not report and option.get('special'):report = option['special']
                 native = report.get('result') or {}
@@ -967,7 +967,7 @@ class SingleTreatmentBoard(SegmentBoard):
                 text = (f'STT {record.get("section_no")} · {record.get("status", "")}\n'
                         f'Dự án: {p.name} · Mặt cắt: {p.station} · Lỗ khoan: {p.borehole_name}\n'
                         f'Phương án: {record.get("opt_name", "")}\n'
-                        f'S꜀ dư = {fmt(record.get("residual"))} cm; [ΔS] = {fmt(record.get("limit"))} cm\n'
+                        f'Sc dư = {fmt(record.get("residual"))} cm; [ΔS] = {fmt(record.get("limit"))} cm\n'
                         + '\n'.join(lines) + '\n' + record.get('notes', ''))
                 if record.get('calculation_report'):
                     text += '\n\nChi tiết tính toán:\n' + json.dumps(record['calculation_report'], ensure_ascii=False, indent=2, default=str)
@@ -978,7 +978,7 @@ class SingleTreatmentBoard(SegmentBoard):
                     f'Hₜₖ = {fmt(p.h_design)} m; Hₜₜ = {fmt(p.height)} m\n'
                     f'Phương án: {item.opt_name} · {row["status"]}\n'
                     f'Thông số xử lý: {item.opt_params_desc}\n'
-                    f'S꜀ dư = {fmt(item.residual_cm)} cm; [ΔS] = {fmt(item.limit_cm)} cm\n'
+                    f'Sc dư = {fmt(item.residual_cm)} cm; [ΔS] = {fmt(item.limit_cm)} cm\n'
                     f'Kiểm toán: {"ĐẠT" if item.is_pass else "CHƯA ĐẠT"}\n'
                     f'Thời gian: {item.time_desc}\n{item.tech_notes}\n\nĐịa tầng:\n')
             for soil in p.soils:
@@ -1031,10 +1031,10 @@ class SingleCombinedResults(ttk.Frame):
         ttk.Label(bar, text='Một phân đoạn một dòng · Trước xử lý và sau xử lý đặt cạnh nhau').pack(side='left')
         ttk.Button(bar, text='Làm mới bảng', command=self.refresh).pack(side='right')
         identity = ['STT', 'Lý trình', 'Chiều dài (m)', 'Mặt cắt', 'Hₜₖ (m)', 'Hₜₜ (m)', 'Lỗ khoan']
-        before = ['Trước · Sᵢ (cm)', 'Trước · S꜀ (cm)', 'Trước · S (cm)',
-                  'Trước · S꜀ dư (cm)', 'Trước · [ΔS] (cm)', 'Trước · Đánh giá']
+        before = ['Trước · Sᵢ (cm)', 'Trước · Sc (cm)', 'Trước · S (cm)',
+                  'Trước · Sc dư (cm)', 'Trước · [ΔS] (cm)', 'Trước · Đánh giá']
         after = ['Sau · Phương án chọn', 'Sau · Thông số xử lý', 'Sau · Sᵢ (cm)',
-                 'Sau · S꜀ (cm)', 'Sau · S (cm)', 'Sau · S꜀ dư (cm)',
+                 'Sau · Sc (cm)', 'Sau · S (cm)', 'Sau · Sc dư (cm)',
                  'Sau · [ΔS] (cm)', 'Sau · Đánh giá', 'Trạng thái']
         self.tree = table(self, identity+before+after,
             [65,190,100,150,100,100,130]+[145]*5+[160]+[240,400]+[145]*5+[160,250])

@@ -159,7 +159,7 @@ def calculation_indicator(action):
     def run(self, *args, **kwargs):
         titles = {
             'calculate_expansion_forecast': 'Dự báo lún nền mở rộng',
-            'calculate_before': 'Lún theo thời gian',
+            'calculate_before': 'Lún theo t',
             'calculate_settlement': 'Lún khi chưa xử lý',
             'calculate_hbl': 'Bù lún',
             'calculate_consolidation': 'Lún sau xử lý',
@@ -4736,7 +4736,7 @@ class App(tk.Tk):
         """Bảng và biểu đồ St(t) lấy cùng kết quả cố kết, đến U=99%."""
         try:
             self.config(cursor='watch')
-            self.status_text.set('Đang xử lý: lún theo thời gian…')
+            self.status_text.set('Đang xử lý: lún theo t…')
             self.update_idletasks()
             self.collect()
             pos_str = self.before_pos_var.get() if hasattr(self, 'before_pos_var') else 'Tim đường'
@@ -4802,10 +4802,10 @@ class App(tk.Tk):
                     f'U = 99% tại t = {t_99 / 365.25:.2f} năm.' if t_99 > 0 else
                     f'{pos_str}: không phát sinh lún cố kết; St = {res_eval["St_t_cm"]:.2f} cm.')
             self.status_text.set(text)
-            self.report_result('Lún theo thời gian', text)
+            self.report_result('Lún theo t', text)
         except Exception as exc:
-            self.report_result('Lún theo thời gian', str(exc), error=True)
-            messagebox.showerror('Lỗi tính lún theo thời gian', str(exc))
+            self.report_result('Lún theo t', str(exc), error=True)
+            messagebox.showerror('Lỗi tính lún theo t', str(exc))
         finally:
             self.config(cursor='')
 
@@ -6624,7 +6624,7 @@ class App(tk.Tk):
                      f'({self._treatment_time_description()})')
             mechanical = self.project.treatment_group == 'mechanical'
             radial_mode = not mechanical and self.project.treatment.startswith(('PVD', 'SD'))
-            headers = (['Vị trí', 'Sc = Sc dư (cm)', 'St (cm)', 'U (%)', 'Đánh giá']
+            headers = (['Vị trí', 'Sc dư (cm)', 'St (cm)', 'U (%)', 'Đánh giá']
                        if mechanical else
                        ['Vị trí', 'Sc (cm)', 'St (cm)', 'Sc dư vùng PVD/SD (cm)',
                         'Sc dư chưa xử lý (cm)', 'Sc dư (cm)', 'U (%)', 'Đánh giá']
