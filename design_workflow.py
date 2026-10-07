@@ -1180,11 +1180,27 @@ def workflow_pdf_records(app):
                 if natural and project_signature(natural['project']) == project_signature(current):
                     before = {'calculated': True, 'evaluation_day': natural.get('days')}
                     before_project = natural['project']
-                if selected and selected.get('signature') == section_signature(current):
+                if selected and (selected.get('signature') == section_signature(current) or
+                                project_signature(selected.get('project_snapshot', current)) == project_signature(current)):
                     rec = deepcopy(selected)
                     rec['opt_name'] = rec.get('name')
                     rec['status'] = 'ĐẠT' if rec.get('pass_check') else 'CHƯA ĐẠT'
                     rec['calculation_report'] = rec.get('special')
+                elif not rec.get('project_snapshot'):
+                    # Fallback: use latest treated calculation result if no formal selection exists
+                    choice = getattr(app, '_choice_group_results', {})
+                    tgroup = app.project.treatment_group
+                    cached = choice.get(tgroup) or choice.get('mechanical') or choice.get('drainage')
+                    if cached and project_signature(cached['project']) == project_signature(current):
+                        snap = deepcopy(cached['project'])
+                        residual = max((r.get('Sc_dư_cm', 0) for r in (cached.get('results') or [])), default=None)
+                        limit = getattr(app.project, 'residual_limit_cm', None)
+                        passing = residual is not None and limit is not None and residual <= limit
+                        rec = {'opt_name': app.project.treatment, 'project_snapshot': snap,
+                               'payload': {'treatment_group': tgroup},
+                               'pass_check': passing, 'status': 'ĐẠT' if passing else 'CHƯA ĐẠT',
+                               'special': None, 'method': None,
+                               'calculation_report': {'locations': deepcopy(cached.get('results', []))}}
             entries.append({'number': n, 'before': before, 'before_project': before_project,
                             'record': rec, 'current': current})
     return entries

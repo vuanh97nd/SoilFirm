@@ -169,6 +169,17 @@ def apply_theme_mode(root, dark: bool):
                     widget.configure(foreground=color_map[cur])
         except Exception:
             pass
+        # Recolor items drawn on Canvas (lines, text, shapes)
+        import tkinter as _tk
+        if isinstance(widget, _tk.Canvas):
+            for item_id in widget.find_all():
+                try:
+                    for attr in ('fill', 'outline'):
+                        cur = widget.itemcget(item_id, attr)
+                        if cur and cur in color_map:
+                            widget.itemconfigure(item_id, **{attr: color_map[cur]})
+                except Exception:
+                    pass
         for child in widget.winfo_children():
             _recolor(child)
 
