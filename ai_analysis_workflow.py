@@ -54,7 +54,7 @@ from ai_analysis_data import (SOIL_KEYS, ARRAY_KEYS, TEXT_KEYS, normalize_materi
     new_session, make_record, commit_record, validate_analysis_project, average_materials, move_layer)
 from utils import number, ScrollableFrame
 from model import Project
-from ui_theme import ProcessingNotice
+from ui_theme import ProcessingNotice, UI_FONT
 
 
 class PageRouter:

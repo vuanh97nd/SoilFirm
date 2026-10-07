@@ -1,5 +1,6 @@
 """Hộp thoại import THSH/CTDY và tính hàng loạt với các vị trí ưu tiên (tối đa 5, có thể để trống)."""
 from __future__ import annotations
+from ui_theme import UI_FONT
 
 from copy import deepcopy
 from pathlib import Path

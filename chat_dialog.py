@@ -1,5 +1,6 @@
 """Fast support conversations with typing, authenticated downloads and deletion."""
 from __future__ import annotations
+from ui_theme import UI_FONT
 import sqlite3
 import json
 import base64

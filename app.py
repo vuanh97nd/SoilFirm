@@ -3480,7 +3480,7 @@ class App(tk.Tk):
         except (tk.TclError, KeyError):
             menu = None
         def walk_menu(menu_widget):
-            if menu_widget is None:
+            if not isinstance(menu_widget, tk.Menu):
                 return
             sources = getattr(menu_widget, '_sf_label_sources', {})
             last = menu_widget.index('end')
