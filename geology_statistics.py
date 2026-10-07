@@ -287,6 +287,8 @@ class GeologyStatistics(ttk.Frame):
             button.pack(side='left',padx=2)
             workspace=getattr(self.app,'_ai_analysis_workspace',None)
             if workspace is not None:workspace.buttons.append(button)
+        sep=ttk.Separator(toolbar,orient='vertical')
+        sep.pack(side='left',fill='y',padx=6,pady=2)
         for label,action in [('Xóa lớp','delete'),('Xóa dữ liệu bảng','reset'),('Xóa dữ liệu tuyến','reset_all')]:
             button=ttk.Button(toolbar,text=label,style='Danger.TButton',command=lambda selected=action:self.layer_action(selected))
             button.pack(side='left',padx=2)

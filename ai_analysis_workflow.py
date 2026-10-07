@@ -180,8 +180,9 @@ class AnalysisWorkspace(ttk.Frame):
         self.button(summary_bar, 'Áp dụng chỉ tiêu', self.approve_geology, style='Accent.TButton').pack(side='right', padx=3)
         for label,command in [('Nhập chỉ tiêu',lambda:self.edit_material(new=True)),('Sửa chỉ tiêu',self.edit_material),('Sắp xếp lớp',self.sort_materials),('↑',lambda:self.move_material(-1)),('↓',lambda:self.move_material(1))]:
             self.button(summary_bar,label,command).pack(side='left',padx=3)
-        self.button(summary_bar,'Xóa dữ liệu bảng',lambda:self.reset_section_data('materials')).pack(side='left',padx=3)
-        self.button(summary_bar,'Xóa dữ liệu đầu vào',self.reset_imported_data).pack(side='left',padx=3)
+        ttk.Separator(summary_bar,orient='vertical').pack(side='left',fill='y',padx=6,pady=2)
+        self.button(summary_bar,'Xóa dữ liệu bảng',lambda:self.reset_section_data('materials'),style='Danger.TButton').pack(side='left',padx=3)
+        self.button(summary_bar,'Xóa dữ liệu đầu vào',self.reset_imported_data,style='Danger.TButton').pack(side='left',padx=3)
         self.material_tree = self.table(pages[0], ('Mã lớp','Loại đất','γ TB (T/m³)','e₀ TB','Cc TB','Cs TB','Pc TB (T/m²)','Cv TB (10⁻³ cm²/s)',
             'c₀ / Su (T/m²)','N-SPT (búa)','φ′ CU (độ)','c TB (T/m²)','φ cắt TB (độ)',
             'P nén (kgf/cm²)','e theo P','P cố kết (kgf/cm²)','P nén thể tích (kgf/cm²)','mv theo P (m²/T)',

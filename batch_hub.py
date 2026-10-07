@@ -240,7 +240,7 @@ def build_view(parent,app):
             app._saved_sections_data=[r for r in getattr(app,'_saved_sections_data',[]) if r.get('section_no')!=n]+[rec]
             session['records']=[r for r in session['records'] if r.get('section_no')!=n]+[deepcopy(rec)]
         app.refresh_treatment_boq();refresh()
-    for text,command in [('Chọn tất cả đoạn',select_all),('Bỏ chọn tất cả',clear_selection),('Tính bằng AI',run_ai),('Xác nhận phương án',approve),('Xem kết quả đoạn',show_detail)]:ttk.Button(toolbar,text=text,command=command).pack(side='left',padx=2)
+    for text,command,style in [('Chọn tất cả đoạn',select_all,'TButton'),('Bỏ chọn tất cả',clear_selection,'TButton'),('Tính bằng AI',run_ai,'Accent.TButton'),('Xác nhận phương án',approve,'Accent.TButton'),('Xem kết quả đoạn',show_detail,'TButton')]:ttk.Button(toolbar,text=text,command=command,style=style).pack(side='left',padx=2)
     filter_var.trace_add('write',lambda *_:refresh())
     app._summary_run_manual=run_manual;app._summary_run_ai=run_ai;app.refresh_data_preview=lambda:None
     refresh();return refresh

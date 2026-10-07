@@ -4406,9 +4406,12 @@ class App(tk.Tk):
         ttk.Label(mnn_info, text="m", font=(UI_FONT, 9)).pack(side='left')
 
         borehole_bar = ttk.Frame(inner)
-        borehole_bar.pack(fill='x', pady=(0, 8))
+        borehole_bar.pack(fill='x', pady=(0, 4))
         ttk.Button(borehole_bar, text='Nhập lỗ khoan…', command=self.open_borehole_input,
                    style='Accent.TButton').pack(side='left')
+        ttk.Button(borehole_bar, text='+ Thêm lớp đất', command=self.add_soil, style='Accent.TButton').pack(side='left', padx=4)
+        ttk.Button(borehole_bar, text='Sửa chỉ tiêu đất', command=self.edit_soil).pack(side='left', padx=4)
+        ttk.Button(borehole_bar, text='🗑 Xóa lớp', command=self.delete_soil, style='Danger.TButton').pack(side='left', padx=4)
         self.borehole_summary = tk.StringVar()
         ttk.Label(borehole_bar, textvariable=self.borehole_summary).pack(side='left', padx=12)
 
@@ -4458,15 +4461,15 @@ class App(tk.Tk):
         self.soil_tree.grid(row=0, column=0, sticky='nsew')
         s_scroll_y.grid(row=0, column=1, sticky='ns')
         s_scroll_x.grid(row=1, column=0, sticky='ew')
-        
+
+        self._soil_empty_label = ttk.Label(
+            soil_container,
+            text='Chưa có lớp đất nào.\nNhấn  + Thêm lớp đất  hoặc  Nhập lỗ khoan…  để bắt đầu.',
+            font=(UI_FONT, 10), foreground='#94A3B8', anchor='center', justify='center')
+        self._soil_empty_label.grid(row=0, column=0, sticky='nsew', padx=40, pady=40)
+
         # BẮT SỰ KIỆN NHẤP ĐÚP CHUỘT: SỬA TRỰC TIẾP Ô DÀY H HOẶC MỞ HỘP THOẠI CHI TIẾT
         self.soil_tree.bind('<Double-1>', self._on_soil_double_click)
-
-        btn_soil = ttk.Frame(inner)
-        btn_soil.pack(fill='x', pady=(10, 0))
-        ttk.Button(btn_soil, text='+ Thêm lớp đất', command=self.add_soil, style='Accent.TButton').pack(side='left', padx=4)
-        ttk.Button(btn_soil, text='Sửa chỉ tiêu đất', command=self.edit_soil).pack(side='left', padx=4)
-        ttk.Button(btn_soil, text='🗑 Xóa lớp', command=self.delete_soil, style='Danger.TButton').pack(side='left', padx=4)
 
     def open_borehole_input(self):
         def commit(candidate):
@@ -4584,6 +4587,11 @@ class App(tk.Tk):
                 f'{s.cs:.3f}' if is_clay else '-', f'{s.pc:.2f}' if is_clay else '-',
                 f'{s.co:.2f}' if is_clay else '-', f'{s.phi_cu_effective:.2f}' if s.phi_cu_effective is not None else '—', source_hint
             ))
+        if hasattr(self, '_soil_empty_label'):
+            if self.project.soils:
+                self._soil_empty_label.grid_remove()
+            else:
+                self._soil_empty_label.grid()
         if hasattr(self,'drainage_parameter_tree'):self.refresh_drainage_parameters()
         for col_index, cid in enumerate(self.soil_tree['columns']):
             display = self.soil_tree.heading(cid, 'text')

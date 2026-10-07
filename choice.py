@@ -264,7 +264,9 @@ def build_view(parent: tk.Misc) -> None:
     btn_export_tech.pack(side='left', padx=(0, 8), ipady=3)
 
     btn_export_boq = ttk.Button(f_sum_actions, text='Xuất bảng khối lượng', style='Accent.TButton')
-    btn_export_boq.pack(side='left', padx=(0, 16), ipady=3)
+    btn_export_boq.pack(side='left', padx=(0, 12), ipady=3)
+
+    ttk.Separator(f_sum_actions, orient='vertical').pack(side='left', fill='y', padx=8, pady=2)
 
     btn_del_section = ttk.Button(f_sum_actions, text="🗑 Xóa phân đoạn chọn", style='Danger.TButton')
     btn_del_section.pack(side='left', padx=(0, 8), ipady=3)
