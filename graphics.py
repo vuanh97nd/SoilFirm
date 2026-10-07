@@ -746,6 +746,17 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             c.create_rectangle(xp - pt_sz, yp - pt_sz, xp + pt_sz, yp + pt_sz,
                                fill='#CBD5E1', outline='#0F172A', width=1.1)
 
+        # 8b. Đường giới hạn [ΔS]
+        limit_m = chart_data.get('residual_limit_m')
+        if limit_m is not None and residual_view and limit_m > 0:
+            y_lim = y_coord(limit_m)
+            if top_y <= y_lim <= bot_y:
+                c.create_line(left, y_lim, right, y_lim,
+                              fill='#DC2626', width=1.8, dash=(8, 4))
+                lim_lbl = f'[ΔS] = {limit_m * 100:.1f} cm'
+                c.create_text(right - 5, y_lim - 6, text=lim_lbl, anchor='ne',
+                              font=(UI_FONT, 8, 'bold'), fill='#DC2626')
+
         if 'assessment_day' in chart_data:
             day = chart_data['assessment_day']
             point = min(rows, key=lambda r: abs(r['ngày'] - day))
@@ -770,7 +781,7 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
         left = 72
         right = w - 60
         mid_y = h * 0.44
-        top_y = 30
+        top_y = 34
         bot_y = h - 42
 
         max_h = max(max((r['hne_m'], r['he_m'])) for r in rows) * 1.25 or 1.0
@@ -779,6 +790,15 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
         x_func = lambda day: left + (right - left) * (day / total_days)
         y_h_func = lambda val: mid_y - (mid_y - top_y) * (val / max_h)
         y_s_func = lambda val: mid_y + (bot_y - mid_y) * (val / max_s)
+
+        # Tiêu đề 2 panel
+        c.create_text((left + right) / 2, top_y - 18, anchor='center',
+                      text=L('DIỄN BIẾN ĐẮP & LÚN / THEO THỜI GIAN'),
+                      font=(UI_FONT, 9, 'bold'), fill='#0F172A')
+        c.create_text(left - 4, (top_y + mid_y) / 2, anchor='e',
+                      text=L('ĐẮP'), font=(UI_FONT, 8, 'bold'), fill='#1E293B', angle=90)
+        c.create_text(left - 4, (mid_y + bot_y) / 2, anchor='e',
+                      text=L('LÚN'), font=(UI_FONT, 8, 'bold'), fill='#0369A1', angle=90)
 
         poly_pts = [(left, mid_y)]
         for r in rows:
@@ -810,7 +830,9 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
         c.create_text(left - 8, top_y - 12, text='H (m)', anchor='e',
                       font=(UI_FONT, 8, 'bold'), fill='#1E293B')
 
-        c.create_line(left, mid_y, right, mid_y, fill='#0F172A', width=1.6)
+        # Đường phân cách 2 panel (nổi bật hơn)
+        c.create_rectangle(left, mid_y - 1, right, mid_y + 1, fill='#334155', outline='')
+        c.create_line(left, mid_y, right, mid_y, fill='#334155', width=2.5)
 
         for i in range(1, 5):
             vs = max_s * i / 4
@@ -842,6 +864,16 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
                 c.create_line(x1, y_s_func(r1['sc_du_cm']),
                               x2, y_s_func(r2['sc_du_cm']),
                               fill='#7C3AED', width=2.0, dash=(2, 2))
+
+        # Đường giới hạn [ΔS]
+        limit_cm = chart_data.get('residual_limit_cm')
+        if limit_cm is not None and limit_cm > 0:
+            y_lim = y_s_func(limit_cm)
+            if mid_y < y_lim < bot_y:
+                c.create_line(left, y_lim, right, y_lim,
+                              fill='#DC2626', width=1.8, dash=(8, 4))
+                c.create_text(right - 5, y_lim - 6, text=f'[ΔS] = {limit_cm:.0f} cm',
+                              anchor='ne', font=(UI_FONT, 8, 'bold'), fill='#DC2626')
 
         for index, stage in enumerate(chart_data.get('stages', [])):
             height = stage['h_cuối']
@@ -881,6 +913,7 @@ def render_chart_view(c: tk.Canvas, chart_data: dict, language: str = 'vi'):
             ('Sc(t) (cm)', '#0284C7', ()),
             ('St(t) (cm)', '#D97706', (5, 3)),
             (L('Sc dư (cm)'), '#7C3AED', (2, 2)),
+            ('[ΔS]', '#DC2626', (8, 4)),
         ]
 
         col_w = (right - left) / len(items)

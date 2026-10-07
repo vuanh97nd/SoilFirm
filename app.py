@@ -969,7 +969,13 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                                   justify='center', fill='#B91C1C',
                                   font=(UI_FONT, 7, 'bold'))
                 if stage_label:
-                    c.create_text(w-12, h-25, anchor='e', text=stage_label,
+                    _sl_x, _sl_y = w - 12, h - 25
+                    bbox = c.bbox(c.create_text(_sl_x, _sl_y, anchor='e', text=stage_label,
+                                               fill='#B91C1C', font=(UI_FONT, 9, 'bold')))
+                    if bbox:
+                        c.create_rectangle(bbox[0]-3, bbox[1]-2, bbox[2]+3, bbox[3]+2,
+                                           fill='#FFFBEB', outline='#FCA5A5', width=1)
+                    c.create_text(_sl_x, _sl_y, anchor='e', text=stage_label,
                                   fill='#B91C1C', font=(UI_FONT, 9, 'bold'))
         else:
             hydro = plot_mode == 'Áp lực nước tĩnh'
@@ -1050,7 +1056,13 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                               text='Áp lực thặng dư ước tính theo U trung bình',
                               fill='#475569', font=(UI_FONT, 7))
             if stage_label:
-                c.create_text(w-12, h-38, anchor='e', text=stage_label,
+                _sl_x2, _sl_y2 = w - 12, h - 38
+                bbox2 = c.bbox(c.create_text(_sl_x2, _sl_y2, anchor='e', text=stage_label,
+                                             fill=plot_color, font=(UI_FONT, 9, 'bold')))
+                if bbox2:
+                    c.create_rectangle(bbox2[0]-3, bbox2[1]-2, bbox2[2]+3, bbox2[3]+2,
+                                       fill='#FFFBEB', outline='#FCA5A5', width=1)
+                c.create_text(_sl_x2, _sl_y2, anchor='e', text=stage_label,
                               fill=plot_color, font=(UI_FONT, 9, 'bold'))
 
     overlay_after = max(c.find_all(), default=overlay_before)
@@ -5598,8 +5610,10 @@ class App(tk.Tk):
                                    fg='#168062' if passed else '#B42318')
         local = cdm_design_project(report.get('project_snapshot', self.project), report['scope'])
         curve = self._calculate_model(cdm_time_history, local, result, method, report['params']['Lc'])
+        lim_m = getattr(self.project, 'residual_limit_cm', 20.0) / 100.0
         self.chart_data = {'type': 'natural', 'metric': 'residual',
-                           'assessment_day': 0.0, 'rows': curve} if curve else {}
+                           'assessment_day': 0.0, 'rows': curve,
+                           'residual_limit_m': lim_m} if curve else {}
         if curve:
             self.box_chart.pack(fill='both', expand=True, pady=4, after=self.box_geom)
             self.render_chart()
@@ -5944,8 +5958,10 @@ class App(tk.Tk):
             rows.append({'ngày': day, 'tháng': day/30, 'sc_m': result['Sc_t_cm']/100,
                          'st_m': result['St_t_cm']/100, 'dsc_m': result['Sc_dư_cm']/100,
                          'u_pct': result['U_%']})
+        lim_m = getattr(self.project, 'residual_limit_cm', 20.0) / 100.0
         self.chart_data = {'type': 'natural', 'metric': 'residual', 'time_unit': 'years',
-                           'assessment_day': evaluation_day, 'rows': rows}
+                           'assessment_day': evaluation_day, 'rows': rows,
+                           'residual_limit_m': lim_m}
         self.render_chart()
 
     def draw_treatment_chart(self):
@@ -5975,8 +5991,10 @@ class App(tk.Tk):
                                        'sc_m': r['Sc_t_cm']/100.0,
                                        'dsc_m': r['Sc_dư_cm']/100.0,
                                        'u_pct': r['U_%']})
+                lim_m = getattr(self.project, 'residual_limit_cm', 20.0) / 100.0
                 self.chart_data = {'type': 'natural', 'metric': 'residual',
-                                   'assessment_day': 0.0, 'rows': chart_rows}
+                                   'assessment_day': 0.0, 'rows': chart_rows,
+                                   'residual_limit_m': lim_m}
                 self._display_result_panels(show_cards=self.current_step in self._step_result_cache
                                             or self._treated_residual is not None)
                 if self.current_step in self._step_result_cache:
@@ -6014,8 +6032,10 @@ class App(tk.Tk):
                     'sc_cm': sc_val, 'st_cm': st_val, 'sc_du_cm': r['Sc_dư_cm']
                 })
 
+            lim_cm = getattr(self.project, 'residual_limit_cm', 20.0)
             self.chart_data = {'type': 'pvd', 'assessment_day': assessment_day,
-                               'stages': deepcopy(schedule), 'rows': chart_rows}
+                               'stages': deepcopy(schedule), 'rows': chart_rows,
+                               'residual_limit_cm': lim_cm}
             self._display_result_panels(show_cards=self.current_step in self._step_result_cache
                                         or self._treated_residual is not None)
             if self.current_step in self._step_result_cache:
