@@ -192,7 +192,24 @@ def _excel_header_context(sheet):
             if re.search(r'\btu\b',_unit_label(left_line)) and re.search(r'\bden\b',_unit_label(right_line)) and re.search(r'\(\s*m\s*\)',left_line) and not re.search(r'\(\s*(?:m|cm|mm)\s*\)',right_line):
                 lines=[line+' / (m) [đơn vị chung nhóm độ sâu]' if line==right_line else line for line in lines]
     context='\n'.join(lines)
-    if len(context)>14000:raise ValueError(sheet.title+': tiêu đề quá dài; chia bảng hoặc rút gọn tiêu đề trước khi đọc AI.')
+    if len(context)>14000:
+        # Auto-select top 40 most relevant columns by geotechnical keyword scoring.
+        GEO_KEYWORDS = {
+            'γ','Su','Cu','Cc','Cs','Cv','e0','φ','c','Es','N','w','LL','PL','IP','Sr','G','k',
+            'qc','fs','Rf','SPT','UCS','qu','depth','elevation','layer','mẫu','lớp','chiều sâu',
+            'độ sâu','bề dày','cao độ','thí nghiệm',
+        }
+        def _col_score(line):
+            text=line.split(': ',1)[1] if ': ' in line else line
+            score=0
+            for kw in GEO_KEYWORDS:
+                if kw.lower() in text.lower():score+=1
+            return score
+        col_lines=[l for l in lines[1:]]  # skip header note line
+        scored=sorted(range(len(col_lines)),key=lambda i:_col_score(col_lines[i]),reverse=True)
+        top40_indices=set(sorted(scored[:40]))
+        selected=[lines[0]]+[col_lines[i] for i in sorted(top40_indices)]
+        context='[Chú ý: bảng rộng, chỉ 40 cột có độ liên quan cao nhất được gửi]\n'+'\n'.join(selected)
     return context
 
 
@@ -436,13 +453,21 @@ def cad_borehole_columns(rows,name,source):
     heads=[r for r in rows if label(r) in ('tên lớp','mã lớp','layer id','layer','stratum')]
     if len(heads)!=1:return _cad_explicit_log_columns(rows,name,source)  # Labelled alternative forms.
     head=heads[0];x,y=head[:2]
+    # Compute adaptive vertical tolerance for column header detection.
+    _numeric_ys = sorted(r[1] for r in rows if numeric(r) is not None)
+    if len(_numeric_ys) >= 5:
+        _ydiffs = sorted(abs(_numeric_ys[i+1]-_numeric_ys[i]) for i in range(len(_numeric_ys)-1) if abs(_numeric_ys[i+1]-_numeric_ys[i]) > 0)
+        _median_row_height = _ydiffs[len(_ydiffs)//2] if _ydiffs else 0
+        adaptive_tol = max(2.0, _median_row_height * 0.10)
+    else:
+        adaptive_tol = 2.0
     options={
         'bottom_elevation':('cao độ (m)','elevation (m)'),
         'bottom_depth':('độ sâu (m)','depth (m)'),
         'thickness':('bề dày (m)','chiều dày (m)','thickness (m)')}
     columns={'code':head}
     for key,names in options.items():
-        candidates=[r for r in rows if label(r) in names and abs(r[1]-y)<2 and r[0]>x]
+        candidates=[r for r in rows if label(r) in names and abs(r[1]-y)<adaptive_tol and r[0]>x]
         if not candidates:return None
         columns[key]=min(candidates,key=lambda r:r[0]-x)
     ordered=sorted(columns,key=lambda k:columns[k][0])
@@ -818,8 +843,44 @@ def _verified_excel_samples(sheet, context, expected, rows):
         if field:
             if field in seen:return []
             seen.add(field);mapping[column]=(field,factor)
-    # The fast path cannot infer soil category from an unclassified description.
-    if 'category' not in seen:return []
+    # The fast path cannot infer soil category from an unclassified description —
+    # unless it can be inferred from the layer code column itself.
+    _category_inferred = False
+    if 'category' not in seen:
+        # Try to infer category from a layer code column using USCS or Vietnamese keywords.
+        USCS_COHESIVE = {'CH','CL','MH','ML','OH','OL','PT'}
+        USCS_GRANULAR = {'SC','SM','SP','SW','GC','GM','GP','GW'}
+        def _infer_category_from_code(raw_code):
+            code = str(raw_code).strip().upper()
+            # Check USCS suffix: e.g. "Lớp 2 (CL)" or just "CL"
+            uscs_match = re.search(r'\b([A-Z]{2})\b', code)
+            if uscs_match:
+                uscs = uscs_match.group(1)
+                if uscs in USCS_COHESIVE:return 'Đất dính'
+                if uscs in USCS_GRANULAR:return 'Đất rời'
+            text = str(raw_code).strip().lower()
+            text = unicodedata.normalize('NFC', text)
+            if any(kw in text for kw in ('sét pha','sét','bùn')):return 'Đất dính'
+            if any(kw in text for kw in ('cát pha',)):return 'Đất dính'
+            if any(kw in text for kw in ('cát','cuội','sỏi')):return 'Đất rời'
+            return None
+        # Find code column
+        code_col = next((col for col,(field,_) in mapping.items() if field=='code'),None)
+        if code_col is not None:
+            # Try inferring from each row's code value; if all succeed, proceed
+            inferred_categories = {}
+            all_ok = True
+            for item in expected:
+                code_cell = sheet.cell(item['row'], code_col)
+                cat = _infer_category_from_code(code_cell.value) if code_cell.value is not None else None
+                if cat is None:all_ok=False;break
+                inferred_categories[item['row']] = cat
+            if all_ok and inferred_categories:
+                _category_inferred = True
+            else:
+                return []
+        else:
+            return []
     result=[]
     for item in expected:
         raw={'code':item['code'],'sample_id':item['sample_id']};evidence=[]
@@ -845,8 +906,12 @@ def _verified_excel_samples(sheet, context, expected, rows):
         if item.get('borehole_name'):
             if raw.get('borehole_name') and borehole_key(raw['borehole_name'])!=borehole_key(item['borehole_name']):return []
             raw['borehole_name']=item['borehole_name']
+        if _category_inferred and not raw.get('category'):
+            raw['category']=inferred_categories.get(item['row'])
         if not raw.get('category') or not any(k in raw for k in ('gamma','e0','cc','cs','pc','cv_constant')):return []
         raw['source']='; '.join(evidence);result.append(raw)
+    if _category_inferred:
+        for r in result:r['_category_inferred']=True
     return result
 
 
@@ -1217,10 +1282,27 @@ def source_chunks(path, progress=None, max_data_chars=8000, extraction_kind=None
     elif ext == '.pdf':
         import fitz
         from PIL import Image
+
+        def _maybe_decode_tcvn3(text):
+            if not text:
+                return text
+            non_ascii = sum(1 for c in text if ord(c) > 127)
+            if non_ascii / max(len(text), 1) > 0.30:
+                # try line by line
+                lines = []
+                for line in text.splitlines():
+                    try:
+                        decoded = decode_cad_text(line)
+                        lines.append(decoded)
+                    except Exception:
+                        lines.append(line)
+                return '\n'.join(lines)
+            return text
+
         with fitz.open(path) as doc:
             for index, page in enumerate(doc):
                 source = f'{path.name} / trang {index+1}'
-                text = page.get_text('text').strip()
+                text = _maybe_decode_tcvn3(page.get_text('text').strip())
                 if len(text) > 22000:
                     # Chia tại dòng để giữ số thứ tự trang trong mỗi phần.
                     lines, size = [], 0
@@ -1243,7 +1325,27 @@ def source_chunks(path, progress=None, max_data_chars=8000, extraction_kind=None
                         if len(buf.getvalue()) <= 1024*1024:
                             break
                     if len(buf.getvalue()) > 1024*1024:
-                        raise ValueError(source + ': ảnh quá lớn; chia trang PDF trước khi đọc AI.')
+                        # Split page into top and bottom halves, compress each separately.
+                        page_h = pix.height
+                        for half_idx, (clip_y0, clip_y1, label_suffix) in enumerate([
+                            (0, page_h // 2, 'trên'),
+                            (page_h // 2, page_h, 'dưới'),
+                        ]):
+                            clip = fitz.IRect(0, clip_y0, pix.width, clip_y1)
+                            pix_half = page.get_pixmap(matrix=fitz.Matrix(1.7, 1.7), alpha=False, clip=clip)
+                            im_half = Image.open(BytesIO(pix_half.tobytes('png'))).convert('RGB')
+                            im_half.thumbnail((2000, 2000))
+                            buf_half = BytesIO()
+                            for quality in (85, 70, 55, 40):
+                                buf_half = BytesIO(); im_half.save(buf_half, 'JPEG', quality=quality)
+                                if len(buf_half.getvalue()) <= 1024*1024:
+                                    break
+                            page_num = page.number + 1
+                            half_source = source + f' (trang {page_num} ({label_suffix}))'
+                            yield {'source': half_source,
+                                   'text': f'trang {page_num} ({label_suffix})' or 'Trang PDF scan; đọc số liệu từ ảnh.',
+                                   'image': {'mime': 'image/jpeg', 'data': base64.b64encode(buf_half.getvalue()).decode()}}
+                        continue
                     yield {'source': source, 'text': text or 'Trang PDF scan; đọc số liệu từ ảnh.',
                            'image': {'mime': 'image/jpeg', 'data': base64.b64encode(buf.getvalue()).decode()}}
     elif ext in ('.dxf', '.dwg'):
@@ -2194,8 +2296,40 @@ def normalize_extracted_row(raw, kind, source):
             layers.append(layer)
         clean['layers']=layers
         item=normalize_borehole(clean,source)
+        warnings=_validate_borehole_layers(item)
+        if warnings:
+            item['_warnings']=warnings
     item['missing'].extend(issues)
     return item,issues
+
+
+def _validate_borehole_layers(borehole):
+    warnings=[]
+    layers=borehole.get('layers') or []
+    for i,layer in enumerate(layers):
+        top=layer.get('top_depth')
+        bot=layer.get('bottom_depth')
+        if top is not None and bot is not None:
+            if bot<=top:
+                warnings.append(f'Lớp {i}: bottom_depth ({bot}) không lớn hơn top_depth ({top})')
+    for i in range(len(layers)-1):
+        bot_i=layers[i].get('bottom_depth')
+        top_next=layers[i+1].get('top_depth')
+        if bot_i is not None and top_next is not None:
+            if top_next-bot_i>2.0:
+                warnings.append(f'Khoảng trống >2m giữa lớp {i} và {i+1}')
+    bottoms=[l.get('bottom_depth') for l in layers if l.get('bottom_depth') is not None]
+    tops=[l.get('top_depth') for l in layers if l.get('top_depth') is not None]
+    if bottoms and tops:
+        total_thickness=sum(
+            (l.get('bottom_depth',0)-l.get('top_depth',0))
+            for l in layers
+            if l.get('bottom_depth') is not None and l.get('top_depth') is not None
+        )
+        max_bottom=max(bottoms)
+        if abs(total_thickness-max_bottom)>0.5:
+            warnings.append(f'Tổng bề dày ({total_thickness:.2f}m) lệch >0.5m so với độ sâu đáy ({max_bottom:.2f}m)')
+    return warnings
 
 
 def normalize_borehole(raw, source=''):
