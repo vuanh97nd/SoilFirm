@@ -11,7 +11,7 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from tkinter import font as tkfont
-from ui_theme import soil_parameter_keys
+from ui_theme import soil_parameter_keys, COLORS, UI_FONT, configure_treeview_style, apply_row_stripes
 
 PARAMS={'gamma':('γ','T/m³'),'e0':('e₀','—'),'cc':('Cc','—'),'cs':('Cs','—'),'pc':('Pc','T/m²'),
         'cv':('Cv','cm²/s'),'co':('Co','T/m²'),'cohesion_c':('c','T/m²'),

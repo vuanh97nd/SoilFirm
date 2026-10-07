@@ -80,7 +80,8 @@ from graphics import (
     draw_cad_grid, draw_soil_hatching, draw_dim_h, draw_dim_v,
     draw_rotated_text, SOIL_PALETTE, render_chart_view
 )
-from ui_theme import COLORS, configure_theme, style_action_button, UI_FONT, UI_FONT_MONO
+from ui_theme import (COLORS, configure_theme, style_action_button, UI_FONT, UI_FONT_MONO,
+                      configure_treeview_style, apply_row_stripes)
 from ui_i18n import english as _english_ui
 from cdm import build_view as build_cdm_view
 from treatment_optimizer import optimize_mechanical, optimize_drainage_time
@@ -3590,9 +3591,7 @@ class App(tk.Tk):
         table_area.rowconfigure(0, weight=1)
 
         style = ttk.Style(admin_win)
-        style.configure("Admin.Treeview.Heading", font=(UI_FONT, 9, 'bold'),
-                        padding=(3, 5))
-        style.configure("Admin.Treeview", font=(UI_FONT, 9), rowheight=22)
+        _admin_stripe = configure_treeview_style(style, 'Admin.Treeview', font_size=9, row_height=22)
 
         tree = ttk.Treeview(table_area, columns=("Fullname", "User", "Key", "Tier", "Expiry", "Status", "LastSeen", "Usage"), show="headings", height=14, style="Admin.Treeview")
         admin_headers = {'Fullname': 'Họ và tên', 'User': 'Tên tài khoản (User)',
@@ -4353,11 +4352,9 @@ class App(tk.Tk):
         style = ttk.Style(self)
         self._soil_body_font = tkfont.Font(self, family=UI_FONT, size=9)
         self._soil_heading_font = tkfont.Font(self, family=UI_FONT, size=9, weight='bold')
-        style.configure("Soil.Treeview.Heading", font=self._soil_heading_font,
-                        padding=(4, 5), background='#E9F0F4', foreground='#172D46')
-        style.configure("Soil.Treeview", font=self._soil_body_font,
-                        rowheight=max(23, self._soil_body_font.metrics('linespace') + 5),
-                        foreground='#1A2C3D')
+        self._soil_stripe_colors = configure_treeview_style(
+            style, 'Soil.Treeview', heading_bg='#E4EDF3', font_size=9,
+            row_height=max(23, self._soil_body_font.metrics('linespace') + 5))
 
         cols = ('stt', 'name', 'description', 'thick', 'z_bot', 'gamma', 'cat',
                 'drain', 'e0', 'cc', 'cs', 'pc', 'co',
@@ -4486,8 +4483,7 @@ class App(tk.Tk):
 
     def refresh_soils(self):
         self.soil_tree.delete(*self.soil_tree.get_children())
-        self.soil_tree.tag_configure('even', background='#FFFFFF')
-        self.soil_tree.tag_configure('odd', background='#F8FAFC')
+        apply_row_stripes(self.soil_tree, getattr(self, '_soil_stripe_colors', None))
         z_tn = number_or_zero(self.vars.get('ground_elevation', tk.StringVar(value='0.0')).get())
         if hasattr(self, 'borehole_summary'):
             self.borehole_summary.set(
@@ -4644,9 +4640,7 @@ class App(tk.Tk):
         tree_scroll_y = ttk.Scrollbar(result_area, orient='vertical')
         
         style = ttk.Style(self)
-        style.configure("Res.Treeview.Heading", font=(UI_FONT, 9, 'bold'),
-                        padding=(3, 5))
-        style.configure("Res.Treeview", font=(UI_FONT, 9), rowheight=21)
+        configure_treeview_style(style, 'Res.Treeview', font_size=9, row_height=21)
 
         self.result_tree = ttk.Treeview(result_area, show='headings',
                                         xscrollcommand=tree_scroll_x.set, yscrollcommand=tree_scroll_y.set,
@@ -6639,12 +6633,11 @@ class App(tk.Tk):
     def show_table(self, tree, headers, rows):
         tree.delete(*tree.get_children())
         tree.configure(height=min(18, max(3, len(rows))))
-        tree.tag_configure('even', background='#FFFFFF')
-        tree.tag_configure('odd', background='#F8FAFC')
+        apply_row_stripes(tree)
         tree['columns'] = tuple(str(i) for i in range(len(headers)))
-        
+
         heading_font = tkfont.Font(family=UI_FONT, size=9, weight='bold')
-        data_font = tkfont.Font(family=UI_FONT, size=8)
+        data_font = tkfont.Font(family=UI_FONT, size=9)
         preferred = []
         
         for i, h in enumerate(headers):

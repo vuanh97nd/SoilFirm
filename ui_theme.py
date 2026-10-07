@@ -67,6 +67,52 @@ def configure_theme(root):
               selectforeground=[('readonly', 'white')])
 
 
+def configure_treeview_style(style, name='Treeview', *, heading_bg=None, row_height=None, font_size=9):
+    """Áp dụng style nhất quán cho tất cả Treeview: heading, màu hàng xen kẽ, highlight chọn.
+
+    Gọi hàm này thay vì configure trực tiếp từng style riêng lẻ.
+    Trả về dict {'even': str, 'odd': str, 'select_bg': str, 'select_fg': str}
+    để caller dùng với tag_configure.
+    """
+    _f = UI_FONT
+    _hbg = heading_bg or '#E4EDF3'
+    _rh = row_height or max(22, font_size + 13)
+    style.configure(f'{name}.Heading',
+                    font=(_f, font_size, 'bold'),
+                    padding=(4, 5),
+                    background=_hbg,
+                    foreground=COLORS['text'],
+                    relief='flat')
+    style.map(f'{name}.Heading',
+              background=[('active', '#CCD9E3')],
+              relief=[('active', 'flat')])
+    style.configure(name,
+                    font=(_f, font_size),
+                    rowheight=_rh,
+                    background='#FFFFFF',
+                    foreground=COLORS['text'],
+                    fieldbackground='#FFFFFF',
+                    bordercolor=COLORS['border'],
+                    relief='flat')
+    style.map(name,
+              background=[('selected', COLORS['tab_selected'])],
+              foreground=[('selected', COLORS['text'])])
+    return {
+        'even': '#FFFFFF',
+        'odd':  '#F3F8FB',
+        'select_bg': COLORS['tab_selected'],
+        'select_fg': COLORS['text'],
+    }
+
+
+def apply_row_stripes(tree, colors=None):
+    """Cấu hình tag 'even'/'odd' và 'selected_row' cho một Treeview cụ thể."""
+    c = colors or {'even': '#FFFFFF', 'odd': '#F3F8FB',
+                   'select_bg': COLORS['tab_selected'], 'select_fg': COLORS['text']}
+    tree.tag_configure('even', background=c['even'])
+    tree.tag_configure('odd',  background=c['odd'])
+
+
 def configure_tab_style(style):
     """One tab appearance for every native notebook in either data workflow."""
     _f = UI_FONT
@@ -153,18 +199,18 @@ class ProcessingNotice(tk.Toplevel):
         self._detail = detail if detail is not None else tk.StringVar(self, value='Đang xử lý…')
         self._processing_label = tk.Label(self, text=task.strip().rstrip('….'),
             bg=COLORS['surface'], fg=COLORS['text'], wraplength=440,
-            font=('Times New Roman', 11, 'bold'))
+            font=(UI_FONT, 11, 'bold'))
         self._processing_label.pack(fill='x', padx=24, pady=(20,12))
         if elapsed is not None:
             self._elapsed_label = tk.Label(self, textvariable=elapsed,
                 bg=COLORS['surface'], fg=COLORS['text'], wraplength=440,
-                font=('Times New Roman', 12, 'bold'))
+                font=(UI_FONT, 12, 'bold'))
             self._elapsed_label.pack(fill='x', padx=24, pady=(0,10))
         self._processing_bar = ProcessingBar(self)
         self._processing_bar.pack(fill='x', padx=32, pady=(0,12))
         tk.Label(self, textvariable=self._detail, bg=COLORS['surface'],
             fg=COLORS['muted'], wraplength=440, height=3, anchor='n',
-            font=('Times New Roman', 10)).pack(fill='x', padx=24, pady=(0,12))
+            font=(UI_FONT, 10)).pack(fill='x', padx=24, pady=(0,12))
         if cancel is not None:
             self._stop_button = ttk.Button(self, text='Dừng xử lý', command=self._request_stop)
             self._stop_button.pack(pady=(0,16))

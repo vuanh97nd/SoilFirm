@@ -27,7 +27,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from utils import ScrollableFrame, number
-from ui_theme import COLORS, UI_FONT, UI_FONT_MONO
+from ui_theme import COLORS, UI_FONT, UI_FONT_MONO, configure_treeview_style, apply_row_stripes
 from model import pressure, effective_overburden, void_ratio
 from ui_i18n import english as _english_ui
 
@@ -990,8 +990,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
         tree_lun.heading(c, text=h)
         tree_lun.column(c, width=w, minwidth=40, anchor='center', stretch=False)
 
-    tree_lun.tag_configure('even', background='#FFFFFF')
-    tree_lun.tag_configure('odd', background='#F8FAFC')
+    apply_row_stripes(tree_lun)
     tree_lun.tag_configure('total', background='#FEF3C7',
                            font=(UI_FONT, 9, 'bold'))
     tree_lun.tag_configure('cdm_row', background='#E0F2FE',
