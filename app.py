@@ -3553,8 +3553,22 @@ class App(tk.Tk):
         sync_route_exports()
         fm.add_cascade(label='Xuất dữ liệu', menu=data_menu)
         pdf_menu = tk.Menu(fm, tearoff=False)
+        _STEP_SCOPE = {4: ('natural', 'Lún tự nhiên'), 5: ('treated', 'Thay thế / Gia cường'),
+                       6: ('treated', 'Cố kết & Thoát nước'), 7: ('cdm', 'Trộn sâu CDM')}
+        def _sync_pdf_menu():
+            step = getattr(self, 'current_step', None)
+            info = _STEP_SCOPE.get(step)
+            if info:
+                scope, name = info
+                pdf_menu.entryconfigure(0, label=f'Xuất PDF – {name}',
+                                        command=lambda s=scope: self.export_pdf(s), state='normal')
+            else:
+                pdf_menu.entryconfigure(0, label='Xuất PDF mục đang xem', state='disabled')
+        pdf_menu.add_command(label='Xuất PDF mục đang xem', state='disabled')
+        pdf_menu.add_separator()
         pdf_menu.add_command(label='Xuất PDF theo phân đoạn', command=lambda: self.export_workflow_pdf(False))
         pdf_menu.add_command(label='Xuất PDF toàn tuyến', command=lambda: self.export_workflow_pdf(True))
+        pdf_menu.configure(postcommand=_sync_pdf_menu)
         fm.add_cascade(label='Xuất báo cáo PDF', menu=pdf_menu)
         m.add_cascade(label='Tệp', menu=fm)
 
