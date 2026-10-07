@@ -591,7 +591,7 @@ class AnalysisWorkspace(ttk.Frame):
         actions=ttk.Frame(popup);actions.pack(pady=8)
         def copy_response():
             popup.clipboard_clear();popup.clipboard_append(self.last_ai_response)
-        ttk.Button(actions,text='Sao chép thông báo / phản hồi',command=copy_response).pack(side='left',padx=5)
+        ttk.Button(actions,text='Sao chép',command=copy_response).pack(side='left',padx=5)
         context=getattr(self,'_pending_mapping_context',None)
         if context:
             ttk.Button(actions,text='Chỉnh ánh xạ khi cần',command=lambda:self.mapping_review(context)).pack(side='left',padx=5)
@@ -1566,7 +1566,7 @@ class AnalysisWorkspace(ttk.Frame):
             try:save({k:(str(original[k]) if isinstance(original[k],(int,float)) and v.get()==initial[k] else v.get().strip()) for k,v in variables.items() if k in editable});popup.destroy()
             except Exception as exc:error.set(str(exc))
         bar=ttk.Frame(popup,padding=10);bar.pack(fill='x')
-        ttk.Button(bar,text='Lưu dữ liệu đã sửa',command=commit,style='Accent.TButton').pack(side='right')
+        ttk.Button(bar,text='Lưu',command=commit,style='Accent.TButton').pack(side='right')
         ttk.Button(bar,text='Hủy',command=popup.destroy).pack(side='right',padx=8)
         popup.grab_set();return popup
 

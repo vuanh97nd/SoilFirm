@@ -3797,9 +3797,9 @@ class App(tk.Tk):
                 except Exception as e:
                     messagebox.showerror("Lỗi", str(e), parent=admin_win)
 
-        ttk.Button(btn_row, text="➕ Tạo / Sửa Tài khoản", command=create_user, style='Accent.TButton').pack(side='left', padx=10)
-        ttk.Button(btn_row, text="🗑 Xóa Tài khoản chọn", command=delete_user, style='Danger.TButton').pack(side='left', padx=10)
-        ttk.Button(btn_row, text="🔄 Làm mới danh sách", command=load_users).pack(side='left', padx=10)
+        ttk.Button(btn_row, text="+ Tài khoản", command=create_user, style='Accent.TButton').pack(side='left', padx=10)
+        ttk.Button(btn_row, text="🗑 Xóa TK", command=delete_user, style='Danger.TButton').pack(side='left', padx=10)
+        ttk.Button(btn_row, text="↺ Làm mới", command=load_users).pack(side='left', padx=10)
         ttk.Button(btn_row, text='Chat với tài khoản chọn',
                    command=lambda: self.open_chat(
                        str(tree.item(tree.selection()[0], 'values')[1]) if tree.selection() else ''
@@ -4129,7 +4129,7 @@ class App(tk.Tk):
             state='readonly', width=18)
         self.cb_main_treatment.grid(row=7, column=1, sticky='w', pady=5)
         self.cb_main_treatment.bind('<<ComboboxSelected>>', self.toggle_main_treatment)
-        self.main_soils_button = ttk.Button(box_exp, text='Khai báo địa chất vùng đã xử lý',
+        self.main_soils_button = ttk.Button(box_exp, text='Địa chất đã xử lý',
                                             command=self.edit_main_zone_soils)
         self.main_soils_button.grid(row=8, column=0, columnspan=3, sticky='w', pady=5)
         ttk.Label(box_exp, text='PVD/SD/Chờ lún: tại vai; Cơ học: tại mép đáy đào; CDM: tại chân nền chính.',
@@ -4663,15 +4663,15 @@ class App(tk.Tk):
         ttk.Combobox(f_row, textvariable=self.settlement_factor_var, values=('1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7'),
                      width=6, state='readonly').pack(side='left', padx=6)
                      
-        ttk.Button(f_row, text='Tính chiều cao bù lún', command=self.calculate_hbl, style='Accent.TButton').pack(side='left', padx=10)
+        ttk.Button(f_row, text='Tính H_bù lún', command=self.calculate_hbl, style='Accent.TButton').pack(side='left', padx=10)
 
         box_calc = ttk.LabelFrame(inner, text='2. Kiểm toán độ lún tự nhiên trước xử lý', padding=10)
         box_calc.pack(fill='x', pady=4)
         r_bar = ttk.Frame(box_calc)
         r_bar.pack(fill='x', pady=2)
-        ttk.Button(r_bar, text='Tính lún cố kết', command=self.calculate_settlement,
+        ttk.Button(r_bar, text='Lún cố kết', command=self.calculate_settlement,
                    style='Accent.TButton').pack(side='left', padx=4)
-        ttk.Button(r_bar, text='Tính lún theo thời gian', command=self.calculate_before, style='Accent.TButton').pack(side='left', padx=4)
+        ttk.Button(r_bar, text='Lún theo t', command=self.calculate_before, style='Accent.TButton').pack(side='left', padx=4)
         
         ttk.Label(r_bar, text='Thời gian t lún tự nhiên (ngày):').pack(side='left', padx=(10, 6))
         self.days = self.vars['assessment_days']
@@ -5015,14 +5015,14 @@ class App(tk.Tk):
         f_act = ttk.Frame(inner)
         f_act.pack(fill='x', pady=8, padx=8)
         self.consolidation_button = ttk.Button(
-            f_act, text='Tính lún cố kết', command=self.calculate_consolidation,
+            f_act, text='Lún cố kết', command=self.calculate_consolidation,
             style='Accent.TButton')
         self.consolidation_button.pack(side='left', padx=3)
         self.optimize_mechanical_button = ttk.Button(
-            f_act, text='Tính toán tối ưu', style='Accent.TButton',
+            f_act, text='Tối ưu', style='Accent.TButton',
             command=self.optimize_mechanical_solution)
         self.optimize_drainage_button = ttk.Button(
-            f_act, text='Tính toán tối ưu', style='Accent.TButton',
+            f_act, text='Tối ưu', style='Accent.TButton',
             command=self.optimize_drainage_solution)
         self.time_chart_button = ttk.Button(f_act, text='Lún theo thời gian',
                                             command=self.draw_treatment_chart)
@@ -5232,7 +5232,7 @@ class App(tk.Tk):
         if hasattr(self, 'treated_pdf_button'):
             self.treated_pdf_button.configure(text='Xuất báo cáo')
         if hasattr(self, 'consolidation_button'):
-            self.consolidation_button.configure(text='Tính lún cố kết', state='normal')
+            self.consolidation_button.configure(text='Lún cố kết', state='normal')
         if hasattr(self, 'optimize_mechanical_button'):
             self.optimize_mechanical_button.pack_forget()
             self.optimize_drainage_button.pack_forget()

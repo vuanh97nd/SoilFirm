@@ -362,10 +362,10 @@ class GeologyStatistics(ttk.Frame):
         ttk.Label(lower,text='Thống kê từng chỉ tiêu của lớp đang chọn',padding=(8,4),font=(UI_FONT,10,'bold')).pack(fill='x')
         choice_bar=ttk.Frame(lower,padding=(8,4));choice_bar.pack(fill='x')
         ttk.Button(choice_bar,text='Chọn giá trị',command=self.open_value_choice).pack(side='left')
-        ttk.Button(choice_bar,text='Trung bình tất cả',command=self.choose_all_means).pack(side='left',padx=6)
-        ttk.Button(choice_bar,text='Áp dụng chỉ tiêu',command=self.apply_values).pack(side='left',padx=6)
-        ttk.Button(choice_bar,text='Xuất giá trị thống kê',command=self.export_calculation_values).pack(side='left',padx=6)
-        ttk.Button(choice_bar,text='Thống kê e–P / Cv–P',command=self.open_lab_statistics).pack(side='left',padx=6)
+        ttk.Button(choice_bar,text='TB tất cả',command=self.choose_all_means).pack(side='left',padx=6)
+        ttk.Button(choice_bar,text='Áp dụng',command=self.apply_values).pack(side='left',padx=6)
+        ttk.Button(choice_bar,text='Xuất thống kê',command=self.export_calculation_values).pack(side='left',padx=6)
+        ttk.Button(choice_bar,text='Thống kê e–P',command=self.open_lab_statistics).pack(side='left',padx=6)
         choice_widgets=list(choice_bar.winfo_children())
         for widget in choice_widgets:widget.pack_forget()
         self.wrap_controls(choice_bar,choice_widgets)
@@ -831,7 +831,7 @@ class GeologyStatistics(ttk.Frame):
             value=saved.get('value')
             if value is not None:feedback.set('Giá trị đã lưu: '+parameter_text(value,self.selected_param())+'. Đóng cửa sổ rồi bấm Áp dụng chỉ tiêu.')
         ttk.Button(actions,text='Lưu giá trị',command=save).pack(side='left',padx=4)
-        ttk.Button(actions,text='Trung bình tất cả',command=lambda:feedback.set(self.choose_all_means())).pack(side='left',padx=4)
+        ttk.Button(actions,text='TB tất cả',command=lambda:feedback.set(self.choose_all_means())).pack(side='left',padx=4)
         ttk.Button(actions,text='Đóng',command=popup.destroy).pack(side='left',padx=4)
         load();popup.update_idletasks();popup.grab_set();popup.lift();selector.focus_set()
         return 'break'
@@ -1400,7 +1400,7 @@ class GeologyStatistics(ttk.Frame):
             self.app.chart_data={};self.app.populate()
             if hasattr(self.app,'render_chart'):self.app.render_chart()
             self.status.set('Đã áp dụng '+str(len(selected))+' chỉ tiêu vào '+self.layer.get()+'. Các chỉ tiêu khác giữ nguyên; cần tính lại kết quả.');popup.destroy()
-        ttk.Button(popup,text='Áp dụng chỉ tiêu',command=commit).pack(pady=10)
+        ttk.Button(popup,text='Áp dụng',command=commit).pack(pady=10)
     def import_file(self):
         if not self.layer_id():messagebox.showinfo('Import','Thêm lớp đất trước khi gán mẫu.',parent=self);return
         filenames=filedialog.askopenfilenames(parent=self,title='Chọn các file Excel/CSV để gộp mẫu',filetypes=[('Excel / CSV','*.xlsx *.xlsm *.csv')])
