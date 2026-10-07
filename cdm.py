@@ -560,7 +560,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
     tk.Label(header,
              text=L("THIẾT KẾ XỬ LÝ NỀN BẰNG CỌC XI MĂNG ĐẤT (CDM) - BS 8006 & TCVN 9906"),
              bg=COLORS['background'], fg=COLORS['nav'],
-             font=(UI_FONT, 12, 'bold')).pack(anchor='w')
+             font=(UI_FONT, 10, 'bold')).pack(anchor='w')
 
     input_frame = tk.Frame(inner, bg=COLORS['background'])
     input_frame.pack(fill='x', padx=10)
@@ -1001,15 +1001,15 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
 
     lbl_eval_lun = ttk.Label(tab_lun,
                              text=L("Đánh giá Lún dư: Chờ tính toán"),
-                             font=(UI_FONT, 11, 'bold'),
+                             font=(UI_FONT, 9, 'bold'),
                              foreground='#64748B')
     lbl_eval_lun.pack(anchor='w', pady=(10, 0))
 
     # --- TAB 2: KẾT QUẢ ỨNG SUẤT ---
     def create_res_lbl(parent, row, col, text, color='#1E293B'):
-        lbl = ttk.Label(parent, text=text, font=(UI_FONT, 10, 'bold'),
+        lbl = ttk.Label(parent, text=text, font=(UI_FONT, 8, 'bold'),
                         foreground=color)
-        lbl.grid(row=row, column=col, sticky='w', padx=(0, 30), pady=6)
+        lbl.grid(row=row, column=col, sticky='w', padx=(0, 20), pady=4)
         return lbl
 
     lbl_htt_res = create_res_lbl(tab_stress, 0, 0,
@@ -1027,9 +1027,9 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
                                                         columnspan=2, sticky='ew', pady=10)
     ttk.Label(tab_stress,
               text=L("A. KIỂM TOÁN CƯỜNG ĐỘ CỌC (TTGH1 & TTGH2)"),
-              font=(UI_FONT, 11, 'bold'),
+              font=(UI_FONT, 9, 'bold'),
               foreground='#1E3A8A').grid(row=3, column=0, columnspan=2,
-                                         sticky='w', pady=4)
+                                         sticky='w', pady=3)
 
     lbl_qu_status = create_res_lbl(tab_stress, 4, 0,
                                    L("Cường độ kiểm toán: --- T/m²"))
@@ -1049,9 +1049,9 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
                                                         columnspan=2, sticky='ew', pady=10)
     ttk.Label(tab_stress,
               text=L("B. KIỂM TOÁN ỨNG SUẤT ĐẤT NỀN"),
-              font=(UI_FONT, 11, 'bold'),
+              font=(UI_FONT, 9, 'bold'),
               foreground='#1E3A8A').grid(row=8, column=0, columnspan=2,
-                                         sticky='w', pady=4)
+                                         sticky='w', pady=3)
 
     lbl_sigma_s = create_res_lbl(tab_stress, 9, 0,
                                  L("Ứng suất lên đất nền (σ_s): --- T/m²"))
@@ -1103,7 +1103,7 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
 
     lbl_no_geo = ttk.Label(tab_geo,
                            text=L("Không sử dụng vật liệu gia cường."),
-                           font=(UI_FONT, 12, 'italic'),
+                           font=(UI_FONT, 9, 'italic'),
                            foreground=COLORS['muted'])
 
     refresh_project_data()
