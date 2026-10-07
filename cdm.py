@@ -969,9 +969,9 @@ def _build_tcvn_bs_view(parent: tk.Misc) -> None:
     tab_stress = ttk.Frame(result_tabs, padding=15)
     tab_geo = ttk.Frame(result_tabs, padding=15)
 
-    result_tabs.add(tab_lun, text=L("Kết quả 1: Lún CDM"))
-    result_tabs.add(tab_stress, text=L("Kết quả 2: Ứng suất (TCVN & BS 8006)"))
-    result_tabs.add(tab_geo, text=L("Kết quả 3: Vải / lưới địa (BS 8006)"))
+    result_tabs.add(tab_lun, text=L("  Lún CDM  "))
+    result_tabs.add(tab_stress, text=L("  Ứng suất (TCVN & BS 8006)  "))
+    result_tabs.add(tab_geo, text=L("  Vải / lưới địa (BS 8006)  "))
 
     # --- TAB 1: KẾT QUẢ LÚN ---
     cols_lun = ('layer', 'h', 'z', 'gamma', 'spt', 'e0', 'cc', 'cr', 'pc',

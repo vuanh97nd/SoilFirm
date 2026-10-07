@@ -960,11 +960,18 @@ def draw_enhanced_cad_diagram(c: tk.Canvas, project: Project, vars_dict: dict, t
                         y1 = h00*p1[1]+h10*(p2[1]-p0[1])/2+h01*p2[1]+h11*(p3[1]-p1[1])/2
                         c.create_line(*prev, x1, y1, fill='#B91C1C', width=2.5)
                         prev = (x1, y1)
+                # Tính baseline chung cho tất cả nhãn (dưới điểm thấp nhất của đường cong)
+                max_py = max((py for _, py in curve), default=ground_y + 30)
+                label_base = min(h - 58, max_py + 14)
                 for idx, ((x_m, s_cm, label), (px, py)) in enumerate(zip(samples, curve)):
                     c.create_line(px, ground_y, px, py, fill='#475569', width=1,
                                   dash=(4, 3))
                     c.create_oval(px-3, py-3, px+3, py+3, fill='#B91C1C', outline='white')
-                    c.create_text(px, py+10+(idx%3)*12,
+                    lbl_y = label_base + (idx % 3) * 20
+                    if py + 5 < lbl_y:
+                        c.create_line(px, py + 4, px, lbl_y - 2,
+                                      fill='#B91C1C', width=0.8, dash=(3, 2))
+                    c.create_text(px, lbl_y,
                                   text=f'{label}\n{settlement_label}={s_cm:.2f} cm', anchor='n',
                                   justify='center', fill='#B91C1C',
                                   font=(UI_FONT, 7, 'bold'))
@@ -5592,7 +5599,7 @@ class App(tk.Tk):
         self.card_st.configure(text=f'{st:.2f} cm')
         self.card_res.configure(text=f'{residual:.2f} cm')
         self.card_limit.configure(text=f'{limit:.2f} cm')
-        self.card_res_context.configure(text='CDM · ' + method)
+        self.card_res_context.configure(text='CDM · ' + ('Tiêu chuẩn' if method == 'standard' else 'ALiCC'))
         passed = residual <= limit
         if method == 'standard':
             stress = result['stress']
