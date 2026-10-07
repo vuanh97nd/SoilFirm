@@ -1,0 +1,24 @@
+{
+  "files": 53,
+  "status": {
+    "read_excel": 26,
+    "read_json": 2,
+    "unavailable": 3,
+    "read_dxf": 10,
+    "unsupported": 10,
+    "read_pdf": 2
+  },
+  "projects": [
+    "An tho",
+    "Bai dinh",
+    "Cam lo La Son",
+    "Cau dinh",
+    "Cau thoi an",
+    "DD-TL",
+    "Hung my",
+    "Kim thanh",
+    "VD4_HN"
+  ],
+  "templates": 91,
+  "knowledge_chunks": 1228
+}

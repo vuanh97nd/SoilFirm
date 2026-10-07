@@ -1,0 +1,91 @@
+LƯU Ý: ĐÂY LÀ MÃ NGUỒN, KHÔNG CÓ EXE HAY BỘ CÀI WINDOWS. TẢI ZIP KHÔNG TỰ NÂNG CẤP ỨNG DỤNG ĐÃ CÀI.
+Để tạo đúng 2026.4: giải nén toàn bộ file của ZIP vào thư mục dự án gốc, sau đó chạy BUILD_2026_4.bat trên Windows. Sau khi build, cài file Output_Setup\SoilFirm_Professional_Setup_v2026.4.exe nếu có Inno Setup; hoặc chạy dist\SoilFirm_Professional.exe.
+
+CẬP NHẬT BIỂU ĐỒ VÀ MỐC LÚN DƯ: Đào thay đất/cọc tre/cừ tràm không chọn chờ lún lấy Sc của lớp đất chưa xử lý làm Sc dư (không cộng thời gian t). Khi chọn chờ lún và khai báo đắp phân kỳ, lấy Sc dư tại kết thúc đắp và chờ lún; biểu đồ hiển thị h đắp, He, St, S và Sc dư. PVD/SD lấy Sc dư tại kết thúc đắp/gia tải/hút chân không, gồm cả phần đất chưa xử lý dưới mũi nếu có. Mục lún tự nhiên vẫn đánh giá sau thời gian t do người dùng nhập. PDF dùng cùng mốc đánh giá.
+
+CẬP NHẬT PDF VÀ Ch/Cv: Đầu trang của các phương án đào thay đất, cọc tre, cừ tràm, chờ lún, PVD và SD chỉ in tên dự án và tên bảng tính, cùng cỡ chữ phần lún tự nhiên. Ch/Cv chỉ có trong bảng đất nền của PDF PVD/SD. Giá trị mặc định dùng để tính PVD/SD là 2 (có thể sửa theo lớp đất); phương án khác có tỷ số hiệu dụng 1 và không dùng công thức thoát nước ngang. Chuyển qua phương án khác vẫn giữ giá trị PVD/SD từng lớp để khi chuyển lại không mất dữ liệu.
+
+CẬP NHẬT KHUNG KẾT QUẢ VÀ CDM: Hai ô Sc, S ở mục 5 và 6 lấy kết quả lún tự nhiên tại vị trí đang chọn ở mục 4; Sc dư sau xử lý ở ô riêng. Mục 07 Phương pháp CDM là trang “Đang phát triển”, nối với cdm.py riêng để thêm công thức và giao diện về sau. Hiện chưa có phép tính hoặc PDF CDM. Gói nguồn phải có cdm.py khi build. Popup tính toán chỉ còn tiêu đề cửa sổ và thanh chạy, không lặp lại dòng chữ trong thân popup.
+
+CẬP NHẬT BIỂU ĐỒ VÀ SƠ ĐỒ SAU XỬ LÝ: Biểu đồ của đào thay đất, cọc tre, cừ tràm, chờ lún, PVD và SD vẽ Sc dư còn lại và đánh dấu giá trị đúng ngày đánh giá. Nếu có lịch đắp, giữ các đường h đắp, He, St, S và bổ sung Sc dư. Bảng chờ lún sau xử lý cũng dùng lịch đắp/chờ như biểu đồ; mục lún tự nhiên vẫn tính riêng tại t. Sơ đồ CAD sau tính dùng Sc dư từng vị trí và tải của giai đoạn được chọn để vẽ ứng suất tăng thêm, áp lực nước lỗ rỗng và áp lực nước thặng dư; bệ phản áp và vùng đào thay đất vẫn theo cấu hình đang khai báo. Ứng suất bản thân và áp lực nước tĩnh chỉ thay đổi khi địa tầng/vùng thay đất hoặc mực nước thay đổi, không ép đổi theo tên phương pháp.
+
+PDF không tự tính lại Hbl khi xuất: dùng Htt và phân kỳ đã nhập, nên Sc dư trên biểu đồ, bảng đánh giá và giao diện cùng một mốc và cùng một mặt cắt. Muốn cập nhật Hbl, thực hiện lệnh tính Hbl trong phần mềm trước khi xuất PDF.
+
+DANH SÁCH BIỂU ĐỒ GIAI ĐOẠN: Bỏ lựa chọn “Toàn bộ”. Chỉ chọn mốc sau từng đợt đắp, sau chờ lún, sau gia tải hoặc sau hút chân không thực sự được khai báo. Biểu đồ phân kỳ dừng ở mốc kết thúc xử lý, không kéo dài thêm đến U=99%. Nếu không bật chờ lún ở nhóm cơ học thì không hiện bộ chọn giai đoạn.
+
+CẬP NHẬT SOILFIRM PRO - FONT, KÝ HIỆU VÀ ĐƠN VỊ PDF
+
+Thay app.py, model.py, graphics.py, dialogs.py, splash.py, report_pdf.py và build_app.py vào dự án SoilFirm Pro trên Windows.
+Giữ nguyên main.py, utils.py, ui_theme.py, credential_store.py và các dữ liệu dự án.
+Chạy bằng python main.py. Nếu dùng EXE cũ, đóng gói lại bằng python build_app.py.
+
+Giao diện và PDF trên Windows dùng Times New Roman.
+Sc = lún cố kết; St = lún theo thời gian; Sc dư = Sc - St; Si = lún tức thời; S = lún tổng.
+Cv nhập theo 10^-3 cm²/s. PDF in Cv cùng đơn vị; giá trị nội bộ cm²/ngày được đổi về đơn vị này.
+Áp lực dùng T/m²; dung trọng dùng T/m³. Ngày làm tròn khi in PDF, phép tính giữ độ chính xác gốc.
+
+PDF A4: số liệu đất nền gộp thành một bảng, mỗi lớp một hàng; bảng này cũng có trong phương án sau xử lý.
+
+PDF: mục 3 Các giai đoạn thi công trình bày đắp, gia tải, hút chân không trong một bảng; chỉ in hàng của phương án được khai báo.
+
+Trong mục I của lún tự nhiên và sau xử lý: 1. Số liệu chung; 2. Số liệu đất nền; 3. Các giai đoạn thi công (khi có bảng giai đoạn).
+
+Bảng đánh giá ở cả lún tự nhiên và sau xử lý mang tiêu đề: Bảng tổng hợp kết quả kiểm tra độ lún.
+
+Các bảng trong giao diện tự căn độ rộng theo nội dung, tiêu đề dài chia tối đa hai dòng; giữ cuộn ngang/dọc khi vượt khung.
+
+PDF: bảng thông số phân tố và ứng suất gộp một bảng theo từng phân tố. Giao diện bỏ nhãn U → 99%; Sc dư sau thời gian t ở mục 4, Sc dư sau xử lý ở mục 5; sơ đồ có trị số P₀ và Δp tại z=0, z=ha.
+
+Ký hiệu: St, Sc, Si, S và Sc dư. Bảng phân tố PDF có Sc Tim, Sc Vai, Sc Chân; nét đứt ghi TIM ĐƯỜNG.
+
+Bước 5/6 đánh giá tại ngày kết thúc xử lý, không cộng t mặc định 180 ngày; bước 4 lún tự nhiên tại t đã chọn. Biểu đồ PDF cao bằng bảng. Bảng giao diện tự co giãn theo khung; CAD fit theo kích thước canvas. Nút Lún cố kết chỉ bật khi dưới mũi bấc/cọc có Sc > 0.
+
+Bước 5: nút Tính lún PVD, SD dành cho PVD/SD; nút Lún dư chưa xử lý dành cho Chờ lún và xem đất dưới mũi bấc/cọc khi có Sc.
+
+Mốc đánh giá Chờ lún, PVD, SD: tổng thời gian đắp phân kỳ và chờ đã khai báo, cộng gia tải/hút chân không nếu có. Không cộng thời gian t của bước lún tự nhiên hay thời gian KCAD. Kết quả và PDF hiển thị các thành phần thời gian xử lý.
+
+Bệ phản áp: mô hình ứng suất có cả phần bệ chồng lên mái đắp chính; kết quả tính thêm Vai bệ phản áp, Chân bệ phản áp khi khai báo bệ. Ô nhập không tự đẩy trang sang phải khi nhận con trỏ.
+
+Giao diện không tự cuộn ngang/dọc khi ô nhập nhận con trỏ. Bảng Ứng Suất & Kháng Cắt mở rộng, chữ cỡ nhỏ, giá trị chỉ gồm số vì đơn vị nằm ở tiêu đề cột. Các nút tính và xem kết quả giai đoạn hiện thanh chạy từ trái sang phải theo thời gian tính thực tế và tự tắt khi có kết quả.
+
+Cửa sổ kết quả theo giai đoạn tự ôm vừa bề rộng cột và số dòng, không mở rộng toàn màn hình.
+
+Cửa sổ bảng giai đoạn mở giữa màn hình, rộng theo các cột và cao khoảng 560 px như ảnh mẫu. Bảng địa tầng tô vàng nhạt các ô Dày H (m) để nhận biết ô sửa trực tiếp. Các bảng kết quả ở mục 4 và 5 hạ giới hạn chiều rộng cột cũ trước khi co theo khung, tránh mất cột bên phải.
+
+Bảng mục 4/5 giữ từng cột vừa nội dung, thanh cuộn ngang hiện ngay dưới bảng khi tổng cột vượt khung. Bỏ nút biểu đồ riêng ở mục 5; tính lún PVD/SD hoặc Chờ lún sẽ tự vẽ biểu đồ theo thời gian.
+
+Phiên bản hiển thị thống nhất v2026.4 (màn hình mở đầu, thông tin bản quyền, kiểm tra cập nhật). Đóng chương trình cũ và chạy lại python build_app.py để tạo EXE mới; sau đó mở tệp trong dist.
+
+Bộ cài Inno Setup: mở SoilFirm_Professional.iss sau khi build_app.py tạo dist\SoilFirm_Professional.exe. OutputBaseFilename dùng MyAppVersion, tạo Output_Setup\SoilFirm_Professional_Setup_v2026.4.exe.
+
+Kiểm tra cập nhật dùng GitHub Releases latest, đọc tag_name và file Setup trong Assets; chỉ thông báo khi phiên bản phát hành lớn hơn bản đang chạy. EXE 2026.1 cũ còn gọi Cloudflare nên cần tải/cài bản mới một lần để dùng chức năng kiểm tra GitHub; khi phát hành bản tiếp theo hãy tăng số phiên bản trong app.py, splash.py và Inno Setup.
+
+Khi Inno báo thiếu dist\SoilFirm_Professional.exe: đặt build_app.py, main.py và SoilFirm_Professional.iss cùng thư mục dự án; chạy python build_app.py tại đó, kiểm tra EXE đã xuất hiện trong dist, rồi mới Compile tệp .iss. Script build tự chạy trong thư mục chứa nó và báo lỗi nếu không có main.py hoặc EXE.
+
+Mục 5 cho phép xuất PDF khi chọn Chờ lún; nút xuất đổi tên theo phương án. Bảng quản trị tự co theo cột và số tài khoản, chọn dòng sẽ điền Họ tên, User, Key, Phân loại, Thời hạn vào mẫu để sửa.
+
+BẢN 2026.4: Giải nén toàn bộ gói mã nguồn. Đóng EXE đang chạy. Chạy python build_app.py để tạo EXE mới trong dist, rồi Compile SoilFirm_Professional.iss. Không dùng EXE/Setup bản 2026.3 đã tạo trước đó. Script build sẽ báo lỗi nếu app.py hoặc splash.py vẫn là bản cũ.
+
+Update tự động: sau khi đăng nhập, ứng dụng kiểm tra GitHub Releases một lần trong luồng nền. Nếu có phiên bản cao hơn và có bộ cài EXE trong Assets, phần mềm hỏi rồi tự tải vào thư mục tạm, kiểm tra dung lượng và SHA-256 khi release cung cấp, mở bộ cài và thoát ứng dụng cũ. Nút Update vẫn có thể kiểm tra thủ công. Để bản 2026.4 nhận cập nhật tiếp, phát hành GitHub Release có phiên bản cao hơn 2026.4 và đính kèm bộ cài tương ứng.
+
+Sửa bảng quản trị: vùng biểu mẫu và các nút Tạo/Sửa, Xóa, Làm mới cố định ở đáy cửa sổ, bảng tài khoản cuộn riêng.
+
+CAD mục 4 và 5: góc phải có lựa chọn biểu đồ Độ lún (mặc định), Ứng suất, Áp lực nước tĩnh, Áp lực nước lỗ rỗng, Áp lực nước thặng dư. Độ lún hiển thị đường nén lún và S tổng tại Tim, Vai, Chân sau khi tính. Áp lực nước thặng dư là ước tính theo U trung bình tại thời điểm đánh giá; không thay cho nghiệm áp lực lỗ rỗng theo chiều sâu.
+
+CAD đối xứng: đường lún ngang qua Chân trái, Vai trái, Tim, Vai phải, Chân phải; đường đứt tại mỗi vị trí ghi S (cm). Áp lực nước hiển thị đường đứng và mũi tên hướng về vị trí đo ở cả hai phía, nhãn u0/u/Δu (T/m²).
+
+Khi chọn biểu đồ Ứng suất hoặc các loại Áp lực nước ở mục 5, nét bấc thấm/cọc cát và lớp thoát nước chuyển xám nhạt, biểu đồ được đưa lên trên. Chọn Độ lún thì ký hiệu xử lý nền hiển thị bình thường.
+
+CAD mục 5 mặc định Mặt cắt PVD/SD. Chọn Độ lún, Ứng suất hoặc Áp lực mới vẽ biểu đồ và làm mờ PVD/SD. Đường lún spline qua đúng tọa độ chân/vai/tim hai bên với đường gạch đứng. Hộp Giai đoạn cho xem sau từng đợt đắp/chờ, gia tải, hút chân không khi khai báo; S tại các vị trí lấy từ treatment_history ở ngày chọn.
+
+Biểu đồ ứng suất tách riêng: Ứng suất bản thân P0 và Ứng suất tăng thêm Δp, đơn vị T/m². Δp là đường cong lấy trực tiếp từ mô hình ứng suất theo chiều sâu tại Tim/Vai/Chân hai bên. Ở Chân mái, Δp có thể tăng ở đoạn gần mặt đất do tải nền đắp phân bố; không ép đường cong giảm giả tạo.
+
+Biểu đồ: Chân mái và Chân bệ phản áp lấy đúng x của hình CAD; khi có bệ, bổ sung Vai bệ/Chân bệ đối xứng. Độ lún S và áp lực/ứng suất vẽ tại các vị trí này. P0/Δp đánh dấu và ghi giá trị tại mỗi ranh giới lớp đất (đầu và cuối lớp). Nhãn trên biểu đồ chỉ ghi ký hiệu=giá trị, không ghi tên vị trí; hai bên đối xứng.
+
+Ứng suất và áp lực ghi giá trị tại z=0 (đáy nền đắp) trên từng đường đứng từ trái qua phải, kể cả vị trí bệ phản áp khi khai báo. P0/Δp cũng ghi giá trị tại ranh giới từng lớp đất ở cả hai phía. Nhãn chỉ gồm ký hiệu và giá trị.
+
+Ngôn ngữ: Mặc định Tiếng Việt. Bộ chọn Tiếng Việt / English nằm ở thanh đầu. Chọn English để đổi nhãn, menu, bảng chính, hộp thoại và PDF xuất ra tiếng Anh; chọn lại Tiếng Việt để khôi phục. Các mã giá trị mô hình vẫn lưu tiếng Việt để không làm thay đổi phép tính. Bắt buộc chép ui_i18n.py cùng app.py/report_pdf.py trước khi build EXE.
+
+Bộ chọn Tiếng Việt/English đã chuyển lên góc phải màn hình đăng nhập. Tiếng Việt mặc định mỗi lần mở ứng dụng; lựa chọn trước khi đăng nhập áp dụng cho giao diện và PDF trong phiên.
+
+Bộ chọn ngôn ngữ có ở cả màn hình đăng nhập và thanh đầu phần mềm. Hai vị trí dùng chung một lựa chọn; đổi sau khi đăng nhập cũng đổi ngôn ngữ PDF xuất tiếp theo.

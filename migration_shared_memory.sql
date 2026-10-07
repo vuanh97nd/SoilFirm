@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS shared_memory_items (id TEXT PRIMARY KEY,kind TEXT NOT NULL,payload TEXT NOT NULL,owner TEXT NOT NULL,state TEXT NOT NULL DEFAULT 'pending' CHECK(state IN ('pending','approved','rejected','disabled')),reviewer TEXT NOT NULL DEFAULT '',created_at TEXT NOT NULL,reviewed_at TEXT NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS shared_memory_changes (seq INTEGER PRIMARY KEY AUTOINCREMENT,item_id TEXT NOT NULL,kind TEXT NOT NULL,state TEXT NOT NULL CHECK(state IN ('approved','disabled','rejected')),payload TEXT NOT NULL,reviewer TEXT NOT NULL,created_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS shared_memory_state ON shared_memory_items(state,created_at);

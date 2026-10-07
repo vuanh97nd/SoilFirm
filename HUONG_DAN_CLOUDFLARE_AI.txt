@@ -1,0 +1,23 @@
+CLOUDFLARE AI - SOILFIRM PRO 2026.11
+
+1. Mở Worker đang dùng cho SoilFirm Pro trong Cloudflare.
+2. Vào Bindings > Add binding > Workers AI; đặt Variable name: AI.
+   Đây là binding, không phải biến Key/Value hoặc Secret. Giữ binding D1 hiện có.
+3. Thay nội dung Worker bằng worker.js mới rồi Deploy.
+4. Mở lại SoilFirm Pro chạy mã nguồn mới; nếu dùng EXE cần đóng gói lại.
+   Hỗ trợ AI mặc định Cloudflare AI; vẫn chọn được DeepSeek và Gemini.
+
+Không cần khóa Gemini/DeepSeek cho Cloudflare AI.
+Mô hình văn bản mặc định: @cf/qwen/qwen3-30b-a3b-fp8.
+Biến tùy chọn CLOUDFLARE_AI_MODEL để thay mô hình văn bản.
+Mô hình ảnh mặc định: @cf/meta/llama-3.2-11b-vision-instruct.
+Biến tùy chọn CLOUDFLARE_AI_VISION_MODEL để thay mô hình đọc ảnh.
+Vision dùng ảnh vừa gửi, hoặc ảnh gần nhất khi hỏi tiếp; không gửi cả hai ảnh cùng lúc.
+
+Llama Vision cần Admin đồng ý giấy phép Meta và Acceptable Use Policy trước lần đầu dùng.
+Đọc: https://developers.cloudflare.com/workers-ai/models/llama-3.2-11b-vision-instruct/
+Theo hướng dẫn Cloudflare, sau khi tự đồng ý điều khoản, gửi một lần {"prompt":"agree"}
+đến mô hình Vision qua API Cloudflare. Mã SoilFirm Pro không tự chấp nhận điều khoản thay Admin.
+
+Workers AI có hạn mức miễn phí chung cho tài khoản Cloudflare; không miễn phí vô hạn.
+Không chạy thử, gọi API hoặc tự triển khai Cloudflare khi sửa mã này.

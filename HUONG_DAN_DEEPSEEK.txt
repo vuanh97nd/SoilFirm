@@ -1,0 +1,14 @@
+THÊM DEEPSEEK TRONG SOILFIRM PRO
+
+1. Cập nhật worker.js trên Cloudflare, rồi Save and Deploy.
+2. Thêm secret/key DEEPSEEK_API_KEY = khóa API từ https://platform.deepseek.com/ . Không dùng khóa Gemini cho DeepSeek.
+3. Thêm biến DEEPSEEK_MODEL = deepseek-flash (nếu bỏ trống, mã dùng giá trị này).
+4. Giữ nguyên GEMINI_API_KEY và SOILFIRM_AI_MODEL cho Gemini.
+5. Cập nhật chat_dialog.py hoặc đóng gói lại EXE. Trong Hỗ trợ AI, chọn Gemini hoặc DeepSeek trước khi gửi.
+
+DeepSeek Flash hỗ trợ nội dung chữ và ảnh. Nút Gửi ảnh, Dán ảnh và Ctrl+V áp dụng cho cả hai lựa chọn. Nội dung câu hỏi, ảnh đính kèm và ngữ cảnh hội thoại gần nhất được gửi đến dịch vụ đã chọn; không tự chuyển dịch vụ khi lỗi. Khóa chỉ ở máy chủ.
+
+DeepSeek API dùng tài khoản API riêng, không phải phiên đăng nhập website chat. HTTP 402 nghĩa là cần kiểm tra số dư API; 429 là giới hạn yêu cầu. Không thể bảo đảm hạn mức miễn phí hoặc câu trả lời khi dịch vụ chưa cấu hình.
+
+Chưa chạy phần mềm, gọi API hoặc triển khai Cloudflare trong phiên làm việc này.
+Tài liệu: https://api-docs.deepseek.com/guides/vision

@@ -1,0 +1,18 @@
+KÍCH HOẠT TRỢ LÝ GEMINI SOILFIRM PRO 2026.11
+
+1. Cập nhật mã worker.js lên Worker Cloudflare hiện dùng cho SoilFirm. Giữ các binding DB, SOILFIRM_KV/KV và secret ADMIN_KEY hiện có.
+2. Thêm secret GEMINI_API_KEY bằng khóa API của Google AI Studio. Không đặt khóa trong app.py hoặc bộ cài.
+3. Thêm biến SOILFIRM_AI_MODEL bằng ID mô hình được phép sử dụng trong tài khoản Gemini API của bạn.
+4. Triển khai Worker. Tính năng AI gọi /api/chat/ai bằng phiên đăng nhập hiện có.
+
+Giao diện: thanh hỗ trợ chia hai nút bằng nhau: Hỗ trợ Admin mở chat trực tiếp, Hỗ trợ AI mở Gemini; nút Chuyển sang Admin mở chat người thật. Admin cũng có nút Trợ lý AI trong cửa sổ chat. Nội dung câu hỏi và tối đa 12 lượt hội thoại gần nhất được gửi qua máy chủ đến dịch vụ Google Gemini. Không tự gửi tệp dự án, ảnh hoặc bảng dữ liệu. Hội thoại AI chỉ giữ trong cửa sổ đang mở. Yêu cầu API đặt store=false.
+
+Giới hạn hiện tại: 6 yêu cầu/phút và 60 yêu cầu/ngày UTC cho mỗi tài khoản. Khóa API chưa cấu hình hoặc dịch vụ lỗi sẽ hiện thông báo và cho chuyển sang Admin. Chi phí AI tính trên tài khoản API của chủ phần mềm.
+
+Video giới thiệu: hiện một lần cho mỗi tài khoản với bản video 2026.11-video-20261001, gồm tài khoản cũ và mới. Hộp thoại tính năng AI hiện một lần cho mỗi tài khoản ở phiên bản này. Tin nhắn mới có âm báo ngắn, không phát lại theo mỗi lần polling.
+
+Đã sửa mã nguồn; chưa chạy phần mềm hoặc gọi API AI, chưa triển khai Worker từ phiên làm việc này. Bản EXE cần được đóng gói lại để nhận thay đổi.
+
+Tài liệu Gemini API: https://ai.google.dev/api/generate-content
+Tạo khóa API: https://aistudio.google.com/apikey
+Biến SOILFIRM_AI_MODEL dùng ID mô hình Gemini đang được phép sử dụng, có thể nhập dạng models/ID hoặc ID. Cấu hình OpenAI cũ không còn được dùng.

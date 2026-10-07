@@ -1,0 +1,8 @@
+{
+  "pending_sql_records": 1228,
+  "python_tests": 36,
+  "rag_chars": 2961,
+  "rag_ms": 141.525068998817,
+  "remote_deployed": false,
+  "ollama_called": false
+}

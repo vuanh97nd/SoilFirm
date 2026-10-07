@@ -1,0 +1,316 @@
+{
+  "code": {
+    "label": "Mã lớp",
+    "unit": "text",
+    "type": "text",
+    "units": {},
+    "alias": [
+      "code",
+      "Mã lớp"
+    ]
+  },
+  "borehole_name": {
+    "label": "Tên lỗ khoan",
+    "unit": "text",
+    "type": "text",
+    "units": {},
+    "alias": [
+      "borehole_name",
+      "Tên lỗ khoan"
+    ]
+  },
+  "sample_id": {
+    "label": "Số hiệu mẫu",
+    "unit": "text",
+    "type": "text",
+    "units": {},
+    "alias": [
+      "sample_id",
+      "Số hiệu mẫu"
+    ]
+  },
+  "category": {
+    "label": "Loại đất",
+    "unit": "text",
+    "type": "text",
+    "units": {},
+    "alias": [
+      "category",
+      "Loại đất"
+    ],
+    "enum": [
+      "Đất dính",
+      "Đất rời"
+    ],
+    "value_aliases": {
+      "Clay": "Đất dính",
+      "Sand": "Đất rời"
+    }
+  },
+  "depth_from": {
+    "label": "Độ sâu từ",
+    "unit": "m",
+    "type": "number",
+    "units": {
+      "m": 1,
+      "cm": 0.01,
+      "mm": 0.001
+    },
+    "min": 0,
+    "alias": [
+      "depth_from",
+      "Độ sâu từ"
+    ]
+  },
+  "depth_to": {
+    "label": "Độ sâu đến",
+    "unit": "m",
+    "type": "number",
+    "units": {
+      "m": 1,
+      "cm": 0.01,
+      "mm": 0.001
+    },
+    "min": 0,
+    "alias": [
+      "depth_to",
+      "Độ sâu đến"
+    ]
+  },
+  "test_depth": {
+    "label": "Độ sâu thí nghiệm",
+    "unit": "m",
+    "type": "number",
+    "units": {
+      "m": 1,
+      "cm": 0.01,
+      "mm": 0.001
+    },
+    "min": 0,
+    "alias": [
+      "test_depth",
+      "Độ sâu thí nghiệm"
+    ]
+  },
+  "gamma": {
+    "label": "Dung trọng tự nhiên",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "gamma",
+      "Dung trọng tự nhiên",
+      "γ",
+      "dung trọng",
+      "bulk density",
+      "natural density"
+    ],
+    "unit": "T/m³",
+    "units": {
+      "T/m³": 1,
+      "g/cm³": 1,
+      "kg/m³": 0.001,
+      "kN/m³": 0.10197162129779283
+    },
+    "min_exclusive": true,
+    "groups": [
+      "natural_density"
+    ]
+  },
+  "e0": {
+    "label": "Hệ số rỗng ban đầu",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "e0",
+      "Hệ số rỗng ban đầu"
+    ],
+    "unit": "1",
+    "units": {
+      "1": 1
+    },
+    "min_exclusive": true
+  },
+  "cc": {
+    "label": "Chỉ số nén",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "cc",
+      "Chỉ số nén"
+    ],
+    "unit": "1",
+    "units": {
+      "1": 1
+    },
+    "groups": [
+      "consolidation"
+    ]
+  },
+  "cs": {
+    "label": "Chỉ số nở",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "cs",
+      "Chỉ số nở"
+    ],
+    "unit": "1",
+    "units": {
+      "1": 1
+    },
+    "groups": [
+      "consolidation"
+    ]
+  },
+  "pc": {
+    "label": "Áp lực tiền cố kết",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "pc",
+      "Áp lực tiền cố kết"
+    ],
+    "unit": "T/m²",
+    "units": {
+      "T/m²": 1,
+      "kg/cm²": 10,
+      "kgf/cm²": 10,
+      "kPa": 0.10197162129779283,
+      "kN/m²": 0.10197162129779283
+    },
+    "groups": [
+      "consolidation"
+    ]
+  },
+  "cv_constant": {
+    "label": "Hệ số cố kết trung bình",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "cv_constant",
+      "Hệ số cố kết trung bình",
+      "Cvtb",
+      "Cv trung bình",
+      "Cv1-2",
+      "Cv1–2",
+      "Cv chính",
+      "Hệ số cố kết Cv1-2"
+    ],
+    "unit": "10^-3 cm²/s",
+    "units": {
+      "10^-3 cm²/s": 1,
+      "10^-4 cm²/s": 0.1,
+      "cm²/s": 1000,
+      "m²/s": 10000000.0,
+      "m²/year": 0.3168808781402895
+    },
+    "min_exclusive": true,
+    "groups": [
+      "consolidation"
+    ]
+  },
+  "co": {
+    "label": "Sức kháng cắt không thoát nước",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "co",
+      "Sức kháng cắt không thoát nước",
+      "Su",
+      "Co",
+      "C0",
+      "cu không thoát nước",
+      "undrained shear strength"
+    ],
+    "unit": "T/m²",
+    "units": {
+      "T/m²": 1,
+      "kg/cm²": 10,
+      "kgf/cm²": 10,
+      "kPa": 0.10197162129779283,
+      "kN/m²": 0.10197162129779283
+    },
+    "groups": [
+      "undrained",
+      "vane_undisturbed"
+    ]
+  },
+  "cohesion_c": {
+    "label": "Lực dính",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "cohesion_c",
+      "Lực dính"
+    ],
+    "unit": "T/m²",
+    "units": {
+      "T/m²": 1,
+      "kg/cm²": 10,
+      "kgf/cm²": 10,
+      "kPa": 0.10197162129779283,
+      "kN/m²": 0.10197162129779283
+    },
+    "groups": [
+      "direct_shear",
+      "triaxial_UU"
+    ]
+  },
+  "friction_phi": {
+    "label": "Góc ma sát trong",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "friction_phi",
+      "Góc ma sát trong"
+    ],
+    "unit": "degree",
+    "units": {
+      "degree": 1,
+      "degree-minute": 1
+    },
+    "max": 90,
+    "max_exclusive": true,
+    "groups": [
+      "direct_shear",
+      "triaxial_UU"
+    ]
+  },
+  "phi_cu_effective": {
+    "label": "Góc ma sát hữu hiệu CU",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "phi_cu_effective",
+      "Góc ma sát hữu hiệu CU"
+    ],
+    "unit": "degree",
+    "units": {
+      "degree": 1,
+      "degree-minute": 1
+    },
+    "max": 90,
+    "max_exclusive": true,
+    "groups": [
+      "triaxial_CU_effective"
+    ]
+  },
+  "spt_n": {
+    "label": "Chỉ số N-SPT",
+    "type": "number",
+    "min": 0,
+    "alias": [
+      "spt_n",
+      "Chỉ số N-SPT",
+      "N-SPT",
+      "Nspt",
+      "N value",
+      "blow count"
+    ],
+    "unit": "blows/30cm",
+    "units": {
+      "blows/30cm": 1
+    },
+    "integer": true
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task",
+    "items",
+    "khong_chac"
+  ],
+  "properties": {
+    "task": {
+      "const": "column_mapping"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cot_id",
+          "thong_so",
+          "do_tin_cay",
+          "ly_do"
+        ],
+        "properties": {
+          "cot_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "thong_so": {
+            "enum": [
+              "code",
+              "borehole_name",
+              "sample_id",
+              "category",
+              "depth_from",
+              "depth_to",
+              "test_depth",
+              "gamma",
+              "e0",
+              "cc",
+              "cs",
+              "pc",
+              "cv_constant",
+              "co",
+              "cohesion_c",
+              "friction_phi",
+              "phi_cu_effective",
+              "spt_n",
+              "unknown"
+            ]
+          },
+          "do_tin_cay": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "ly_do": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^[^0-9=<>/\\\\]*$"
+          }
+        }
+      }
+    },
+    "khong_chac": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+SỬA AI SOILFIRM PRO 2026.11
+
+1. Thay toàn bộ mã Worker Cloudflare đang dùng bằng worker.js này, rồi Save and Deploy.
+2. Giữ nguyên binding DB và các binding KV hiện có; giữ secret ADMIN_KEY.
+3. Cấu hình secret GEMINI_API_KEY bằng khóa Gemini từ Google AI Studio. SOILFIRM_GEMINI_API_KEY cũng được chấp nhận. Không dùng khóa OpenAI cho Gemini.
+4. Đặt SOILFIRM_AI_MODEL=auto để tự liệt kê mô hình Flash hỗ trợ generateContent. Có thể chọn ID mô hình cụ thể; gặp 404 sẽ thử mô hình Flash khác từ danh sách API trả về.
+5. Cập nhật chat_dialog.py/bản EXE mới để có chọn ảnh và Ctrl+V dán ảnh. Giao diện gửi câu hỏi và ảnh tới /api/chat/ai; /api/ai/consult cũng được hỗ trợ.
+
+Các sửa đổi: tạo device_logins trước khi ALTER; mở đúng đường dẫn consult; không gọi lại cùng mô hình khi lỗi 404; không đưa khóa Gemini vào URL; hỗ trợ ảnh PNG/JPEG và ảnh trong hội thoại; đọc các phần văn bản trả lời, bỏ phần suy nghĩ; phân biệt lỗi khóa, quyền API, hạn mức và mô hình. Giữ giới hạn chống spam 15 câu/phút, không chặn tổng câu hỏi/ngày theo bản mã bạn cung cấp.
+
+Chưa chạy thử phần mềm hoặc gọi API. Chưa triển khai Worker trực tiếp từ phiên làm việc này. Nếu vẫn lỗi sau khi cập nhật, thông báo sẽ chỉ rõ nhóm lỗi để xử lý tiếp.

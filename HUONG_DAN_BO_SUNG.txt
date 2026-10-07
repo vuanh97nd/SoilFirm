@@ -1,0 +1,7 @@
+SoilFirm Pro 2026.4
+Mục 5: đào thay đất, cọc tre, cừ tràm. Mái đào m=1 từ chân taluy; cọc bắt đầu dưới đáy đào.
+Khi không kết hợp chờ lún: chỉ tính theo thời gian t, không có lịch đắp; khi kết hợp chờ lún mới khai báo giai đoạn đắp.
+Bảng phân tố hiện tên lớp địa chất và đoạn xử lý; phần xử lý gộp theo lớp đất, Sc=0; đất bên dưới chia dz.
+Mục 3 hiển thị chỉ tiêu đến m (CU), cột Mô tả rộng gấp đôi và có cuộn ngang.
+Biểu đồ các phương án cơ học chạy đến U=99%, có lựa chọn vị trí; bảng đánh giá hiển thị Sc=Sc dư.
+Chạy main.py hoặc BUILD_2026_4.bat trên Windows; cài dependencies bằng pip install -r requirements.txt.

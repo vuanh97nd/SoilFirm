@@ -1,0 +1,33 @@
+﻿
+# Python caches and environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Build outputs
+build/
+dist/
+*.egg-info/
+
+# Local credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Runtime outputs
+ai_workspace/outputs/
+*.log
+Chay_thu_GeotechAIExtractor/test_results.txt
+
+# Local data: review before publishing
+/Data.xlsx
+/shared_memory_reference.sqlite3
+/shared_memory_seed.json
+/seed_shared_memory.sql
+/source_inventory_portable.json
+/source_read_report.json
