@@ -65,7 +65,7 @@ def verify_distribution(exe_file):
     except Exception as exc:
         raise RuntimeError(f'EXE/PKG chưa hợp lệ: {exe}. {exc}. Không tạo bộ cài từ tệp này.') from exc
     runtime = exe.parent / '_internal'
-    required = ('base_library.zip', 'Data_Import_Mau.xlsx', 'SoilFirm_Gioi_thieu_30s.mp4', 'logo.ico', 'logo.png', 'parameter_registry.json', 'mapping_schema.json', 'geotech_template_catalog.json', 'shared_memory_seed.json')
+    required = ('base_library.zip', 'logo.ico', 'logo.png', 'parameter_registry.json', 'mapping_schema.json', 'geotech_template_catalog.json')
     for name in required:
         path = runtime / name
         if not path.is_file() or path.stat().st_size == 0:
@@ -78,6 +78,25 @@ def verify_distribution(exe_file):
             raise RuntimeError(f'base_library.zip bị hỏng: {bad}')
     print('--> Đã kiểm tra EXE x64, PKG/PYZ và các tệp runtime cần thiết.')
     return str(exe)
+
+
+def build_assets(project_dir):
+    """Core schemas are mandatory; optional local datasets are never fabricated."""
+    from pathlib import Path
+    root = Path(project_dir)
+    core = ('parameter_registry.json', 'mapping_schema.json', 'geotech_template_catalog.json')
+    missing = [name for name in core if not (root / name).is_file()]
+    if missing:
+        raise FileNotFoundError('Thiếu tài nguyên bắt buộc: ' + ', '.join(missing))
+    assets = [root / name for name in core]
+    for name in ('Data_Import_Mau.xlsx', 'shared_memory_seed.json'):
+        path = root / name
+        if path.is_file():
+            assets.append(path)
+        else:
+            print('--> Không đóng gói tệp tùy chọn ' + name +
+                  '; chức năng dùng tệp này sẽ không có dữ liệu đi kèm.')
+    return assets
 
 
 # 1. TỰ ĐỘNG TẠO FILE LOGO.ICO BẰNG PILLOW
@@ -165,16 +184,8 @@ def build_executable():
         import xlrd
     except ImportError:
         subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'xlrd>=2.0.1'])
-    template_file = os.path.join(project_dir, 'Data_Import_Mau.xlsx')
-    if not os.path.isfile(template_file):
-        raise FileNotFoundError('Thiếu Data_Import_Mau.xlsx để đóng gói file mẫu import.')
-    for name in ('parameter_registry.json','mapping_schema.json','geotech_template_catalog.json','shared_memory_seed.json'):
-        if not os.path.isfile(os.path.join(project_dir,name)):
-            raise FileNotFoundError(f'Thiếu {name} để đóng gói cổng kiểm tra AI.')
-    intro_video = os.path.join(project_dir, 'SoilFirm_Gioi_thieu_30s.mp4')
-    if not os.path.isfile(intro_video):
-        raise FileNotFoundError('Thiếu SoilFirm_Gioi_thieu_30s.mp4 để đóng gói video giới thiệu.')
-    ico_file = generate_soilfirm_ico(force=True)
+    assets = build_assets(project_dir)
+    ico_file = generate_soilfirm_ico(force=False)
     
     # Kiểm tra cài đặt PyInstaller
     try:
@@ -203,16 +214,11 @@ def build_executable():
         "--collect-all=pdfplumber",
         f"--add-data={os.path.join(project_dir, 'soilfirm_agent')}{os.pathsep}soilfirm_agent",
         "--collect-all=webview",
-        f"--add-data={intro_video}{os.pathsep}.",
         "--collect-all=pypdf",
         "--collect-all=fitz",
         "--collect-all=xlrd",
         "--collect-all=ezdxf",
-        f"--add-data={template_file}{os.pathsep}.",
-        f"--add-data={os.path.join(project_dir, 'parameter_registry.json')}{os.pathsep}.",
-        f"--add-data={os.path.join(project_dir, 'mapping_schema.json')}{os.pathsep}.",
-        f"--add-data={os.path.join(project_dir, 'geotech_template_catalog.json')}{os.pathsep}.",
-        f"--add-data={os.path.join(project_dir, 'shared_memory_seed.json')}{os.pathsep}.",
+        f"--add-data={os.path.join(project_dir)}{os.pathsep}.",
         "--collect-all=pythonnet",
         "--collect-all=clr_loader",
         "--onedir",
@@ -229,6 +235,7 @@ def build_executable():
         "main.py"
     ]
     
+    cmd[3:3] = [f"--add-data={asset}{os.pathsep}." for asset in assets]
     result = subprocess.run(cmd, cwd=project_dir)
     exe_file = os.path.join(project_dir, 'dist', 'SoilFirm_Professional', 'SoilFirm_Professional.exe')
     if result.returncode == 0 and os.path.isfile(exe_file):

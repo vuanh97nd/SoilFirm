@@ -15,8 +15,6 @@
 #define MyAppExeSource AddBackslash(SourcePath) + BuildDir + "\" + MyAppExeName
 #define RuntimeDir AddBackslash(SourcePath) + BuildDir + "\_internal"
 #define BaseLibrarySource RuntimeDir + "\base_library.zip"
-#define TemplateSource RuntimeDir + "\Data_Import_Mau.xlsx"
-#define IntroSource RuntimeDir + "\SoilFirm_Gioi_thieu_30s.mp4"
 ; Chỉ đóng gói bản onedir do build_app.py tạo, không dùng EXE rời cũ.
 #define MyIconSource AddBackslash(SourcePath) + "logo.ico"
 
@@ -31,12 +29,6 @@
 
 #if !FileExists(BaseLibrarySource)
   #error "Thieu _internal\base_library.zip. Hay chay python build_for_setup.py de build day du."
-#endif
-#if !FileExists(TemplateSource)
-  #error "Thieu _internal\Data_Import_Mau.xlsx. Khong tao Setup tu ban build nay."
-#endif
-#if !FileExists(IntroSource)
-  #error "Thieu _internal\SoilFirm_Gioi_thieu_30s.mp4. Khong tao Setup tu ban build nay."
 #endif
 
 [Setup]

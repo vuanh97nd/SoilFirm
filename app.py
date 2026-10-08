@@ -2281,7 +2281,6 @@ class App(tk.Tk):
             self.current_expiry = expires_at
             self.presence.start(user, key)
             self.support_background.start()
-            self.after(400, self._show_first_software_intro)
             self._menu()
             self._apply_ui_language()
             if getattr(self, '_startup_splash', None) is None:
@@ -3575,7 +3574,6 @@ class App(tk.Tk):
         m.add_command(label='Thiết lập tính toán', command=self.open_calculation_settings)
 
         hm = tk.Menu(m, tearoff=False)
-        hm.add_command(label='Giới thiệu SOILFIRM PRO (30 giây)', command=self.show_software_intro)
         hm.add_command(label='Hướng dẫn sử dụng', command=lambda: show_help_dialog(self))
         m.add_cascade(label='Hướng dẫn', menu=hm)
 

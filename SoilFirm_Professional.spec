@@ -1,10 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_all
 
-datas = [('G:/My Drive/Dev/SoilFirm_Pro_2026.11/logo.png', '.'), ('G:/My Drive/Dev/SoilFirm_Pro_2026.11/SoilFirm_Gioi_thieu_30s.mp4', '.'), ('G:/My Drive/Dev/SoilFirm_Pro_2026.11/Data_Import_Mau.xlsx', '.'), ('G:/My Drive/Dev/SoilFirm_Pro_2026.11/logo.ico', '.')]
-datas += [('G:/My Drive/Dev/SoilFirm_Pro_2026.11/parameter_registry.json', '.'), ('G:/My Drive/Dev/SoilFirm_Pro_2026.11/mapping_schema.json', '.')]
-datas += [('G:/My Drive/Dev/SoilFirm_Pro_2026.11/geotech_template_catalog.json', '.'), ('G:/My Drive/Dev/SoilFirm_Pro_2026.11/shared_memory_seed.json', '.')]
-datas += [('G:/My Drive/Dev/SoilFirm_Pro_2026.11/soilfirm_agent', 'soilfirm_agent')]
+from pathlib import Path
+project_dir = Path(SPECPATH)
+core_assets = ('logo.png', 'logo.ico', 'parameter_registry.json',
+               'mapping_schema.json', 'geotech_template_catalog.json')
+datas = [(str(project_dir / name), '.') for name in core_assets]
+for name in ('Data_Import_Mau.xlsx', 'shared_memory_seed.json'):
+    if (project_dir / name).is_file():
+        datas.append((str(project_dir / name), '.'))
+datas.append((str(project_dir / 'soilfirm_agent'), 'soilfirm_agent'))
 binaries = []
 hiddenimports = ['xlrd', 'geotech_ai_extractor', 'geotech_memory', 'geotech_memory_ui', 'geotech_memory_sync', 'sqlite3', 'soilfirm_agent', 'soilfirm_agent.app_bridge', 'soilfirm_agent.documents', 'soilfirm_agent.table_python', 'jsonschema', 'pdfplumber']
 for package in ('pandas','pydantic','pydantic_core','g4f','ddgs','soilfirm_agent','jsonschema','pdfplumber'):
@@ -21,8 +26,8 @@ datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['main.py'],
-    pathex=[],
+    [str(project_dir / 'main.py')],
+    pathex=[str(project_dir)],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
@@ -51,7 +56,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['G:/My Drive/Dev/SoilFirm_Pro_2026.11/logo.ico'],
+    icon=[str(project_dir / 'logo.ico')],
     contents_directory='_internal',
 )
 coll = COLLECT(
