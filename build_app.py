@@ -10,6 +10,14 @@ import subprocess
 APP_VERSION = "2026.11"
 
 
+def configure_build_output():
+    """Build logs use UTF-8 even when Windows redirects stdout with cp1252."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, 'reconfigure', None)
+        if reconfigure is not None:
+            reconfigure(encoding='utf-8', errors='backslashreplace')
+
+
 def verify_source_version(project_dir):
     """Chặn đóng gói nhầm app/splash của bản cũ."""
     if not os.path.isfile(os.path.join(project_dir, 'ui_i18n.py')):
@@ -158,6 +166,7 @@ def generate_soilfirm_ico(force=False):
 
 # 2. GỌI PYINSTALLER BUILD EXE
 def build_executable():
+    configure_build_output()
     import struct
     if sys.platform != 'win32' or struct.calcsize('P') != 8:
         raise RuntimeError('Bộ cài Windows x64 phải được build bằng Python 64-bit trên Windows.')
@@ -236,7 +245,10 @@ def build_executable():
     ]
     
     cmd[3:3] = [f"--add-data={asset}{os.pathsep}." for asset in assets]
-    result = subprocess.run(cmd, cwd=project_dir)
+    build_env = os.environ.copy()
+    build_env['PYTHONIOENCODING'] = 'utf-8'
+    build_env['PYTHONUTF8'] = '1'
+    result = subprocess.run(cmd, cwd=project_dir, env=build_env)
     exe_file = os.path.join(project_dir, 'dist', 'SoilFirm_Professional', 'SoilFirm_Professional.exe')
     if result.returncode == 0 and os.path.isfile(exe_file):
         verify_distribution(exe_file)

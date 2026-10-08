@@ -1,5 +1,6 @@
 @echo off
 setlocal
+chcp 65001 >nul
 cd /d "%~dp0"
 call build_exe.bat --no-pause
 if errorlevel 1 goto failed
