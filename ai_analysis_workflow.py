@@ -134,7 +134,7 @@ class AnalysisWorkspace(ttk.Frame):
         header.pack(fill='x')
         ttk.Label(header, text='Chọn phân đoạn và so sánh phương án',
                   font=(UI_FONT, 13, 'bold'), foreground='#123B56').pack(side='left')
-        ttk.Combobox(header, textvariable=self.provider, values=('Cloudflare AI','Gemini','DeepSeek','DeepSeek (g4f)','deepseek-r1:8b', 'qwen3:8b', 'qwen3:4b-q4_K_M', 'qwen3:4b-q8_0','Groq','Grok (xAI)','ChatGPT','NVIDIA AI','Kimi AI'),
+        ttk.Combobox(header, textvariable=self.provider, values=('Cloudflare AI','Gemini','DeepSeek','DeepSeek (g4f)','Groq','Grok (xAI)','ChatGPT','NVIDIA AI','Kimi AI'),
                      state='readonly', width=22).pack(side='right')
         controls = ttk.Frame(self, padding=(12, 0))
         controls.pack(fill='x')
@@ -649,7 +649,7 @@ class AnalysisWorkspace(ttk.Frame):
         def run():
             try:self.events.put(('done',action(progress)))
             except Exception as exc:self.events.put(('error',exc))
-        if self.provider.get() in (FREE_PROVIDER, 'deepseek-r1:8b', 'qwen3:8b', 'qwen3:4b-q4_K_M', 'qwen3:4b-q8_0') and use_ai:
+        if self.provider.get() == FREE_PROVIDER and use_ai:
             run_deepseek_free_async(
                 self.app, label,
                 lambda result: self.events.put(('done', result)),
@@ -1156,7 +1156,7 @@ class AnalysisWorkspace(ttk.Frame):
         memory_scope=project_scope(self.data_project(),self.app.current_username or '')
         shared_eligible=not self.app.is_trial()
         shared_role=getattr(self.app,'current_user_role','')
-        provider={'Cloudflare AI':'cloudflare','Gemini':'gemini','DeepSeek':'deepseek','DeepSeek (g4f)':'deepseek_free','deepseek-r1:8b':'ollama','qwen3:8b':'ollama_qwen','qwen3:4b-q4_K_M':'ollama_qwen_4b_q4','qwen3:4b-q8_0':'ollama_qwen_4b_q8','Groq':'groq','Grok (xAI)':'grok','ChatGPT':'openai','NVIDIA AI':'nvidia','Kimi AI':'kimi'}[self.provider.get()]
+        provider={'Cloudflare AI':'cloudflare','Gemini':'gemini','DeepSeek':'deepseek','DeepSeek (g4f)':'deepseek_free','Groq':'groq','Grok (xAI)':'grok','ChatGPT':'openai','NVIDIA AI':'nvidia','Kimi AI':'kimi'}[self.provider.get()]
         url=self.app.API_BASE_URL+'/api/chat/ai'
         import hashlib
         import_source_hashes={};import_source_stats={}
@@ -1190,7 +1190,7 @@ class AnalysisWorkspace(ttk.Frame):
             from geotech_memory_sync import sync_shared_memory
             shared_sync=sync_shared_memory(self.app.API_BASE_URL,credentials,memory_scope,shared_eligible)
             if progress:progress(shared_sync['message'])
-            local_post = make_local_post(self.cancel_event, engine=provider if provider in ('ollama','ollama_qwen','ollama_qwen_4b_q4','ollama_qwen_4b_q8') else 'g4f') if provider in ('deepseek_free', 'ollama', 'ollama_qwen','ollama_qwen_4b_q4','ollama_qwen_4b_q8') else None
+            local_post = make_local_post(self.cancel_event, engine='g4f') if provider == 'deepseek_free' else None
             result=request_extraction_files(selected_paths,kind,credentials,url,provider,progress,
                 self.cancel_event.is_set,post=local_post,target_names=target_names,
                 reviewed_boreholes=reviewed_boreholes,completed_sources=completed_sources,memory_scope=memory_scope)

@@ -1,4 +1,4 @@
-"""Chạy: python -m unittest test_geotech_memory -v (không cần Ollama/GPU)."""
+"""Chạy: python -m unittest test_geotech_memory -v (không gọi dịch vụ AI thật)."""
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 import json
@@ -70,16 +70,16 @@ class MemoryTests(unittest.TestCase):
     def test_mapping_reuse_no_ai_and_current_numbers(self):
         self.remember()
         with patch('geotech_memory.default_path',return_value=self.db),patch.object(data,'_mapping_storage',return_value=(Path(self.temp.name)/'legacy.json',Path(self.temp.name)/'audit.jsonl')):
-            rows,notes=data._read_excel_header_mapping(self.chunk,{},'mock','ollama_qwen',lambda *a,**k:self.fail('Không được gọi AI khi mapping đã xác nhận'),None,None)
+            rows,notes=data._read_excel_header_mapping(self.chunk,{},'mock','deepseek',lambda *a,**k:self.fail('Không được gọi AI khi mapping đã xác nhận'),None,None)
             self.assertEqual(rows[0]['values']['gamma'],1.8)
             chunk=deepcopy(self.chunk);chunk['excel_rows'][0]['cells']['B']['value']=1.9
-            rows,_=data._read_excel_header_mapping(chunk,{},'mock','ollama_qwen',lambda *a,**k:self.fail('AI không cần gọi'),None,None)
+            rows,_=data._read_excel_header_mapping(chunk,{},'mock','deepseek',lambda *a,**k:self.fail('AI không cần gọi'),None,None)
             self.assertEqual(rows[0]['values']['gamma'],1.9)
     def test_mapping_still_validates_numbers(self):
         self.remember();chunk=deepcopy(self.chunk);chunk['excel_rows'][0]['cells']['B']['value']='không có số'
         with patch('geotech_memory.default_path',return_value=self.db),patch.object(data,'_mapping_storage',return_value=(Path(self.temp.name)/'legacy.json',Path(self.temp.name)/'audit.jsonl')):
             with self.assertRaises(data.MappingReviewRequired):
-                data._read_excel_header_mapping(chunk,{},'mock','ollama_qwen',lambda *a,**k:self.fail('Không gọi AI'),None,None)
+                data._read_excel_header_mapping(chunk,{},'mock','deepseek',lambda *a,**k:self.fail('Không gọi AI'),None,None)
     def test_no_hallucinated_mapping_ids(self):
         wrong=json.loads(self.answer);wrong['items'][1]['thong_so']='made_up'
         with self.assertRaises(ValueError):self.mem.remember_mapping('project-A',self.columns,self.registry,json.dumps(wrong),actor='tester',confirmed=True)

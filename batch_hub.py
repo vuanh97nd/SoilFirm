@@ -17,16 +17,16 @@ def consult_batch_ai(app,provider,label,context,cancel):
     import requests
     from ai_analysis_data import parse_ai_json
     if cancel.is_set():raise InterruptedError('Đã dừng tính AI.')
-    providers={'Cloudflare AI':'cloudflare','Gemini':'gemini','DeepSeek':'deepseek','DeepSeek (g4f)':'deepseek_free','DeepSeek (miễn phí)':'ollama','Qwen (miễn phí)':'ollama_qwen','Groq':'groq','Grok (xAI)':'grok','ChatGPT':'openai','NVIDIA AI':'nvidia','Kimi AI':'kimi'}
+    providers={'Cloudflare AI':'cloudflare','Gemini':'gemini','DeepSeek':'deepseek','DeepSeek (g4f)':'deepseek_free','Groq':'groq','Grok (xAI)':'grok','ChatGPT':'openai','NVIDIA AI':'nvidia','Kimi AI':'kimi'}
     payload={'username':app.current_username,'key':app.current_login_key,'provider':providers[provider],
              'text':label,'context':json.dumps(context,ensure_ascii=False,default=str),
              'history':[],'tools':False}
     if len(payload['context'])>28000:raise ValueError('Ngữ cảnh đoạn quá lớn để gửi AI; giảm số lớp/phương án trong lần tính.')
     timeout=(5,135) if provider=='NVIDIA AI' else (5,105)
     try:
-        if provider in ('DeepSeek (g4f)', 'DeepSeek (miễn phí)', 'Qwen (miễn phí)'):
+        if provider == 'DeepSeek (g4f)':
             from local_ai_engine import make_local_post
-            response = make_local_post(cancel, engine=providers[provider] if providers[provider] in ('ollama','ollama_qwen') else 'g4f')(app.API_BASE_URL+'/api/chat/ai',json=payload,timeout=timeout)
+            response = make_local_post(cancel, engine='g4f')(app.API_BASE_URL+'/api/chat/ai',json=payload,timeout=timeout)
         else:
             response=requests.post(app.API_BASE_URL+'/api/chat/ai',json=payload,timeout=timeout)
         data=response.json()

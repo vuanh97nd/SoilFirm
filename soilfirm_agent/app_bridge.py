@@ -20,13 +20,7 @@ def run_app_agent(question,provider_code,document_path,role,code_root,gateway,ca
     source=Path(document_path).resolve() if document_path else None
     root=source.parent if source else Path(code_root).resolve()/'ai_workspace'
     tools=ToolSet(root,role=role,code_root=code_root,memory_write=memory_write,memory_fetch=memory_fetch,cancel=cancel,progress=progress)
-    local={'ollama_qwen_coder_7b':'qwen2.5-coder:7b','ollama':'deepseek-r1:8b','ollama_qwen':'qwen3:8b','ollama_qwen_4b_q4':'qwen3:4b-q4_K_M','ollama_qwen_4b_q8':'qwen3:4b-q8_0'}
-    if provider_code in local:
-        if os.environ.get('OLLAMA_BASE_URL','http://127.0.0.1:11434').rstrip('/') in ('http://127.0.0.1:11434','http://localhost:11434'):
-            from local_ai_engine import check_local_ai_component
-            check_local_ai_component(local[provider_code])
-        provider=make_provider(local[provider_code])
-    elif provider_code=='deepseek_free':provider=JSONAdapter('g4f',os.environ.get('SOILFIRM_G4F_MODEL','deepseek-v3'))
+    if provider_code=='deepseek_free':provider=JSONAdapter('g4f',os.environ.get('SOILFIRM_G4F_MODEL','deepseek-v3'))
     else:
         def infer(messages):return gateway(messages,tools.definitions)
         provider=make_provider(provider_code,infer=infer)

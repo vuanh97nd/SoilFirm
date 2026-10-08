@@ -1728,7 +1728,7 @@ class App(tk.Tk):
         self.ai_web_search_var = tk.BooleanVar(value=self._calculation_preferences.get('web_search', True))
         self.header_ai_selector = ttk.Combobox(f_ai_grp,
             textvariable=self.ai_provider_var,
-            values=('Cloudflare AI','Gemini','DeepSeek','DeepSeek (g4f)','deepseek-r1:8b', 'qwen3:8b', 'qwen3:4b-q4_K_M', 'qwen3:4b-q8_0','Groq','Grok (xAI)','ChatGPT','NVIDIA AI','Kimi AI'),
+            values=('Cloudflare AI','Gemini','DeepSeek','DeepSeek (g4f)','Groq','Grok (xAI)','ChatGPT','NVIDIA AI','Kimi AI'),
             state='readonly', width=16)
 
         f_user_grp = tk.Frame(actions, bg=COLORS['header'])
@@ -2753,12 +2753,14 @@ class App(tk.Tk):
                 result['method'] = data['method']
             if data.get('mode') in ('TÍNH MỘT ĐOẠN', 'TÍNH TOÀN TUYẾN'):
                 result['mode'] = data['mode']
-            # Chuyển nhãn cũ khi mở cấu hình, giữ đúng loại kết nối.
-            data['provider'] = {'AI (miễn phí)':'deepseek-r1:8b',
-                                'DeepSeek (miễn phí)':'deepseek-r1:8b',
-                                'Qwen (miễn phí)':'qwen3:8b',
-                                'DeepSeek (Miễn phí)':'DeepSeek (g4f)'}.get(data.get('provider'),data.get('provider'))
-            if data.get('provider') in ('Cloudflare AI', 'Gemini', 'DeepSeek', 'DeepSeek (g4f)','deepseek-r1:8b', 'qwen3:8b', 'qwen3:4b-q4_K_M', 'qwen3:4b-q8_0', 'Groq',
+            # Các cấu hình mô hình cục bộ cũ dùng lựa chọn mặc định hiện tại.
+            if data.get('provider') in ('AI (miễn phí)', 'DeepSeek (miễn phí)',
+                    'Qwen (miễn phí)', 'deepseek-r1:8b', 'qwen3:8b',
+                    'qwen3:4b-q4_K_M', 'qwen3:4b-q8_0', 'qwen2.5-coder:7b'):
+                data['provider'] = 'Cloudflare AI'
+            elif data.get('provider') == 'DeepSeek (Miễn phí)':
+                data['provider'] = 'DeepSeek (g4f)'
+            if data.get('provider') in ('Cloudflare AI', 'Gemini', 'DeepSeek', 'DeepSeek (g4f)','Groq',
                                         'Grok (xAI)', 'ChatGPT', 'NVIDIA AI', 'Kimi AI'):
                 result['provider'] = data['provider']
             stages = data.get('stages')

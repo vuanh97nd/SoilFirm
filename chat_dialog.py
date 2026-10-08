@@ -602,8 +602,7 @@ def show_ai_dialog(app):
     toolbar=ttk.Frame(window,padding=10);toolbar.grid(row=0,column=0,columnspan=2,sticky='ew')
     ttk.Label(toolbar,text=T('AI:','Provider:')).pack(side='left')
     provider=app.ai_provider_var if hasattr(app,'ai_provider_var') else tk.StringVar(value='Cloudflare AI')
-    provider_selector=ttk.Combobox(toolbar,textvariable=provider,values=(('qwen2.5-coder:7b','deepseek-r1:8b') if admin_full else ())+('Cloudflare AI','DeepSeek','DeepSeek (g4f)','qwen3:8b','qwen3:4b-q4_K_M','qwen3:4b-q8_0','Gemini','Groq','Grok (xAI)','ChatGPT','NVIDIA AI','Kimi AI'),state='readonly',width=22)
-    if not admin_full and provider.get() in ('qwen2.5-coder:7b','deepseek-r1:8b'):provider.set('Cloudflare AI')
+    provider_selector=ttk.Combobox(toolbar,textvariable=provider,values=('Cloudflare AI','DeepSeek','DeepSeek (g4f)','Gemini','Groq','Grok (xAI)','ChatGPT','NVIDIA AI','Kimi AI'),state='readonly',width=22)
     provider_selector.pack(side='left',padx=8)
     use_web=getattr(app,'ai_web_search_var',None)
     if use_web is None:use_web=tk.BooleanVar(value=True)
@@ -1190,15 +1189,13 @@ def show_ai_dialog(app):
     def send(_event=None,local_plan=None):
         text=draft.get().strip()
         image=state['image']
-        if not admin_full and provider.get() in ('qwen2.5-coder:7b','deepseek-r1:8b'):
-            status.set('Mô hình viết mã này chỉ dành cho Admin.');return
         if not admin_full and local_plan:
             status.set('Tài khoản này chỉ được trò chuyện và đọc số liệu; công cụ thao tác dành cho Admin.');return
         batch_request=state.get('ai_batch_request')
         if not admin_full:batch_request=None
         if not batch_request or batch_request.get('text')!=text:batch_request=None
         if state['busy'] or not(text or image or state['document']):return
-        if provider.get() in ('DeepSeek (g4f)', 'deepseek-r1:8b', 'qwen2.5-coder:7b', 'qwen3:8b', 'qwen3:4b-q4_K_M', 'qwen3:4b-q8_0'):
+        if provider.get() == 'DeepSeek (g4f)':
             if image:
                 status.set(provider.get()+' hỗ trợ chat văn bản. Dùng nút đọc dữ liệu để nhập file hoặc chọn AI hỗ trợ ảnh.');return
             if local_plan or batch_request:
@@ -1303,7 +1300,7 @@ def show_ai_dialog(app):
             state['single_batch_busy'] = True;app._single_batch_busy = True
         processing(True,'AI đang lập kế hoạch tính…' if batch_request else 'AI đang xử lý…');draft.set('')
         append('user',text,image);status.set(T('AI đang trả lời…','AI is responding…'))
-        payload={**credentials,'text':text,'history':messages[-12:],'image':image,'document':state['document'],'context':context[:28000],'tools':tools_allowed,'provider':{'Cloudflare AI':'cloudflare','DeepSeek':'deepseek','DeepSeek (g4f)':'deepseek_free','deepseek-r1:8b':'ollama','qwen2.5-coder:7b':'ollama_qwen_coder_7b','qwen3:8b':'ollama_qwen','qwen3:4b-q4_K_M':'ollama_qwen_4b_q4','qwen3:4b-q8_0':'ollama_qwen_4b_q8','Gemini':'gemini','Groq':'groq','Grok (xAI)':'grok','ChatGPT':'openai','NVIDIA AI':'nvidia','Kimi AI':'kimi'}[provider.get()]}
+        payload={**credentials,'text':text,'history':messages[-12:],'image':image,'document':state['document'],'context':context[:28000],'tools':tools_allowed,'provider':{'Cloudflare AI':'cloudflare','DeepSeek':'deepseek','DeepSeek (g4f)':'deepseek_free','Gemini':'gemini','Groq':'groq','Grok (xAI)':'grok','ChatGPT':'openai','NVIDIA AI':'nvidia','Kimi AI':'kimi'}[provider.get()]}
         tool_source=state.get('document_path') if str(state.get('document_path','')).lower().endswith('.xlsx') else getattr(app,'_section_excel_path',None)
         if request_mode=='TÍNH TOÀN TUYẾN':
             tool_source=app._ai_analysis_workspace.state.get('source')
@@ -1332,7 +1329,7 @@ def show_ai_dialog(app):
                 payload['context']=(payload.get('context','')+GeotechMemory().rag_context(memory_scope,text))[:28000]
                 if cancel.is_set():raise InterruptedError('Đã dừng hỗ trợ.')
                 attached_path=state.get('document_path')
-                agent_requested=(bool(attached_path and str(attached_path).lower().endswith(('.xlsx','.pdf'))) or admin_full and (payload['provider'] in ('ollama','ollama_qwen_coder_7b') or any(w in text.lower() for w in ('sửa code','sửa mã','mã nguồn','viết hàm python','sửa lỗi','fix lỗi'))))
+                agent_requested=(bool(attached_path and str(attached_path).lower().endswith(('.xlsx','.pdf'))) or admin_full and (any(w in text.lower() for w in ('sửa code','sửa mã','mã nguồn','viết hàm python','sửa lỗi','fix lỗi'))))
                 if agent_requested and not local_plan and not batch_request and not image:
                     from soilfirm_agent.app_bridge import run_app_agent
                     def gateway(messages,definitions):
@@ -1386,9 +1383,9 @@ def show_ai_dialog(app):
                     except Exception as exc:
                         sources_text='\n\nTra cứu mạng chưa hoàn tất: '+str(exc)[:300]
                         payload['context']=('CHƯA TRA CỨU ĐƯỢC MẠNG. Vẫn trả lời phần có căn cứ từ kiến thức/dữ liệu được cung cấp; không tự nhận đã tra cứu hoặc khẳng định tiêu chuẩn/giá hiện hành.\n'+payload.get('context',''))[:28000]
-                if payload['provider'] in ('deepseek_free', 'ollama', 'ollama_qwen','ollama_qwen_4b_q4','ollama_qwen_4b_q8','ollama_qwen_coder_7b'):
+                if payload['provider'] == 'deepseek_free':
                     from local_ai_engine import chat_deepseek_local
-                    response = chat_deepseek_local(payload, cancel, engine=payload['provider'] if payload['provider'] in ('ollama','ollama_qwen','ollama_qwen_4b_q4','ollama_qwen_4b_q8','ollama_qwen_coder_7b') else 'g4f')
+                    response = chat_deepseek_local(payload, cancel, engine='g4f')
                     data = response.json()
                     if not response.ok or not data.get('success') or not data.get('answer'):
                         raise ValueError(provider.get()+' chưa trả lời hợp lệ.')

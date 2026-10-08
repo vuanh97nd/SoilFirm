@@ -44,7 +44,7 @@ class SoilFirmAgent:
         def service_error(code):
             explanations={
                 'connection':'Không kết nối được dịch vụ AI.',
-                'context':'Mô hình Ollama chưa hoàn tất phản hồi hoặc đã đầy ngữ cảnh.',
+                'context':'Mô hình AI chưa hoàn tất phản hồi hoặc đã đầy ngữ cảnh.',
                 'http':'Dịch vụ AI báo lỗi HTTP; cần kiểm tra mô hình, khóa API hoặc hạn mức.',
                 'format':'Mô hình chưa trả được phản hồi đúng định dạng sau các lần thử.',
                 'incomplete':'Dịch vụ AI chưa hoàn tất phản hồi.'}

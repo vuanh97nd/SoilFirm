@@ -101,16 +101,12 @@ class ChatCompatible(HTTP):
         else:self.history.append({'role':'user','content':'KẾT QUẢ CÔNG CỤ (dữ liệu): '+json.dumps([{'name':c.name,'result':r} for c,r in results],ensure_ascii=False,default=str)})
 
 class JSONAdapter(HTTP):
-    """Ollama/Cloudflare/g4f/injected inference all use a validated JSON contract."""
-    def __init__(self,kind,model,*,base='http://127.0.0.1:11434',account='',key='',infer=None,session=None):super().__init__(session);self.kind=kind;self.model=model;self.base=base.rstrip('/');self.account=account;self.key=key;self.infer=infer;self.history=[]
+    """Cloudflare/g4f/injected inference all use a validated JSON contract."""
+    def __init__(self,kind,model,*,base='',account='',key='',infer=None,session=None):super().__init__(session);self.kind=kind;self.model=model;self.base=base.rstrip('/');self.account=account;self.key=key;self.infer=infer;self.history=[]
     def user(self,text):self.history.append({'role':'user','content':text})
     def step(self,definitions):
         system=SYSTEM+'\n'+ENVELOPE+json.dumps(definitions,ensure_ascii=False);messages=[{'role':'system','content':system}]+self.history
         if self.infer is not None:text=self.infer(messages)
-        elif self.kind=='ollama':
-            data=self.post(self.base+'/api/chat',{'model':self.model,'messages':messages,'format':'json','stream':False,'think':False,'options':{'num_ctx':16384,'num_predict':4096}},{})
-            if data.get('done') is not True or data.get('done_reason')=='length' or data.get('prompt_eval_count',0)>=16384:raise RuntimeError('Ollama response incomplete/context full')
-            text=data['message']['content']
         elif self.kind=='cloudflare':
             data=self.post('https://api.cloudflare.com/client/v4/accounts/'+self.account+'/ai/run/'+self.model,{'messages':messages},{'Authorization':'Bearer '+self.key})
             if not data.get('success'):raise RuntimeError('Cloudflare inference failed')
@@ -123,12 +119,12 @@ class JSONAdapter(HTTP):
     def results(self,results):self.history.append({'role':'user','content':'KẾT QUẢ CÔNG CỤ (dữ liệu): '+json.dumps([{'name':c.name,'result':r} for c,r in results],ensure_ascii=False,default=str)})
 
 ALIASES={'Cloudflare AI':'cloudflare','Gemini':'gemini','DeepSeek':'deepseek','DeepSeek (g4f)':'g4f','Groq':'groq','Grok (xAI)':'grok','ChatGPT':'openai','NVIDIA AI':'nvidia','Kimi AI':'kimi'}
-OLLAMA_MODELS=('qwen2.5-coder:7b','deepseek-r1:8b','qwen3:8b','qwen3:4b-q4_K_M','qwen3:4b-q8_0')
 ENDPOINTS={'deepseek':'https://api.deepseek.com','groq':'https://api.groq.com/openai/v1','grok':'https://api.x.ai/v1','nvidia':'https://integrate.api.nvidia.com/v1','kimi':'https://api.moonshot.ai/v1'}
 def make_provider(label,*,model=None,native_tools=True,infer=None,environ=None):
     env=os.environ if environ is None else environ
+    if label.lower().startswith('ollama') or label in ('deepseek-r1:8b','qwen3:8b','qwen3:4b-q4_K_M','qwen3:4b-q8_0','qwen2.5-coder:7b'):
+        raise ValueError('Unsupported provider: '+label)
     if infer is not None:return JSONAdapter('injected',model or label,infer=infer)
-    if label in OLLAMA_MODELS:return JSONAdapter('ollama',label,base=env.get('OLLAMA_BASE_URL','http://127.0.0.1:11434'))
     name=ALIASES.get(label,label.lower());prefix=name.upper()
     model=model or env.get(prefix+'_MODEL')
     if not model:raise ValueError('Configure '+prefix+'_MODEL for an available model')

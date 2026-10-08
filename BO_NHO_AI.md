@@ -1,7 +1,7 @@
 # Bộ nhớ AI theo dự án – SoilFirm Pro 2026.11
 
-Đây là bộ nhớ bên ngoài cho AI, không huấn luyện lại hoặc thay trọng số Qwen3.
-Áp dụng cho các nhà cung cấp hiện có; Qwen trên Ollama dùng cùng cơ chế.
+Đây là bộ nhớ bên ngoài cho AI, không huấn luyện lại hoặc thay trọng số mô hình AI.
+Áp dụng cho các nhà cung cấp AI hiện có trong danh sách lựa chọn của SoilFirm.
 
 ## Sử dụng
 

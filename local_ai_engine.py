@@ -27,15 +27,6 @@ if _AI_DEPENDENCY_DIR.is_dir() and str(_AI_DEPENDENCY_DIR) not in sys.path:sys.p
 
 
 FREE_PROVIDER = "DeepSeek (g4f)"
-OLLAMA_PROVIDER = "deepseek-r1:8b"
-QWEN_PROVIDER = "qwen3:8b"
-OLLAMA_MODELS = {
-    "ollama": "deepseek-r1:8b",
-    "ollama_qwen": "qwen3:8b",
-    "ollama_qwen_4b_q4": "qwen3:4b-q4_K_M",
-    "ollama_qwen_4b_q8": "qwen3:4b-q8_0",
-    'ollama_qwen_coder_7b': 'qwen2.5-coder:7b',
-}
 
 _AI_INSTALL_PACKAGES={'g4f':'g4f==8.6.5','jsonschema':'jsonschema>=4','pandas':'pandas>=2','openpyxl':'openpyxl>=3.1','xlrd':'xlrd>=2.0.1','numpy':'numpy','requests':'requests'}
 _AI_INSTALL_LOCK=threading.Lock()
@@ -45,9 +36,6 @@ def ai_install_plan(error,provider,admin=False):
     if not admin:return None
     text=str(error);lower=text.casefold()
     if ('schema' in lower and 'jsonschema' not in lower) or any(word in lower for word in ('401','403','429','api key','xác thực','timeout','timed out')):return None
-    model=OLLAMA_MODELS.get(provider,provider if provider in OLLAMA_MODELS.values() else None)
-    if model and any(word in lower for word in ('chưa tìm thấy ollama','ollama chưa có mô hình','model not found','model "'+model+'" not found')):
-        return {'kind':'ollama','model':model,'label':'Ollama và mô hình '+model}
     module=getattr(error,'name',None) if isinstance(error,ModuleNotFoundError) else None
     if not module:
         match=re.search(r"No module named ['\"]([A-Za-z0-9_.]+)['\"]",text)
@@ -56,17 +44,6 @@ def ai_install_plan(error,provider,admin=False):
     if module in _AI_INSTALL_PACKAGES:return {'kind':'python','module':module,'package':_AI_INSTALL_PACKAGES[module],'label':'mô-đun Python '+module}
     return None
 
-def check_local_ai_component(model):
-    """Expose missing local runtime/model before Agent hides a provider failure."""
-    if model not in OLLAMA_MODELS.values():raise ValueError('Mô hình không thuộc danh sách SoilFirm.')
-    import requests
-    with requests.Session() as session:
-        session.trust_env=False
-        _ensure_ollama_running(session,60)
-        response=session.get('http://127.0.0.1:11434/api/tags',timeout=(3,10))
-        response.raise_for_status()
-        names={m.get('name') or m.get('model') for m in response.json().get('models',[]) if isinstance(m,dict)}
-        if model not in names:raise LocalAIError('Ollama chưa có mô hình '+model+'. Chạy: ollama pull '+model)
 
 def _install_ai_component(plan,progress,runner=None,which=None):
     """CLI installation with no console, shell, or model-generated commands."""
@@ -81,27 +58,7 @@ def _install_ai_component(plan,progress,runner=None,which=None):
             if runner:return runner(argv,timeout=timeout)
             completed=subprocess.run(argv,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,timeout=timeout,creationflags=flags,shell=False)
             if completed.returncode:raise RuntimeError('Lệnh cài thất bại (mã '+str(completed.returncode)+'). Nhật ký: '+str(log_path))
-        if plan.get('kind')=='ollama':
-            model=plan.get('model')
-            if model not in OLLAMA_MODELS.values():raise ValueError('Mô hình không thuộc danh sách SoilFirm.')
-            executable=which('ollama')
-            candidate=Path(os.environ.get('LOCALAPPDATA',''))/'Programs'/'Ollama'/'ollama.exe'
-            if not executable and candidate.is_file():executable=str(candidate)
-            if not executable:
-                winget=which('winget')
-                if not winget:raise RuntimeError('Máy chưa có winget (App Installer); chưa thể cài ngầm Ollama.')
-                progress('Đang cài Ollama ngầm…')
-                run([winget,'install','--id','Ollama.Ollama','--exact','--source','winget','--scope','user','--silent','--accept-package-agreements','--accept-source-agreements','--disable-interactivity'])
-                executable=which('ollama') or (str(candidate) if candidate.is_file() else None)
-                if not executable:raise RuntimeError('Đã chạy trình cài nhưng chưa tìm được ollama.exe. Kiểm tra nhật ký: '+str(log_path))
-            if not runner:
-                import requests
-                with requests.Session() as session:
-                    session.trust_env=False;_ensure_ollama_running(session,180)
-            progress('Đang tải mô hình '+model+' ngầm; có thể mất nhiều phút…')
-            run([executable,'pull',model],timeout=7200)
-            run([executable,'show',model],timeout=60)
-        elif plan.get('kind')=='python':
+        if plan.get('kind')=='python':
             module=plan.get('module')
             if module not in _AI_INSTALL_PACKAGES or plan.get('package')!=_AI_INSTALL_PACKAGES[module]:raise ValueError('Gói cài không thuộc danh sách SoilFirm.')
             frozen=bool(getattr(sys,'frozen',False))
@@ -164,7 +121,6 @@ def offer_ai_install(parent,error,provider,admin=False,on_status=None):
         if not finished:parent.after(200,poll)
     parent.after(200,poll)
     return True
-_OLLAMA_SLOTS = threading.BoundedSemaphore(1)
 _SLOTS = threading.BoundedSemaphore(2)
 _SYSTEM = (
     "Chỉ trả một đối tượng JSON đúng schema được yêu cầu, không Markdown. "
@@ -217,92 +173,11 @@ def clean_json_response(text):
     return json.dumps(parsed, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
 
 
-def _ensure_ollama_running(session, timeout):
-    """Dùng server sẵn có hoặc khởi động CLI trong nền, không chặn luồng Tk."""
-    import requests
-    import shutil
-    import subprocess
-    from pathlib import Path
-    def ready():
-        try:
-            response=session.get('http://127.0.0.1:11434/api/version',timeout=(1,1))
-        except (requests.ConnectionError,requests.Timeout):
-            return False
-        if not response.ok:
-            raise LocalAIError('Dịch vụ tại cổng 11434 không trả phiên bản Ollama hợp lệ.')
-        try:info=response.json()
-        except ValueError as exc:
-            raise LocalAIError('Dịch vụ tại cổng 11434 không trả phiên bản Ollama hợp lệ.') from exc
-        if not isinstance(info,dict) or not isinstance(info.get('version'),str) or not info['version'].strip():
-            raise LocalAIError('Dịch vụ tại cổng 11434 không phải Ollama hợp lệ.')
-        return True
-    if ready():return
-    executable=shutil.which('ollama')
-    if not executable and os.name=='nt':
-        local_appdata=os.environ.get('LOCALAPPDATA')
-        if local_appdata:
-            candidate=Path(local_appdata)/'Programs'/'Ollama'/'ollama.exe'
-            if candidate.is_file():executable=str(candidate)
-    if not executable:
-        raise LocalAIError('Chưa tìm thấy Ollama. Cài Ollama trên máy rồi mở lại SoilFirm.')
-    environment=os.environ.copy()
-    environment['OLLAMA_HOST']='127.0.0.1:11434'
-    options={'stdin':subprocess.DEVNULL,'stdout':subprocess.DEVNULL,
-             'stderr':subprocess.DEVNULL,'env':environment,'close_fds':True}
-    if os.name=='nt':
-        options['creationflags']=subprocess.CREATE_NO_WINDOW | subprocess.CREATE_NEW_PROCESS_GROUP
-    else:
-        options['start_new_session']=True
-    try:
-        server=subprocess.Popen([executable,'serve'],**options)
-    except OSError as exc:
-        raise LocalAIError('Không thể tự khởi động Ollama. Mở Ollama trên máy rồi thử lại.') from exc
-    # Server tồn tại độc lập với tác vụ; hủy câu hỏi không tắt Ollama dùng chung.
-    deadline=time.monotonic()+min(20.0,max(1.0,timeout-3.0))
-    while time.monotonic()<deadline:
-        if ready():return
-        if server.poll() is not None:
-            raise LocalAIError('Ollama dừng khi khởi động. Chạy ollama serve để xem nguyên nhân.')
-        time.sleep(0.2)
-    raise LocalAIError('Ollama chưa sẵn sàng sau khi tự khởi động. Đợi một chút rồi thử lại.')
 
 
 def _provider_process(connection, prompt_text, timeout, model, provider, max_tokens, system_prompt, response_schema, num_ctx):
     """Tiến trình biệt lập: chỉ nhận chuỗi, không có đối tượng app/bảng dữ liệu."""
     try:
-        if provider == "__ollama__":
-            import requests
-            # Chỉ gọi loopback, không dùng proxy môi trường hoặc khóa tài khoản.
-            with requests.Session() as session:
-                session.trust_env = False
-                _ensure_ollama_running(session,timeout)
-                response = session.post("http://127.0.0.1:11434/api/chat", json={
-                    "model": model, "stream": False, "format": response_schema or "json", "think": False,
-                    "messages": [{"role": "system", "content": system_prompt},
-                                 {"role": "user", "content": prompt_text}],
-                    # Ollama: -1 bỏ giới hạn token đầu ra. Vẫn giữ timeout,
-                    # hủy tác vụ và cổng kiểm tra phản hồi hoàn chỉnh.
-                    "options": {"temperature": 0, "num_ctx": num_ctx, "num_predict": -1},
-                    "keep_alive": "10m",
-                }, timeout=(3, timeout))
-            if response.status_code == 404:
-                raise LocalAIError("Ollama chưa có mô hình " + model + ". Chạy: ollama pull " + model)
-            if not response.ok:
-                raise LocalAIError("Ollama báo HTTP " + str(response.status_code) + ". Kiểm tra Ollama và mô hình đã cài.")
-            data = response.json()
-            if not isinstance(data, dict) or data.get("error") or data.get("done") is not True:
-                raise LocalAIError("Ollama chưa trả phản hồi hoàn chỉnh.")
-            if data.get("model") != model:
-                raise LocalAIError("Ollama trả sai mô hình đã chọn; không dùng kết quả.")
-            if data.get("done_reason") == "length":
-                raise LocalAIError("Ollama vẫn trả phản hồi bị cắt dù đã yêu cầu không giới hạn token; chưa dùng phản hồi. Kiểm tra phiên bản Ollama và giới hạn của mô hình đang chạy.")
-            if data.get("prompt_eval_count", 0) >= num_ctx:
-                raise LocalAIError("Ngữ cảnh vượt giới hạn của mô hình; chia nhỏ yêu cầu, không dùng phần bị cắt.")
-            message = data.get("message")
-            if not isinstance(message, dict) or message.get("tool_calls"):
-                raise LocalAIError("Ollama trả cấu trúc hoặc lệnh công cụ không được phép.")
-            connection.send((True, clean_json_response(message.get("content"))))
-            return
         from g4f.client import Client
         client = Client(provider=provider or None)
         response = client.chat.completions.create(
@@ -321,17 +196,7 @@ def _provider_process(connection, prompt_text, timeout, model, provider, max_tok
         connection.send((False, "Thiếu g4f hoặc phụ thuộc. Cài g4f trong môi trường chạy SoilFirm."))
     except Exception as exc:
         # Không đưa cookie, khóa hoặc nội dung lỗi gốc của provider ra UI.
-        if provider == "__ollama__":
-            if isinstance(exc, LocalAIError):
-                message = str(exc)
-            elif type(exc).__name__ == "ConnectionError":
-                message = "Chưa kết nối được Ollama. Mở Ollama trên máy rồi thử lại."
-            elif type(exc).__name__ in ("Timeout", "ReadTimeout", "ConnectTimeout"):
-                message = "Ollama quá thời gian chờ; chưa dùng phản hồi."
-            else:
-                message = "Ollama không trả phản hồi hợp lệ (" + type(exc).__name__ + ")."
-            connection.send((False, message))
-        elif type(exc).__name__ == "MissingAuthError":
+        if type(exc).__name__ == "MissingAuthError":
             connection.send((False, {"code": "auth_required", "message":
                 "DeepSeek qua g4f yêu cầu xác thực nhưng chưa được cấu hình. "
                 "Nhãn miễn phí không có nghĩa là không cần đăng nhập hoặc khóa của nhà cung cấp. "
@@ -367,12 +232,9 @@ def extract_geotech_local(prompt_text, max_retries=3, *, cancel=None,
     provider = os.environ.get("SOILFIRM_G4F_PROVIDER", "").strip()
     if engine == "g4f" and "deepseek" not in model.casefold():
         raise LocalAIError("Nhãn DeepSeek yêu cầu mô hình DeepSeek; không tự dùng AI khác.")
-    if engine != "g4f" and engine not in OLLAMA_MODELS:
+    if engine != "g4f":
         raise LocalAIError("Loại kết nối AI không hợp lệ.")
-    if engine in OLLAMA_MODELS:
-        model = OLLAMA_MODELS[engine]
-        provider = "__ollama__"
-    slots = _OLLAMA_SLOTS if engine in OLLAMA_MODELS else _SLOTS
+    slots = _SLOTS
     while not slots.acquire(timeout=0.1):
         if cancel.is_set():
             raise InterruptedError("Đã dừng AI; chưa liên kết dữ liệu.")
@@ -515,51 +377,6 @@ def require_ai_answer(response):
         raise LocalAIError(str(message or 'AI chưa trả nội dung answer; kiểm tra model, kết nối và hạn mức.'))
     return data['answer']
 
-def _ollama_metadata_request(payload):
-    """Tạo schema từ registry và cot_id thật; không chứa ô số khảo sát."""
-    document = payload.get("document") or {}
-    context = payload.get("context") or ""
-    content = json_codec.loads(document["text"])
-    if document.get("name") == "Tiêu đề Excel":
-        system, rest = context.split("\nREGISTRY:", 1)
-        registry_text, examples_text = rest.split("\nEXAMPLES:", 1)
-        registry = json_codec.loads(registry_text)
-        ids = [entry["id"] for entry in registry]
-        columns = [column["cot_id"] for column in content]
-        # Schema cứng giúp mô hình nhỏ không tự đổi tên khóa hoặc trả số liệu.
-        item = {"type": "object", "additionalProperties": False,
-            "required": ["cot_id", "thong_so", "do_tin_cay", "ly_do"],
-            "properties": {
-                "cot_id": {"type": "integer", "enum": columns},
-                "thong_so": {"type": "string", "enum": ids + ["unknown"]},
-                "do_tin_cay": {"type": "number", "enum": [0, 0.5, 0.7, 0.85, 0.9, 0.93, 0.95, 0.98, 0.99, 1]},
-                "ly_do": {"type": "string", "enum": ["Tiêu đề và đơn vị phù hợp", "Thiếu đơn vị",
-                    "Thiếu nhóm thí nghiệm", "Ký hiệu chưa rõ", "Không thuộc thông số được phép", "Cần xác nhận thủ công"]}}}
-        schema = {"type": "object", "additionalProperties": False,
-            "required": ["task", "items", "khong_chac"], "properties": {
-                "task": {"const": "column_mapping"},
-                "items": {"type": "array", "minItems": len(columns), "maxItems": len(columns), "items": item},
-                "khong_chac": {"type": "array", "uniqueItems": True, "maxItems": len(columns),
-                    "items": {"type": "integer", "enum": columns}}}}
-        request = {"registry": registry, "examples": json_codec.loads(examples_text),
-                   "task": "column_mapping", "columns": content}
-    elif document.get("name") == "Cấu trúc nguồn":
-        system, definitions = context.rsplit("\n", 1)
-        info = json_codec.loads(definitions)
-        fields = info["fields"]
-        schema = {"type": "object", "additionalProperties": False,
-            "required": ["task", "status", "fields", "reason"], "properties": {
-                "task": {"const": "reader_review"},
-                "status": {"type": "string", "enum": ["confirmed", "unknown", "rejected"]},
-                "fields": {"type": "array", "uniqueItems": True, "maxItems": len(fields),
-                    "items": {"type": "string", "enum": sorted(fields)}},
-                "reason": {"type": "string", "enum": ["Đơn vị và nhóm phù hợp",
-                    "Thiếu căn cứ từ tiêu đề", "Đơn vị hoặc nhóm mâu thuẫn", "Chưa đủ thông tin"]}}}
-        request = {"registry": info["registry"], "task": "reader_review",
-                   "fields": fields, "headers": content}
-    else:
-        return None
-    return json_codec.dumps(request, ensure_ascii=False, separators=(",", ":")), system, schema
 
 
 def make_local_post(cancel=None, engine="g4f"):
@@ -570,60 +387,13 @@ def make_local_post(cancel=None, engine="g4f"):
     """
     # Chỉ sống trong một lần đọc; lần nhập tiếp theo tạo adapter mới.
     # Không cache số liệu, lỗi hoặc trạng thái xác nhận nghiệp vụ.
+    if engine != "g4f":
+        raise LocalAIError("Loại kết nối AI không hợp lệ.")
     pending = {}
     pending_lock = threading.Lock()
     stats = {"calls": 0, "metadata_reused": 0, "seconds": 0.0}
     def post(url, *, json, timeout=None, **kwargs):
         document = json.get("document") or {}
-        if engine in OLLAMA_MODELS and document.get("name") == "Cấu trúc nguồn":
-            system, definitions = json["context"].rsplit("\n", 1)
-            info = json_codec.loads(definitions)
-            fields = info["fields"]
-            if len(fields) > 6:
-                from mapping_proposer import review_reader_structure
-                headers = json_codec.loads(document["text"])
-                checked = []; reasons = []
-                for start in range(0, len(fields), 6):
-                    if cancel is not None and cancel.is_set():
-                        raise InterruptedError("Đã dừng kiểm tra; chưa trả số liệu.")
-                    group = fields[start:start+6]
-                    registry = [entry for entry in info["registry"] if entry["id"] in group]
-                    part = dict(json)
-                    part["context"] = system + "\n" + json_codec.dumps(
-                        {"fields": group, "registry": registry}, ensure_ascii=False, separators=(",", ":"))
-                    part["max_tokens"] = 2048
-                    answer = require_ai_answer(post(url, json=part, timeout=timeout))
-                    # Dùng lại cổng xác nhận thật cho TỪNG nhóm; không chỉ ghép JSON.
-                    approval = review_reader_structure(headers, group, registry,
-                        lambda request, raw=answer: raw, retries=0)
-                    checked.extend(approval["fields"]); reasons.append(approval["reason"])
-                if len(checked) != len(fields) or set(checked) != set(fields):
-                    raise LocalAIError("AI chưa xác nhận đủ chỉ tiêu; chưa trả số liệu.")
-                return _LocalResponse(json_codec.dumps({"task": "reader_review", "status": "confirmed",
-                    "fields": sorted(checked), "reason": reasons[0]}, ensure_ascii=False, separators=(",", ":")), source=engine)
-        if engine in OLLAMA_MODELS and document.get("name") == "Tiêu đề Excel":
-            columns = json_codec.loads(document["text"])
-            if len(columns) > 8:
-                items = []; unsure = []
-                for start in range(0, len(columns), 8):
-                    if cancel is not None and cancel.is_set():
-                        raise InterruptedError("Đã dừng ánh xạ; chưa liên kết dữ liệu.")
-                    group = columns[start:start+8]
-                    part = dict(json)
-                    part["document"] = dict(document, text=json_codec.dumps(group, ensure_ascii=False, separators=(",", ":")))
-                    part["max_tokens"] = min(1800, 240 + 160 * len(group))
-                    result = post(url, json=part, timeout=timeout).json()
-                    if not isinstance(result,dict) or not isinstance(result.get("answer"),str):raise LocalAIError("AI chưa trả nội dung ánh xạ; thử lại hoặc chọn model khác.")
-                    obj = json_codec.loads(result["answer"])
-                    allowed = {column["cot_id"] for column in group}
-                    if (set(obj) != {"task", "items", "khong_chac"} or obj["task"] != "column_mapping"
-                            or len(obj["items"]) != len(allowed)
-                            or {item["cot_id"] for item in obj["items"]} != allowed
-                            or set(obj["khong_chac"]) - allowed):
-                        raise LocalAIError("AI trả thiếu hoặc lặp cột trong nhóm; chưa liên kết dữ liệu.")
-                    items.extend(obj["items"]); unsure.extend(obj["khong_chac"])
-                return _LocalResponse(json_codec.dumps({"task": "column_mapping", "items": items,
-                    "khong_chac": sorted(set(unsure))}, ensure_ascii=False, separators=(",", ":")), source=engine)
         prompt = "\n".join(str(part) for part in (
             json.get("context", ""), json.get("text", ""), document.get("text", "")) if part)
         seconds = timeout[-1] if isinstance(timeout, (tuple, list)) else timeout
@@ -633,10 +403,6 @@ def make_local_post(cancel=None, engine="g4f"):
         # Chỉ gộp yêu cầu metadata cố định. Yêu cầu chat/kế hoạch không dùng cache.
         is_metadata = document.get("name") in ("Tiêu đề Excel", "Cấu trúc nguồn")
         format_options = {}
-        if engine in OLLAMA_MODELS and is_metadata:
-            prompt, system, schema = _ollama_metadata_request(json)
-            tokens = max(tokens, 2048)
-            format_options = {"system_prompt": system, "response_schema": schema, "num_ctx": 8192}
         signature = hashlib.sha256((engine + "\0" + str(tokens) + "\0" + prompt + json_codec.dumps(format_options, sort_keys=True, ensure_ascii=False)).encode("utf-8")).hexdigest()
         owner = True; future = None
         if is_metadata:
@@ -676,7 +442,7 @@ def make_local_post(cancel=None, engine="g4f"):
             finally:
                 with pending_lock:
                     stats["seconds"] += time.monotonic() - started
-        return _LocalResponse(answer, source=engine if engine in OLLAMA_MODELS else "deepseek_free")
+        return _LocalResponse(answer, source="deepseek_free")
     post.ai_stats = stats
     return post
 
@@ -717,4 +483,4 @@ def chat_deepseek_local(payload, cancel=None, engine="g4f"):
         raise LocalAIError('AI cục bộ trả sai cấu trúc chat; chưa dùng phản hồi.')
     if cancel is not None and cancel.is_set():
         raise InterruptedError('Đã dừng chat AI cục bộ.')
-    return _LocalResponse(obj['answer'].strip(), source=engine if engine in OLLAMA_MODELS else 'deepseek_free')
+    return _LocalResponse(obj['answer'].strip(), source='deepseek_free')
