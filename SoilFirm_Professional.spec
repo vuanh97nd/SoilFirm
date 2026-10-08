@@ -12,7 +12,7 @@ for name in ('Data_Import_Mau.xlsx', 'shared_memory_seed.json'):
 datas.append((str(project_dir / 'soilfirm_agent'), 'soilfirm_agent'))
 binaries = []
 hiddenimports = ['xlrd', 'geotech_ai_extractor', 'geotech_memory', 'geotech_memory_ui', 'geotech_memory_sync', 'sqlite3', 'soilfirm_agent', 'soilfirm_agent.app_bridge', 'soilfirm_agent.documents', 'soilfirm_agent.table_python', 'jsonschema', 'pdfplumber']
-for package in ('pandas','pydantic','pydantic_core','g4f','ddgs','soilfirm_agent','jsonschema','pdfplumber'):
+for package in ('pydantic','pydantic_core','g4f','ddgs','soilfirm_agent','pdfplumber'):
     collected=collect_all(package)
     datas += collected[0]; binaries += collected[1]; hiddenimports += collected[2]
 tmp_ret = collect_all('webview')
@@ -34,7 +34,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['pandas.tests', 'jsonschema.tests', 'jsonschema.benchmarks', 'g4f.local'],
     noarchive=False,
     optimize=0,
 )
